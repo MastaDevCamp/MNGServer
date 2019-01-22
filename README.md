@@ -8,11 +8,11 @@
 
 ### Directory tree
 
-> ─root 
-> ​    └core
-> ​         ├auth-server
-> ​         ├cms-server
-> ​         └patch-server
+> ─ root  
+> &nbsp; &nbsp; &nbsp; └ core  
+> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ├ auth-server  
+> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ├ cms-server  
+> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; └ patch-server  
 
 ### Dependencies
 

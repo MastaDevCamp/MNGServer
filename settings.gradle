@@ -1,0 +1,5 @@
+rootProject.name = 'mng'
+include 'mng-cms'
+include 'mng-patch'
+include 'mng-auth'
+include 'mng-core'

@@ -1,0 +1,8 @@
+//=================================================================//
+// mng auth server
+//=================================================================//
+
+dependencies {
+    compile project(':mng-core')
+    compile('org.springframework.boot:spring-boot-starter-aop')
+}

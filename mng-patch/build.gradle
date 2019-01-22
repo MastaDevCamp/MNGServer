@@ -1,0 +1,11 @@
+//=================================================================//
+// mng path server
+//=================================================================//
+
+dependencies {
+    compile project(':mng-core')
+
+    compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0')
+    runtime('mysql:mysql-connector-java')
+
+}

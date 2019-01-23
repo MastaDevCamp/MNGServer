@@ -1,8 +1,10 @@
 package com.masta.patch.utils.FileSystem.model;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class FileEntry {
     private int listIndex;
     private char type;
@@ -14,5 +16,12 @@ public class FileEntry {
     private int compressSize;
     private String originalHash;
     private String compressHash;
+
+    public String getFileInfo() {
+        String info = "";
+        info = String.format("%d | %c | %s | %s | %d | %s | %d | %d | %s | %s",
+                listIndex, type, path, version, fileIndex, compress, originalSize, compressSize, originalHash, compressHash);
+        return info;
+    }
 
 }

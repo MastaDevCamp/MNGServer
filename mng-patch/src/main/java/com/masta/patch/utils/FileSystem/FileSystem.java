@@ -1,5 +1,7 @@
 package com.masta.patch.utils.FileSystem;
 
+import com.masta.patch.utils.FileSystem.model.DiffFileEntry;
+import com.masta.patch.utils.FileSystem.model.Version;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,13 +43,14 @@ public class FileSystem {
         // set file type
         char fileType = file.isDirectory() ? 'D' : (file.getTotalSpace() != 0 ? 'F' : 'G');
 
-        FileEntry fileEntry = FileEntry.builder()
+
+        FileEntry fileEntry = DiffFileEntry.builder()
                 .listIndex(listIndex++)
                 .type(fileType)
                 .path(file.getPath())
-                .version("0.3.0")
                 .fileIndex(fileType != 'D' ? fileIndex++ : 0)
                 .compress("gzip")
+                .version(Version.builder().from("0.1.0").to("0.1.0").build())
                 .originalSize((int) file.length())
                 .compressSize((int) file.length())
                 .originalHash("gieaorngoiarengionraeoigneariognoierango")

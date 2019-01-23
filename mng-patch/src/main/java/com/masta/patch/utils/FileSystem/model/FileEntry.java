@@ -3,7 +3,7 @@ package com.masta.patch.utils.FileSystem.model;
 import lombok.Data;
 
 @Data
-public class FileList {
+public class FileEntry {
     private int listIndex;
     private char type;
     private String path;
@@ -14,4 +14,5 @@ public class FileList {
     private int compressSize;
     private String originalHash;
     private String compressHash;
+
 }

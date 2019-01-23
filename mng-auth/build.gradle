@@ -5,4 +5,12 @@
 dependencies {
     compile project(':mng-core')
     compile('org.springframework.boot:spring-boot-starter-aop')
+    
+    //security
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.1.1.RELEASE'
+    compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.1.1.RELEASE'
+
+    //test
+    testCompile('org.springframework.security:spring-security-test')
+    testCompile('io.rest-assured:rest-assured:3.1.0') // Rest API Test
 }

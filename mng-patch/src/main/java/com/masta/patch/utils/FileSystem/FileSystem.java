@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -50,7 +49,7 @@ public class FileSystem {
                 .fileIndex(fileType != 'D' ? fileIndex++ : 0)
                 .compress("gzip")
                 .originalSize((int) file.length())
-                .compressSize((int) file.length() - 1)
+                .compressSize((int) file.length())
                 .originalHash("gieaorngoiarengionraeoigneariognoierango")
                 .compressHash("gig34ng90w43ng09qnero903oigrs9g0540p9roe")
                 .build();
@@ -58,13 +57,8 @@ public class FileSystem {
         return fileEntry;
     }
 
-    public List<String> getFileTreeList(String path) {
+    public List<FileEntry> getFileTreeList(String path) {
         listFilesForFolder(new File(path));
-        List<String> rtn = new ArrayList<>();
-        for (FileEntry fileEntry : fileList) {
-            rtn.add(fileEntry.getFileInfo());
-        }
-        log.info(path);
-        return rtn;
+        return this.fileList;
     }
 }

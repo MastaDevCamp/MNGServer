@@ -17,11 +17,4 @@ public class FileEntry {
     private String originalHash;
     private String compressHash;
 
-    public String getFileInfo() {
-        String info = "";
-        info = String.format("%d | %c | %s | %s | %d | %s | %d | %d | %s | %s",
-                listIndex, type, path, version, fileIndex, compress, originalSize, compressSize, originalHash, compressHash);
-        return info;
-    }
-
 }

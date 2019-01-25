@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
+import static com.masta.core.response.DefaultRes.res;
 
 @Slf4j
 @RestController
@@ -34,10 +35,12 @@ public class TestFSController {
     @JsonView(Views.Full.class)
     public ResponseEntity getFileList(@RequestParam("path") final Optional<String> path) {
         try {
-            log.info("fullJsonController");
-            ResponseEntity responseEntity = path.map( string -> new ResponseEntity<>(fileSystem.getFileTreeList(string), HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK));
-            return responseEntity;
+
+            if(path.isPresent()){
+                log.info("fullJsonController");
+                return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()), HttpStatus.OK);
+            }
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -49,11 +52,13 @@ public class TestFSController {
     @JsonView(Views.Patch.class)
     public ResponseEntity getDiffFileList(@RequestParam("path") final Optional<String> path) {
         try {
-            log.info("patchJsonController");
-            ResponseEntity responseEntity = path.map( string -> new ResponseEntity<>(fileSystem.getFileTreeList(string), HttpStatus.OK))
-            .orElseGet(() -> new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK));
 
-            return responseEntity;
+            if(path.isPresent()){
+                log.info("patchJsonController");
+                return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()), HttpStatus.OK);
+            }
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
+
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

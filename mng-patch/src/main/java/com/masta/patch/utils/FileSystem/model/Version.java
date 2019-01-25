@@ -10,6 +10,6 @@ import lombok.Getter;
 public class Version{
     @JsonView(Views.Full.class)
     private String from;
-    @JsonView(Views.Full.class)
+    @JsonView(Views.Patch.class)
     private String to;
 }

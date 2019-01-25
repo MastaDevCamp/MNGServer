@@ -28,10 +28,7 @@ public class FileSystem {
 //    private ObjectMapper mapper;
 
     public FileSystem(final List<FileEntry> fileList) {
-//        this.mapper = mapper;
         this.fileList = fileList;
-        this.listIndex = 1;
-        this.fileIndex = 1;
     }
 
     public void listFilesForFolder(final File folder) {
@@ -49,6 +46,7 @@ public class FileSystem {
      * @param file
      * @return FileEntrey Filled fields.
      */
+    @JsonView(Views.Patch.class)
     public FileEntry getFileEntry(File file) {
 
 //        boolean forPatch = false;
@@ -83,8 +81,12 @@ public class FileSystem {
 
 
 
-    public DefaultRes getFileTreeList(String path) {
+    public List<FileEntry> getFileTreeList(String path) {
+        fileList.clear();
+        this.listIndex = 1;
+        this.fileIndex = 1;
         listFilesForFolder(new File(path));
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_JSON_FILE, this.fileList);
+        return this.fileList;
+//        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_JSON_FILE, this.fileList);
     }
 }

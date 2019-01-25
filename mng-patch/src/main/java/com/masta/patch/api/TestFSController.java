@@ -1,7 +1,12 @@
 package com.masta.patch.api;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.masta.core.response.DefaultRes;
+import com.masta.core.response.ResponseMessage;
+import com.masta.core.response.StatusCode;
 import com.masta.patch.utils.FileSystem.FileSystem;
+import com.masta.patch.utils.FileSystem.model.Views;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +30,30 @@ public class TestFSController {
         this.fileSystem = fileSystem;
     }
 
-    @GetMapping("")
+    @GetMapping("full")
+    @JsonView(Views.Full.class)
     public ResponseEntity getFileList(@RequestParam("path") final Optional<String> path) {
         try {
-            return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()), HttpStatus.OK);
+            log.info("fullJsonController");
+            ResponseEntity responseEntity = path.map( string -> new ResponseEntity<>(fileSystem.getFileTreeList(string), HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK));
+            return responseEntity;
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("patch")
+    @JsonView(Views.Patch.class)
+    public ResponseEntity getDiffFileList(@RequestParam("path") final Optional<String> path) {
+        try {
+            log.info("patchJsonController");
+            ResponseEntity responseEntity = path.map( string -> new ResponseEntity<>(fileSystem.getFileTreeList(string), HttpStatus.OK))
+            .orElseGet(() -> new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK));
+
+            return responseEntity;
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

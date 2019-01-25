@@ -8,7 +8,6 @@ import lombok.*;
 @Builder
 public class FileEntry {
     @JsonView(Views.Full.class)
-
     private int listIndex;
     @JsonView(Views.Full.class)
     private char type;

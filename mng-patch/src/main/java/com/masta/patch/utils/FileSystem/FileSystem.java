@@ -1,7 +1,11 @@
 package com.masta.patch.utils.FileSystem;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.masta.core.response.DefaultRes;
+import com.masta.core.response.ResponseMessage;
+import com.masta.core.response.StatusCode;
 import com.masta.patch.utils.FileSystem.model.Version;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import com.masta.patch.utils.FileSystem.model.Views;
@@ -15,16 +19,17 @@ import java.util.List;
 @Service
 public class FileSystem {
 
-//    private List<FileEntry> fileList;
-    private List<ObjectWriter> fileList;
+    private List<FileEntry> fileList;
     int listIndex;
     int fileIndex;
 
-    private ObjectMapper mapper;
 
-    public FileSystem(final List<FileEntry> fileList, final ObjectMapper mapper) {
-        this.mapper = mapper;
-//        this.fileList = fileList;
+
+//    private ObjectMapper mapper;
+
+    public FileSystem(final List<FileEntry> fileList) {
+//        this.mapper = mapper;
+        this.fileList = fileList;
         this.listIndex = 1;
         this.fileIndex = 1;
     }
@@ -46,14 +51,14 @@ public class FileSystem {
      */
     public FileEntry getFileEntry(File file) {
 
-        boolean forPatch = false;
-
-        ObjectWriter viewWriter;
-        if (forPatch) {
-            viewWriter = mapper.writerWithView(Views.Patch.class);
-        } else {
-            viewWriter = mapper.writerWithView(Views.Full.class);
-        }
+//        boolean forPatch = false;
+//
+//        ObjectWriter viewWriter;
+//        if (forPatch) {
+//            viewWriter = mapper.writerWithView(Views.Patch.class);
+//        } else {
+//            viewWriter = mapper.writerWithView(Views.Full.class);
+//        }
 
 
         // set file type
@@ -73,15 +78,13 @@ public class FileSystem {
                 .diffType('x') //현재는 full file
                 .build();
 
-
-        viewWriter.writeValue(viewWriter);
         return fileEntry;
     }
 
-    public List<FileEntry> getFileTreeList(String path) {
+
+
+    public DefaultRes getFileTreeList(String path) {
         listFilesForFolder(new File(path));
-
-
-        return this.fileList;
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_JSON_FILE, this.fileList);
     }
 }

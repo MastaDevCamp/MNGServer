@@ -2,7 +2,7 @@ package com.masta.patch.utils.FileSystem.model;
 
 public class Views {
 
-    public static interface Full {}
+    public interface Full {}
 
-    public static interface Patch extends Full {}
+    public interface Patch extends Full {}
 }

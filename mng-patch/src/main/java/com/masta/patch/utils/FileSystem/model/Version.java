@@ -1,5 +1,6 @@
 package com.masta.patch.utils.FileSystem.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,6 +8,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class Version{
+    @JsonView(Views.Full.class)
     private String from;
+    @JsonView(Views.Full.class)
     private String to;
 }

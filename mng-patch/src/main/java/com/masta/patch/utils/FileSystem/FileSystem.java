@@ -4,7 +4,10 @@ import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.File;
+import java.io.RandomAccessFile;
+import java.security.MessageDigest;
 import java.util.List;
 
 @Slf4j
@@ -55,6 +58,34 @@ public class FileSystem {
                 .build();
 
         return fileEntry;
+    }
+
+    public String getMD5Hash(File file) throws Exception {
+        String md5 = "";
+
+        byte[] fileByte = new byte[20];
+
+        if (file.length() > 20) {
+            byte[] last = new byte[10];
+            byte[] first = new byte[10];
+
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            raf.read(first, 0, 10);
+            raf.seek(file.length() - 10);
+            raf.read(last, 0, 10);
+
+            // combine byte[]
+            System.arraycopy(first, 0, fileByte, 0, first.length);
+            System.arraycopy(last, 0, fileByte, first.length, last.length);
+        } else {
+            RandomAccessFile raf = new RandomAccessFile(file, "r");
+            raf.read(fileByte, 0, (int) file.length());
+        }
+
+        byte[] res = MessageDigest.getInstance("MD5").digest(fileByte);
+        md5 = DatatypeConverter.printHexBinary(res);
+
+        return md5;
     }
 
     public List<FileEntry> getFileTreeList(String path) {

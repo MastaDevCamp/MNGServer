@@ -1,14 +1,8 @@
 package com.masta.patch.utils.FileSystem;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.masta.core.response.DefaultRes;
-import com.masta.core.response.ResponseMessage;
-import com.masta.core.response.StatusCode;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
-import com.masta.patch.utils.FileSystem.model.Views;
-import jdk.nashorn.internal.parser.JSONParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +11,6 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -29,34 +22,22 @@ public class FileSystem {
         parentDir.fileEntryList = new ArrayList<>();
         parentDir.dirEntryList = new ArrayList<>();
 
-        System.out.println(parentDir.toString());
-
         File file = new File(parentDir.getPath());
 
         for (final File children : file.listFiles()) {
             if (children.isFile()) { //file
-
-                System.out.println("for child file :" +children.toString());
                 FileEntry childFile = getFileEntry(children); //childFile obejct setting
-
-                System.out.println("FileEntry child : "+ childFile.toString());
                 parentDir.fileEntryList.add(childFile); //child
 
-            }else if (children.isDirectory()){ //dir
-
-                System.out.println("for child dir file :" +children.toString());
+            } else if (children.isDirectory()) { //dir
                 DirEntry childDir = getDirEntry(children);
-
-                System.out.println("DirEntry child : "+ childDir.toString());
                 parentDir.dirEntryList.add(childDir);
-
                 listFilesForFolder(childDir); //자식 dir
             }
-            log.info(parentDir.toString());
         }
     }
 
-    public DirEntry getDirEntry(File file){
+    public DirEntry getDirEntry(File file) {
         char fileType = 'D';
 
         DirEntry dirEntry = DirEntry.builder()
@@ -93,29 +74,28 @@ public class FileSystem {
         return fileEntry;
     }
 
-    public void jsonToPOJO(String path){
+    public void jsonToPOJO(String path) {
         ObjectMapper mapper = new ObjectMapper();
 
-        try{
+        try {
             FileEntry[] fileEntries = mapper.readValue(new File(path), FileEntry[].class);
 
-            for(FileEntry fileEntry : fileEntries){
+            for (FileEntry fileEntry : fileEntries) {
                 log.info(fileEntry.toString());
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
 
-    public String getMD5Hash(File file)  {
-        String md5 = "";
+    public String getMD5Hash(File file) {
 
-        if(file.isDirectory()) {
+        if (file.isDirectory()) {
             return "";
         }
 
-
+        String md5 = "";
         byte[] fileByte = new byte[20];
 
         try {
@@ -139,18 +119,17 @@ public class FileSystem {
             byte[] res = MessageDigest.getInstance("MD5").digest(fileByte);
             md5 = DatatypeConverter.printHexBinary(res);
 
-        } catch (Exception e ) {
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
         return md5;
     }
 
-
     public DirEntry getFileTreeList(String path) {
-        DirEntry rootDir = new DirEntry();
-        rootDir = getDirEntry(new File(rootDir.getPath()));
+        DirEntry rootDir = getDirEntry(new File(path));
         listFilesForFolder(rootDir);
+        log.info("version " + rootDir.getVersion() + " created.");
         return rootDir;
     }
 

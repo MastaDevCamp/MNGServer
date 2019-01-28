@@ -1,12 +1,10 @@
 package com.masta.patch.api;
 
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import com.masta.patch.utils.FileSystem.FileSystem;
-import com.masta.patch.utils.FileSystem.model.Views;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -17,11 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
-
 
 import java.util.Optional;
 
+import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
 
 @Slf4j
@@ -37,12 +34,14 @@ public class TestFSController {
 
     @ApiOperation(value = "make version json to POJO")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "file", value = "C:\\Users\\user\\PatchVersion\\dpmsLog\\FullLog\\full_version_0.1.0.json", required = true, dataType = "string", paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "file", value = "Put path", required = true, dataType = "string", paramType = "query", defaultValue = ""),
     })
+
+
     @GetMapping("jsonToPOJO")
-    public ResponseEntity jsonToPOJO(@RequestParam("file") final Optional<String> file){
+    public ResponseEntity jsonToPOJO(@RequestParam("file") final Optional<String> file) {
         try {
-            if(file.isPresent()){
+            if (file.isPresent()) {
                 log.info("create version json to POJO");
                 fileSystem.jsonToPOJO(file.get());
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -58,14 +57,14 @@ public class TestFSController {
 
     @ApiOperation(value = "version json 생성")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "path", value = "C:\\Users\\user\\PatchVersion\\gameFiles", required = true, dataType = "string", paramType = "query", defaultValue = ""),
+            @ApiImplicitParam(name = "path", value = "Put path", required = true, dataType = "string", paramType = "query", defaultValue = ""),
     })
     @GetMapping("json")
     public ResponseEntity getDiffFileList(@RequestParam("path") final Optional<String> path) {
         try {
-            if(path.isPresent()){
+            if (path.isPresent()) {
                 log.info("file to Json Converter");
-                return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()),HttpStatus.OK);
+                return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()), HttpStatus.OK);
             }
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
 

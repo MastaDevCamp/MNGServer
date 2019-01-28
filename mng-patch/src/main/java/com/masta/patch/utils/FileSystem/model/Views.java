@@ -4,7 +4,7 @@ public class Views {
 
     public interface ALL{}
 
-    public interface FULL extends ALL{}
+//    public interface FULL extends ALL{}
 
     public interface Patch extends ALL{}
 }

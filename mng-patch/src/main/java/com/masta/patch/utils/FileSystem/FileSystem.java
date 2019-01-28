@@ -26,10 +26,13 @@ public class FileSystem {
 
         for (final File children : file.listFiles()) {
             if (children.isFile()) { //file
+
                 FileEntry childFile = getFileEntry(children); //childFile obejct setting
                 parentDir.fileEntryList.add(childFile); //child
 
-            } else if (children.isDirectory()) { //dir
+            }else if (children.isDirectory()){ //dir
+
+
                 DirEntry childDir = getDirEntry(children);
                 parentDir.dirEntryList.add(childDir);
                 listFilesForFolder(childDir); //자식 dir

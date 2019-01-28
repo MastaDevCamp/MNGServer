@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
-import static com.masta.core.response.DefaultRes.res;
 
 @Slf4j
 @RestController
@@ -32,7 +31,7 @@ public class TestFSController {
     }
 
     @GetMapping("full")
-    @JsonView(Views.Full.class)
+    @JsonView(Views.FULL.class)
     public ResponseEntity getFileList(@RequestParam("path") final Optional<String> path) {
         try {
 

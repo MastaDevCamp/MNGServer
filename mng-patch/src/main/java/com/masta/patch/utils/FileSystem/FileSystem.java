@@ -1,14 +1,6 @@
 package com.masta.patch.utils.FileSystem;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.masta.core.response.DefaultRes;
-import com.masta.core.response.ResponseMessage;
-import com.masta.core.response.StatusCode;
-import com.masta.patch.utils.FileSystem.model.Version;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
-import com.masta.patch.utils.FileSystem.model.Views;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -46,19 +38,8 @@ public class FileSystem {
      * @param file
      * @return FileEntrey Filled fields.
      */
-    @JsonView(Views.Patch.class)
+//    @JsonView(Views.Patch.class)
     public FileEntry getFileEntry(File file) {
-
-//        boolean forPatch = false;
-//
-//        ObjectWriter viewWriter;
-//        if (forPatch) {
-//            viewWriter = mapper.writerWithView(Views.Patch.class);
-//        } else {
-//            viewWriter = mapper.writerWithView(Views.Full.class);
-//        }
-
-
         // set file type
         char fileType = file.isDirectory() ? 'D' : (file.getTotalSpace() != 0 ? 'F' : 'G');
 
@@ -68,12 +49,14 @@ public class FileSystem {
                 .path(file.getPath())
                 .fileIndex(fileType != 'D' ? fileIndex++ : 0)
                 .compress("gzip")
-                .version(Version.builder().from("0.1.0").to("0.1.0").build())
                 .originalSize((int) file.length())
                 .compressSize((int) file.length())
                 .originalHash("gieaorngoiarengionraeoigneariognoierango")
                 .compressHash("gig34ng90w43ng09qnero903oigrs9g0540p9roe")
-                .diffType('x') //현재는 full file
+                .diffType('x') //patch
+                .nowVersion("0.1.0") //full
+                .fromVersion("0.1.0") //patch
+                .toVersion("0.1.2") //patch
                 .build();
 
         return fileEntry;

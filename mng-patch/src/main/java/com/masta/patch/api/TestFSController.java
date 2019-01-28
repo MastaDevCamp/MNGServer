@@ -7,6 +7,9 @@ import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import com.masta.patch.utils.FileSystem.FileSystem;
 import com.masta.patch.utils.FileSystem.model.Views;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +17,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
+
 
 import java.util.Optional;
 
-import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
+
 
 @Slf4j
 @RestController
@@ -30,14 +35,17 @@ public class TestFSController {
         this.fileSystem = fileSystem;
     }
 
-    @GetMapping("full")
-    @JsonView(Views.FULL.class)
-    public ResponseEntity getFileList(@RequestParam("path") final Optional<String> path) {
+    @ApiOperation(value = "make version json to POJO")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "file", value = "C:\\Users\\user\\PatchVersion\\dpmsLog\\FullLog\\full_version_0.1.0.json", required = true, dataType = "string", paramType = "query", defaultValue = ""),
+    })
+    @GetMapping("jsonToPOJO")
+    public ResponseEntity jsonToPOJO(@RequestParam("file") final Optional<String> file){
         try {
-
-            if(path.isPresent()){
-                log.info("fullJsonController");
-                return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()), HttpStatus.OK);
+            if(file.isPresent()){
+                log.info("create version json to POJO");
+                fileSystem.jsonToPOJO(file.get());
+                return new ResponseEntity<>(HttpStatus.OK);
             }
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
 
@@ -47,14 +55,17 @@ public class TestFSController {
         }
     }
 
-    @GetMapping("patch")
-    @JsonView(Views.Patch.class)
+
+    @ApiOperation(value = "version json 생성")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "path", value = "C:\\Users\\user\\PatchVersion\\gameFiles", required = true, dataType = "string", paramType = "query", defaultValue = ""),
+    })
+    @GetMapping("json")
     public ResponseEntity getDiffFileList(@RequestParam("path") final Optional<String> path) {
         try {
-
             if(path.isPresent()){
-                log.info("patchJsonController");
-                return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()), HttpStatus.OK);
+                log.info("file to Json Converter");
+                return new ResponseEntity<>(fileSystem.getFileTreeList(path.get()),HttpStatus.OK);
             }
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
 

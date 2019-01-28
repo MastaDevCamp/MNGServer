@@ -1,6 +1,14 @@
 package com.masta.patch.utils.FileSystem;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.masta.core.response.DefaultRes;
+import com.masta.core.response.ResponseMessage;
+import com.masta.core.response.StatusCode;
+import com.masta.patch.utils.FileSystem.model.Version;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
+import com.masta.patch.utils.FileSystem.model.Views;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +26,16 @@ public class FileSystem {
     int listIndex;
     int fileIndex;
 
-    public FileSystem(final List<FileEntry> fileList) {
 
+
+//    private ObjectMapper mapper;
+
+    public FileSystem(final List<FileEntry> fileList) {
         this.fileList = fileList;
-        this.listIndex = 1;
-        this.fileIndex = 1;
     }
 
     public void listFilesForFolder(final File folder) {
+
         for (final File fileEntry : folder.listFiles()) {
             fileList.add(getFileEntry(fileEntry));
             if (fileEntry.isDirectory()) {
@@ -39,7 +49,18 @@ public class FileSystem {
      * @param file
      * @return FileEntrey Filled fields.
      */
+    @JsonView(Views.Patch.class)
     public FileEntry getFileEntry(File file) {
+
+//        boolean forPatch = false;
+//
+//        ObjectWriter viewWriter;
+//        if (forPatch) {
+//            viewWriter = mapper.writerWithView(Views.Patch.class);
+//        } else {
+//            viewWriter = mapper.writerWithView(Views.Full.class);
+//        }
+
 
         // set file type
         char fileType = file.isDirectory() ? 'D' : (file.getTotalSpace() != 0 ? 'F' : 'G');
@@ -48,13 +69,14 @@ public class FileSystem {
                 .listIndex(listIndex++)
                 .type(fileType)
                 .path(file.getPath())
-                .version("0.3.0")
                 .fileIndex(fileType != 'D' ? fileIndex++ : 0)
                 .compress("gzip")
+                .version(Version.builder().from("0.1.0").to("0.1.0").build())
                 .originalSize((int) file.length())
                 .compressSize((int) file.length())
                 .originalHash("gieaorngoiarengionraeoigneariognoierango")
                 .compressHash("gig34ng90w43ng09qnero903oigrs9g0540p9roe")
+                .diffType('x') //현재는 full file
                 .build();
 
         return fileEntry;
@@ -88,8 +110,13 @@ public class FileSystem {
         return md5;
     }
 
+
     public List<FileEntry> getFileTreeList(String path) {
+        fileList.clear();
+        this.listIndex = 1;
+        this.fileIndex = 1;
         listFilesForFolder(new File(path));
         return this.fileList;
+//        return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_JSON_FILE, this.fileList);
     }
 }

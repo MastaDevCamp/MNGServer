@@ -22,8 +22,6 @@ public class FileSystem {
         parentDir.fileEntryList = new ArrayList<>();
         parentDir.dirEntryList = new ArrayList<>();
 
-        System.out.println(parentDir.toString());
-
         File file = new File(parentDir.getPath());
 
         for (final File children : file.listFiles()) {
@@ -34,16 +32,15 @@ public class FileSystem {
 
             }else if (children.isDirectory()){ //dir
 
+
                 DirEntry childDir = getDirEntry(children);
                 parentDir.dirEntryList.add(childDir);
-
                 listFilesForFolder(childDir); //자식 dir
             }
-            log.info(parentDir.toString());
         }
     }
 
-    public DirEntry getDirEntry(File file){
+    public DirEntry getDirEntry(File file) {
         char fileType = 'D';
 
         DirEntry dirEntry = DirEntry.builder()
@@ -80,29 +77,28 @@ public class FileSystem {
         return fileEntry;
     }
 
-    public void jsonToPOJO(String path){
+    public void jsonToPOJO(String path) {
         ObjectMapper mapper = new ObjectMapper();
 
-        try{
+        try {
             FileEntry[] fileEntries = mapper.readValue(new File(path), FileEntry[].class);
 
-            for(FileEntry fileEntry : fileEntries){
+            for (FileEntry fileEntry : fileEntries) {
                 log.info(fileEntry.toString());
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
 
-    public String getMD5Hash(File file)  {
-        String md5 = "";
+    public String getMD5Hash(File file) {
 
-        if(file.isDirectory()) {
+        if (file.isDirectory()) {
             return "";
         }
 
-
+        String md5 = "";
         byte[] fileByte = new byte[20];
 
         try {
@@ -126,17 +122,17 @@ public class FileSystem {
             byte[] res = MessageDigest.getInstance("MD5").digest(fileByte);
             md5 = DatatypeConverter.printHexBinary(res);
 
-        } catch (Exception e ) {
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
         return md5;
     }
 
-
     public DirEntry getFileTreeList(String path) {
         DirEntry rootDir = getDirEntry(new File(path));
         listFilesForFolder(rootDir);
+        log.info("version " + rootDir.getVersion() + " created.");
         return rootDir;
     }
 

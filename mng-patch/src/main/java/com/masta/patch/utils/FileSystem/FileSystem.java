@@ -1,14 +1,8 @@
 package com.masta.patch.utils.FileSystem;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.masta.core.response.DefaultRes;
-import com.masta.core.response.ResponseMessage;
-import com.masta.core.response.StatusCode;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
-import com.masta.patch.utils.FileSystem.model.Views;
-import jdk.nashorn.internal.parser.JSONParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +11,6 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -36,18 +29,12 @@ public class FileSystem {
         for (final File children : file.listFiles()) {
             if (children.isFile()) { //file
 
-                System.out.println("for child file :" +children.toString());
                 FileEntry childFile = getFileEntry(children); //childFile obejct setting
-
-                System.out.println("FileEntry child : "+ childFile.toString());
                 parentDir.fileEntryList.add(childFile); //child
 
             }else if (children.isDirectory()){ //dir
 
-                System.out.println("for child dir file :" +children.toString());
                 DirEntry childDir = getDirEntry(children);
-
-                System.out.println("DirEntry child : "+ childDir.toString());
                 parentDir.dirEntryList.add(childDir);
 
                 listFilesForFolder(childDir); //자식 dir
@@ -148,8 +135,7 @@ public class FileSystem {
 
 
     public DirEntry getFileTreeList(String path) {
-        DirEntry rootDir = new DirEntry();
-        rootDir = getDirEntry(new File(rootDir.getPath()));
+        DirEntry rootDir = getDirEntry(new File(path));
         listFilesForFolder(rootDir);
         return rootDir;
     }

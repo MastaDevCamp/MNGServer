@@ -1,8 +1,8 @@
 package com.masta.patch.utils.FileSystem.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,7 +18,27 @@ public class DirEntry {
     private String version;
     private char diffType; //patch
 
-    public List<DirEntry> dirEntryList;
+    public List<DirEntry> dirEntryList = new ArrayList<>();
 
-    public List<FileEntry> fileEntryList;
+    public List<FileEntry> fileEntryList = new ArrayList<>();
+
+    public void setDiffType(char diffType) {
+        this.diffType = diffType;
+    }
+
+    public void setAllDiffType(char diffType) {
+
+        for (FileEntry fileEntry : this.fileEntryList) {
+            fileEntry.setDiffType(diffType);
+        }
+        for (DirEntry dirEntry : this.dirEntryList) {
+            dirEntry.setDiffType(diffType);
+            dirEntry.setAllDiffType(diffType);
+        }
+    }
+
+    public FileEntry findFileEntry(String path) {
+        FileEntry fileEntry = fileEntryList.stream().filter(f -> f.getPath().equals(path)).findAny().orElse(null);
+        return fileEntry;
+    }
 }

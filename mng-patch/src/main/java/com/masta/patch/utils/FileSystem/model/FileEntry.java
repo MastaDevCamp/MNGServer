@@ -1,6 +1,5 @@
 package com.masta.patch.utils.FileSystem.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 
 @Getter
@@ -17,8 +16,12 @@ public class FileEntry {
     private String originalHash;
     private String compressHash;
     private String version;
-    
+
     private char diffType;      //c, d, u //parch
+
+    public void setDiffType(char diffType) {
+        this.diffType = diffType;
+    }
 }
 
 

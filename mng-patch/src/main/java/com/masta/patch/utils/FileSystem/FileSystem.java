@@ -16,6 +16,11 @@ import java.util.ArrayList;
 @Service
 public class FileSystem {
 
+    final private HashingSystem hashingSystem;
+
+    public FileSystem(final HashingSystem hashingSystem){
+        this.hashingSystem = hashingSystem;
+    }
 
     public void listFilesForFolder(final DirEntry parentDir) {
 
@@ -66,8 +71,10 @@ public class FileSystem {
                 .type(fileType)
                 .path(file.getPath())
                 .compress("gzip")
-                .originalSize((int) file.length())
-                .compressSize((int) file.length())
+//                .originalSize((int) file.length())
+//                .compressSize((int) file.length())
+                .originalHash(hashingSystem.MD5hashing(file))
+                .compressHash(hashingSystem.MD5hashing(file))
                 .originalHash(getMD5Hash(file))
                 .compressHash(getMD5Hash(file))
                 .diffType('x') //patch
@@ -130,9 +137,12 @@ public class FileSystem {
     }
 
     public DirEntry getFileTreeList(String path) {
+        long startTime = System.currentTimeMillis();
         DirEntry rootDir = getDirEntry(new File(path));
         listFilesForFolder(rootDir);
         log.info("version " + rootDir.getVersion() + " created.");
+        long endTime = System.currentTimeMillis();
+        System.out.println("That took " + (endTime - startTime) + " milliseconds");
         return rootDir;
     }
 

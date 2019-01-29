@@ -27,7 +27,7 @@ public class DirEntry {
     }
 
     public void setAllDiffType(char diffType) {
-
+        this.diffType = diffType;
         for (FileEntry fileEntry : this.fileEntryList) {
             fileEntry.setDiffType(diffType);
         }
@@ -40,5 +40,10 @@ public class DirEntry {
     public FileEntry findFileEntry(String path) {
         FileEntry fileEntry = fileEntryList.stream().filter(f -> f.getPath().equals(path)).findAny().orElse(null);
         return fileEntry;
+    }
+
+    public void clearList() {
+        this.dirEntryList.clear();
+        this.fileEntryList.clear();
     }
 }

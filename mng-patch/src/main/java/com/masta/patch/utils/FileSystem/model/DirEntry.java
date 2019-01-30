@@ -46,4 +46,16 @@ public class DirEntry {
         this.dirEntryList.clear();
         this.fileEntryList.clear();
     }
+
+    public DirEntry(DirEntry dirEntry) {
+        this.type = dirEntry.type;
+        this.path = dirEntry.path;
+        this.compress = dirEntry.compress;
+        this.version = dirEntry.version;
+        this.diffType = dirEntry.diffType;
+
+        this.dirEntryList.addAll(dirEntry.dirEntryList);
+
+        this.fileEntryList.addAll(dirEntry.fileEntryList);
+    }
 }

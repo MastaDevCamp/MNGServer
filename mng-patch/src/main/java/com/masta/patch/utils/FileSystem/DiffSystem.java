@@ -101,7 +101,6 @@ public class DiffSystem {
                 retainDirAll.put(dir.getPath(), 'S');  // 'S' not changed
             }
         }
-
         return retainDirAll;
     }
 
@@ -112,6 +111,7 @@ public class DiffSystem {
         for (final FileEntry file : prevDir.fileEntryList) {
             retainFileAll.put(file, 'D');
         }
+        log.info(retainFileAll.toString());
         for (final FileEntry file : nextDir.fileEntryList) {
             FileEntry commonFile = findFile(retainFileAll, file);
             if (commonFile == null) {
@@ -126,6 +126,7 @@ public class DiffSystem {
                 retainFileAll.put(file, 'S');
             }
         }
+
         return retainFileAll;
     }
 

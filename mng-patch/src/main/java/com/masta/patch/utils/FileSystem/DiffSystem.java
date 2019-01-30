@@ -14,29 +14,37 @@ import java.util.Map;
 @Service
 public class DiffSystem {
 
-    private DirEntry patchDir = new DirEntry();
-    private DirEntry notPatchDir = new DirEntry();
+    private DirEntry resultDir = new DirEntry();
+    private boolean isRoot = true;
 
     public DirEntry makePatchJson(String prevJsonPath, String nextJsonPath) {
-        DirEntry resultDir = new DirEntry();
+        //DirEntry resultDir = new DirEntry();
         DirEntry prevRoot = readVersionJson(prevJsonPath);
         DirEntry nextRoot = readVersionJson(nextJsonPath);
 
-        diff(prevRoot, nextRoot, resultDir);
+        diff(prevRoot, nextRoot);
 
-        return patchDir;
+        return resultDir;
     }
 
-    public void diff(DirEntry prevDir, DirEntry nextDir, DirEntry resultDir) {
+    public void diff(DirEntry prevDir, DirEntry nextDir) {
         try {
-            diffDir(prevDir, nextDir, resultDir);
+            DirEntry bPrevDir = prevDir;
+            DirEntry bNextDir = nextDir;
+
+            DirEntry patchDir = new DirEntry();
+            DirEntry notPatchDir = new DirEntry();
+
+            diffDir(prevDir, nextDir, patchDir, notPatchDir);
             for (final DirEntry dirEntry : notPatchDir.dirEntryList) {
+                prevDir = bPrevDir;
+                nextDir = bNextDir;
                 prevDir = prevDir.dirEntryList.stream().filter(d -> d.getPath().equals(dirEntry.getPath())).findAny().orElse(null);
                 nextDir = nextDir.dirEntryList.stream().filter(d -> d.getPath().equals(dirEntry.getPath())).findAny().orElse(null);
-                diff(prevDir, nextDir, resultDir);
+                diff(prevDir, nextDir);
             }
-            patchDir.clearList();
-            notPatchDir.clearList();
+//            patchDir.clearList();
+//            notPatchDir.clearList();
         } catch (Exception e) {
             return;
         }
@@ -56,7 +64,7 @@ public class DiffSystem {
         }
     }
 
-    public void diffDir(DirEntry prevDir, DirEntry nextDir, DirEntry resultDir) {
+    public void diffDir(DirEntry prevDir, DirEntry nextDir, DirEntry patchDir, DirEntry notPatchDir) {
         Map<String, Character> commonDirs = getDirRetainAll(prevDir, nextDir);
         Map<FileEntry, Character> commonFiles = getFileRetainAll(prevDir, nextDir);
 
@@ -65,22 +73,27 @@ public class DiffSystem {
             if (tempDir == null)
                 tempDir = nextDir.dirEntryList.stream().filter(d -> d.getPath().equals(path)).findAny().orElse(null);
 
-            tempDir.setAllDiffType(commonDirs.get(path));
             if (commonDirs.get(path) != 'S') {
+                tempDir.setAllDiffType(commonDirs.get(path));
                 resultDir.dirEntryList.add(tempDir);
                 patchDir.dirEntryList.add(tempDir);
             } else {
+                tempDir.setDiffType(commonDirs.get(path));
                 notPatchDir.dirEntryList.add(tempDir);
             }
         }
 
-        for (FileEntry file : commonFiles.keySet()) {
-            if (commonFiles.get(file) != 'S') {
-                file.setDiffType(commonFiles.get(file));
-                resultDir.fileEntryList.add(file);
-                patchDir.fileEntryList.add(file);
+        if (isRoot) {
+            for (FileEntry file : commonFiles.keySet()) {
+                if (commonFiles.get(file) != 'S') {
+                    file.setDiffType(commonFiles.get(file));
+                    resultDir.fileEntryList.add(file);
+                    //patchDir.fileEntryList.add(file);
+                }
             }
+            isRoot = false;
         }
+
     }
 
 

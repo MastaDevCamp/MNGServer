@@ -22,10 +22,15 @@ public class FileEntry {
     public void setDiffType(char diffType) {
         this.diffType = diffType;
     }
+
+    public FileEntry(FileEntry fileEntry) {
+        this.type = fileEntry.type;          //고정값
+        this.path = fileEntry.path;
+        this.compress = fileEntry.compress;    //고정값
+        this.originalSize = fileEntry.originalSize;
+        this.compressSize = fileEntry.compressSize;
+        this.originalHash = fileEntry.originalHash;
+        this.compressHash = fileEntry.compressHash;
+        this.version = fileEntry.version;
+    }
 }
-
-
-
-
-
-

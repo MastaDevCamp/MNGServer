@@ -21,30 +21,9 @@ public class DirEntry {
     public List<DirEntry> dirEntryList = new ArrayList<>();
 
     public List<FileEntry> fileEntryList = new ArrayList<>();
-
-    public void setDiffType(char diffType) {
-        this.diffType = diffType;
-    }
-
-    public void setAllDiffType(char diffType) {
-        this.diffType = diffType;
-        for (FileEntry fileEntry : this.fileEntryList) {
-            fileEntry.setDiffType(diffType);
-        }
-        for (DirEntry dirEntry : this.dirEntryList) {
-            dirEntry.setDiffType(diffType);
-            dirEntry.setAllDiffType(diffType);
-        }
-    }
-
-    public FileEntry findFileEntry(String path) {
-        FileEntry fileEntry = fileEntryList.stream().filter(f -> f.getPath().equals(path)).findAny().orElse(null);
-        return fileEntry;
-    }
-
-    public void clearList() {
-        this.dirEntryList.clear();
-        this.fileEntryList.clear();
+    
+    public String print() {
+        return String.format("%c | %s | %s | %s | %c ", this.type, this.path, this.compress, this.version, this.diffType);
     }
 
     public DirEntry(DirEntry dirEntry) {

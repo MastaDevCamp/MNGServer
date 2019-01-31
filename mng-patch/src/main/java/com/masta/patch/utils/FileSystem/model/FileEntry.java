@@ -19,18 +19,8 @@ public class FileEntry {
 
     private char diffType;      //c, d, u //parch
 
-    public void setDiffType(char diffType) {
-        this.diffType = diffType;
-    }
-
-    public FileEntry(FileEntry fileEntry) {
-        this.type = fileEntry.type;          //고정값
-        this.path = fileEntry.path;
-        this.compress = fileEntry.compress;    //고정값
-        this.originalSize = fileEntry.originalSize;
-        this.compressSize = fileEntry.compressSize;
-        this.originalHash = fileEntry.originalHash;
-        this.compressHash = fileEntry.compressHash;
-        this.version = fileEntry.version;
+    public String print() {
+        return String.format("%c | %s | %s | %d | %d | %s | %s | %s | %c ",
+                this.type, this.path, this.compress, this.originalSize, this.compressSize, this.originalHash, this.compressHash, this.version, this.diffType);
     }
 }

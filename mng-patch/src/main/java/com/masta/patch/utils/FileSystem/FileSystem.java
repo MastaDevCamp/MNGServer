@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -109,4 +111,40 @@ public class FileSystem {
         return rootDir;
     }
 
+    public List<String> makeFileList(String jsonPath) {
+        List<String> fileList = new ArrayList<>();
+        DirEntry rootDir = readVersionJson(jsonPath);
+
+        searchFile(rootDir, fileList);
+        Collections.sort(fileList);
+
+        return fileList;
+    }
+
+    public void searchFile(DirEntry rootDir, List<String> fileList) {
+        for(FileEntry fileEntry : rootDir.fileEntryList) {
+            fileList.add(fileEntry.print());
+        }
+
+        if( rootDir.dirEntryList.size() == 0) {
+            fileList.add(rootDir.print());
+        } else {
+            for(DirEntry dirEntry : rootDir.dirEntryList) {
+                searchFile(dirEntry, fileList);
+            }
+        }
+    }
+
+
+    public DirEntry readVersionJson(String jsonPath) {
+        DirEntry dirEntry = new DirEntry();
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            dirEntry = mapper.readValue(new File(jsonPath), DirEntry.class);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return dirEntry;
+    }
 }

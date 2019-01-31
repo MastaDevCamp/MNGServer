@@ -73,4 +73,21 @@ public class TestFSController {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("list")
+    public ResponseEntity getJson2List(@RequestParam("jsonPath") final Optional<String> jsonPath) {
+        try {
+            if (jsonPath.isPresent()) {
+                log.info("converter json to list");
+                return new ResponseEntity<>(fileSystem.makeFileList(jsonPath.get()), HttpStatus.OK);
+            }
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

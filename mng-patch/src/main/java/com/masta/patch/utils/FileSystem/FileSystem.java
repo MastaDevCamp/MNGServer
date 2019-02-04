@@ -24,6 +24,31 @@ public class FileSystem {
         this.hashingSystem = hashingSystem;
     }
 
+
+    /**
+     *
+     * Be called from controller
+     *
+     * @param path
+     * @return Full DirEntry (return all file paths' contents)
+     */
+    public DirEntry getFileTreeList(String path) {
+//        long startTime = System.currentTimeMillis(); //time check
+        DirEntry rootDir = getDirEntry(new File(path));
+        listFilesForFolder(rootDir);
+        log.info("version " + rootDir.getVersion() + " created.");
+//        long endTime = System.currentTimeMillis();
+//        System.out.println("That took " + (endTime - startTime) + " milliseconds");
+        return rootDir;
+    }
+
+    /**
+     * recursion code
+     * filled the contents by, recursion and for statements repeated their childDir
+     * by using getFileEntry and getDirEntry, filled all the file's properties on object.
+     *
+     * @param parentDir
+     */
     public void listFilesForFolder(final DirEntry parentDir) {
 
         parentDir.fileEntryList = new ArrayList<>();
@@ -34,11 +59,10 @@ public class FileSystem {
         for (final File children : file.listFiles()) {
             if (children.isFile()) { //file
 
-                FileEntry childFile = getFileEntry(children); //childFile obejct setting
+                FileEntry childFile = getFileEntry(children); //childFile object setting
                 parentDir.fileEntryList.add(childFile); //child
 
             }else if (children.isDirectory()){ //dir
-
 
                 DirEntry childDir = getDirEntry(children);
                 parentDir.dirEntryList.add(childDir);
@@ -47,6 +71,10 @@ public class FileSystem {
         }
     }
 
+    /**
+     * @param file
+     * @return DirEntry Filled fields.
+     */
     public DirEntry getDirEntry(File file) {
         char fileType = 'D';
 
@@ -63,7 +91,7 @@ public class FileSystem {
 
     /**
      * @param file
-     * @return FileEntrey Filled fields.
+     * @return FileEntry Filled fields.
      */
     public FileEntry getFileEntry(File file) {
 
@@ -85,32 +113,13 @@ public class FileSystem {
         return fileEntry;
     }
 
-    public void jsonToPOJO(String path) {
-        ObjectMapper mapper = new ObjectMapper();
 
-        try {
-            FileEntry[] fileEntries = mapper.readValue(new File(path), FileEntry[].class);
-
-            for (FileEntry fileEntry : fileEntries) {
-                log.info(fileEntry.toString());
-            }
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-    }
-
-
-    public DirEntry getFileTreeList(String path) {
-        long startTime = System.currentTimeMillis();
-        DirEntry rootDir = getDirEntry(new File(path));
-        listFilesForFolder(rootDir);
-        log.info("version " + rootDir.getVersion() + " created.");
-        long endTime = System.currentTimeMillis();
-        System.out.println("That took " + (endTime - startTime) + " milliseconds");
-        return rootDir;
-    }
-
+    /**
+     * convert tree version of full json to string list version
+     *
+     * @param jsonPath
+     * @return
+     */
     public List<String> makeFileList(String jsonPath) {
         List<String> fileList = new ArrayList<>();
         DirEntry rootDir = readVersionJson(jsonPath);
@@ -121,6 +130,14 @@ public class FileSystem {
         return fileList;
     }
 
+
+    /**
+     *
+     * convert object to string list
+     *
+     * @param rootDir
+     * @param fileList
+     */
     public void searchFile(DirEntry rootDir, List<String> fileList) {
         for(FileEntry fileEntry : rootDir.fileEntryList) {
             fileList.add(fileEntry.print());
@@ -135,7 +152,13 @@ public class FileSystem {
         }
     }
 
-
+    /**
+     *
+     * convert json to pojo type
+     *
+     * @param jsonPath
+     * @return DirEntry
+     */
     public DirEntry readVersionJson(String jsonPath) {
         DirEntry dirEntry = new DirEntry();
 
@@ -147,4 +170,23 @@ public class FileSystem {
         }
         return dirEntry;
     }
+
+    /**
+     *
+     * make full json to patch json's string list
+     *
+     * @param beforeJson
+     * @param afterJson
+     * @return
+     */
+    public List<String> getPatchJson(String beforeJson, String afterJson){
+
+        List<String> beforeJsonString = makeFileList(beforeJson);
+        List<String> afterJsonString = makeFileList(afterJson);
+
+        
+
+        return null;
+    }
+
 }

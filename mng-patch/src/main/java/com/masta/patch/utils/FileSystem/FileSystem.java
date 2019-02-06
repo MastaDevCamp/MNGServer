@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
@@ -12,13 +13,21 @@ import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+
+
 
 @Slf4j
 @Service
 public class FileSystem {
 
     final private HashingSystem hashingSystem;
+
+
+    @Value("${file.path}")
+    private String mainDir;
+
 
     public FileSystem(final HashingSystem hashingSystem){
         this.hashingSystem = hashingSystem;
@@ -171,7 +180,9 @@ public class FileSystem {
         return dirEntry;
     }
 
+
     /**
+     *
      *
      * make full json to patch json's string list
      *
@@ -181,12 +192,49 @@ public class FileSystem {
      */
     public List<String> getPatchJson(String beforeJson, String afterJson){
 
-        List<String> beforeJsonString = makeFileList(beforeJson);
-        List<String> afterJsonString = makeFileList(afterJson);
 
-        
+        List<String[]> beforeJsonStrings = jsonStringToArray(makeFileList(beforeJson));
+        List<String[]> afterJsonStrings = jsonStringToArray(makeFileList(afterJson));
+
+        HashMap<String,Integer> beforeHashMap = makePathHashMap(beforeJsonStrings);
+        HashMap<String,Integer> afterHashMap = makePathHashMap(afterJsonStrings);
 
         return null;
     }
+
+    public void compareDiff(HashMap<String,Integer> before, HashMap<String,Integer> after){
+        for(String path: before.keySet()){
+
+        }
+    }
+
+    public List<String[]> jsonStringToArray (List<String> jsonList){
+
+        List<String[]> strings = new ArrayList<>();
+
+        for(String jsonString: jsonList){
+            String stringList[] = jsonString.split(" \\| ");
+            strings.add(stringList);
+        }
+
+        return strings;
+    }
+
+
+    public HashMap<String, Integer> makePathHashMap(List<String[]> jsonStringList){
+
+        HashMap<String, Integer> hashMap = new HashMap<>();
+
+        int dirIndex = mainDir.length();
+
+        int i=0;
+        for(String[] jsonString : jsonStringList){
+            String pathString = jsonString[1].substring(dirIndex);
+            hashMap.put(pathString, i++);
+        }
+        return hashMap;
+
+    }
+
 
 }

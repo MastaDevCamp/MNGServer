@@ -57,7 +57,7 @@ public class TestFSController {
         try {
             if (before.isPresent() && after.isPresent()) {
                 log.info("full json to patch json (string list)");
-                return new ResponseEntity<>(fileSystem.makeFileList(before.get()), HttpStatus.OK);
+                return new ResponseEntity<>(fileSystem.getPatchJson(before.get(),after.get()), HttpStatus.OK);
             }
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
 

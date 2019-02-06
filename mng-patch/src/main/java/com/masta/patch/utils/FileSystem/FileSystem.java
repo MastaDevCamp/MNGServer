@@ -3,19 +3,17 @@ package com.masta.patch.utils.FileSystem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
+import java.beans.beancontext.BeanContextSupport;
 import java.io.File;
 import java.io.RandomAccessFile;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-
+import java.util.*;
 
 
 @Slf4j
@@ -24,13 +22,20 @@ public class FileSystem {
 
     final private HashingSystem hashingSystem;
 
+    private List<String[]> beforeJsonStrings;
+    private List<String[]> afterJsonStrings;
+
 
     @Value("${file.path}")
     private String mainDir;
 
 
-    public FileSystem(final HashingSystem hashingSystem){
+
+
+    public FileSystem(final HashingSystem hashingSystem, List<String[]> afterJsonStrings, List<String[]> beforeJsonStrings){
         this.hashingSystem = hashingSystem;
+        this.afterJsonStrings = afterJsonStrings;
+        this.beforeJsonStrings = beforeJsonStrings;
     }
 
 
@@ -192,21 +197,64 @@ public class FileSystem {
      */
     public List<String> getPatchJson(String beforeJson, String afterJson){
 
+        beforeJsonStrings = jsonStringToArray(makeFileList(beforeJson));
+        afterJsonStrings = jsonStringToArray(makeFileList(afterJson));
 
-        List<String[]> beforeJsonStrings = jsonStringToArray(makeFileList(beforeJson));
-        List<String[]> afterJsonStrings = jsonStringToArray(makeFileList(afterJson));
 
         HashMap<String,Integer> beforeHashMap = makePathHashMap(beforeJsonStrings);
         HashMap<String,Integer> afterHashMap = makePathHashMap(afterJsonStrings);
+
+        compareDiff(beforeHashMap, afterHashMap);
 
         return null;
     }
 
     public void compareDiff(HashMap<String,Integer> before, HashMap<String,Integer> after){
-        for(String path: before.keySet()){
 
+        List<String> diffStringList = new ArrayList<>();
+
+        //addDeleteList
+        addDeleteList(before,after,diffStringList);
+
+        //addCreateList
+        addCreateList(before,after,diffStringList);
+        log.info(diffStringList.toString());
+
+        //addUpdateList
+        addUpdateList(before,after,diffStringList);
+
+    }
+
+    public void addDeleteList(HashMap<String,Integer> before, HashMap<String,Integer> after, List<String> diffStringList){
+        List<String> deleteList = new ArrayList<>();
+        deleteList.addAll(before.keySet());
+        deleteList.removeAll(after.keySet());
+
+        for(String path : deleteList){
+            beforeJsonStrings.get(before.get(path))[4] = "d";
+            diffStringList.add(arrayToStringFormat(beforeJsonStrings.get(before.get(path))));
         }
     }
+
+
+    public void addCreateList(HashMap<String,Integer> before, HashMap<String,Integer> after, List<String> diffStringList){
+        List<String> createList = new ArrayList<>();
+        createList.addAll(after.keySet());
+        createList.removeAll(before.keySet());
+
+        for(String path : createList){
+            beforeJsonStrings.get(after.get(path))[4] = "c";
+            diffStringList.add(arrayToStringFormat(beforeJsonStrings.get(after.get(path))));
+        }
+    }
+
+    public void addUpdateList(HashMap<String,Integer> before, HashMap<String,Integer> after, List<String> diffStringList){
+        List<String> updateList = new ArrayList<>();
+        updateList.addAll(before.keySet());
+        updateList.retainAll(after.keySet()); //교집합
+        log.info(updateList.toString());
+    }
+
 
     public List<String[]> jsonStringToArray (List<String> jsonList){
 
@@ -220,6 +268,12 @@ public class FileSystem {
         return strings;
     }
 
+
+    public String arrayToStringFormat(String strings[]){
+
+        System.out.println(String.format("%s | %s | %s | %s | %s ", strings));
+        return String.format("%s | %s | %s | %s | %s ", strings);
+    }
 
     public HashMap<String, Integer> makePathHashMap(List<String[]> jsonStringList){
 

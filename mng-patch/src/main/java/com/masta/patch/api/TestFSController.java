@@ -32,28 +32,6 @@ public class TestFSController {
         this.fileSystem = fileSystem;
     }
 
-    @ApiOperation(value = "make version json to POJO")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "file", value = "Put path", required = true, dataType = "string", paramType = "query", defaultValue = ""),
-    })
-
-
-    @GetMapping("jsonToPOJO")
-    public ResponseEntity jsonToPOJO(@RequestParam("file") final Optional<String> file) {
-        try {
-            if (file.isPresent()) {
-                log.info("create version json to POJO");
-                fileSystem.jsonToPOJO(file.get());
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
 
     @ApiOperation(value = "version json 생성")
     @ApiImplicitParams({
@@ -73,6 +51,22 @@ public class TestFSController {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("patch")
+    public ResponseEntity getPatchJson(@RequestParam("before") final Optional<String> before, @RequestParam("after") final Optional<String> after) {
+        try {
+            if (before.isPresent() && after.isPresent()) {
+                log.info("full json to patch json (string list)");
+                return new ResponseEntity<>(fileSystem.getPatchJson(before.get(),after.get()), HttpStatus.OK);
+            }
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @GetMapping("list")
     public ResponseEntity getJson2List(@RequestParam("jsonPath") final Optional<String> jsonPath) {

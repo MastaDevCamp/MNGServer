@@ -204,12 +204,10 @@ public class FileSystem {
         HashMap<String,Integer> beforeHashMap = makePathHashMap(beforeJsonStrings);
         HashMap<String,Integer> afterHashMap = makePathHashMap(afterJsonStrings);
 
-        compareDiff(beforeHashMap, afterHashMap);
-
-        return null;
+        return compareDiff(beforeHashMap, afterHashMap);
     }
 
-    public void compareDiff(HashMap<String,Integer> before, HashMap<String,Integer> after){
+    public List<String> compareDiff(HashMap<String,Integer> before, HashMap<String,Integer> after){
 
         List<String> diffStringList = new ArrayList<>();
 
@@ -218,33 +216,60 @@ public class FileSystem {
 
         //addCreateList
         addCreateList(before,after,diffStringList);
-        log.info(diffStringList.toString());
+
 
         //addUpdateList
         addUpdateList(before,after,diffStringList);
 
+        log.info(diffStringList.toString());
+        return diffStringList;
     }
 
     public void addDeleteList(HashMap<String,Integer> before, HashMap<String,Integer> after, List<String> diffStringList){
         List<String> deleteList = new ArrayList<>();
         deleteList.addAll(before.keySet());
         deleteList.removeAll(after.keySet());
-
-        for(String path : deleteList){
-            beforeJsonStrings.get(before.get(path))[4] = "d";
-            diffStringList.add(arrayToStringFormat(beforeJsonStrings.get(before.get(path))));
+        int idx;
+        for(String path : deleteList) {
+            char type;
+            if (beforeJsonStrings.get(before.get(path))[0].equals("D")) {
+                if(dirMostCheck(path, before)){
+                    continue;
+                }
+                type = 'D'; idx = 4;
+            }else{
+                type = 'F'; idx = 8;
+            }
+            beforeJsonStrings.get(before.get(path))[idx] = "D";
+            diffStringList.add(arrayToStringFormat(beforeJsonStrings.get(before.get(path)), type));
         }
     }
 
+    public boolean dirMostCheck(String path, HashMap<String,Integer> before){
+        for(String childPath : before.keySet()){
+            if(childPath.contains(path)){
+                return true; //삭제하면 안되는 dir
+            }
+        }
+        return false;
+
+    }
 
     public void addCreateList(HashMap<String,Integer> before, HashMap<String,Integer> after, List<String> diffStringList){
         List<String> createList = new ArrayList<>();
         createList.addAll(after.keySet());
         createList.removeAll(before.keySet());
 
+        int idx ;
         for(String path : createList){
-            beforeJsonStrings.get(after.get(path))[4] = "c";
-            diffStringList.add(arrayToStringFormat(beforeJsonStrings.get(after.get(path))));
+            char type;
+            if (afterJsonStrings.get(after.get(path))[0].equals("D")) {
+                type = 'D'; idx = 4;
+            }else{
+                type = 'F'; idx = 8;
+            }
+                afterJsonStrings.get(after.get(path))[idx] = "C";
+                diffStringList.add(arrayToStringFormat(afterJsonStrings.get(after.get(path)), type));
         }
     }
 
@@ -252,7 +277,15 @@ public class FileSystem {
         List<String> updateList = new ArrayList<>();
         updateList.addAll(before.keySet());
         updateList.retainAll(after.keySet()); //교집합
-        log.info(updateList.toString());
+
+        for(String path : updateList){
+            if(beforeJsonStrings.get(before.get(path))[0].equals("F")){
+                if(!beforeJsonStrings.get(before.get(path))[5].equals(afterJsonStrings.get(after.get(path))[5])) {
+                    beforeJsonStrings.get(before.get(path))[8] = "U";
+                    diffStringList.add(arrayToStringFormat(beforeJsonStrings.get(before.get(path)), 'F'));
+                }
+            }
+        }
     }
 
 
@@ -269,10 +302,15 @@ public class FileSystem {
     }
 
 
-    public String arrayToStringFormat(String strings[]){
+    public String arrayToStringFormat(String strings[], char type){
+        if(type == 'D'){
+            System.out.println(String.format("%s | %s | %s | %s | %s ", strings));
+            return String.format("%s | %s | %s | %s | %s ", strings);
+        }else{
+            System.out.println(String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s ", strings));
+            return String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s ", strings);
+        }
 
-        System.out.println(String.format("%s | %s | %s | %s | %s ", strings));
-        return String.format("%s | %s | %s | %s | %s ", strings);
     }
 
     public HashMap<String, Integer> makePathHashMap(List<String[]> jsonStringList){

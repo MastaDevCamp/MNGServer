@@ -1,6 +1,7 @@
 package com.masta.auth.membership.entity;
 
 
+import com.masta.auth.membership.dto.LoginRes;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +24,6 @@ public class NonSocialUser extends User implements UserDetails {
 
     private String username;
     private String password;
-    //private String Authority;
     private String email;
     private boolean emailConfirm;
     @Transient
@@ -78,5 +78,11 @@ public class NonSocialUser extends User implements UserDetails {
     public NonSocialUser(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public LoginRes toLoginRes(){
+        return LoginRes.builder()
+                .userNum(getNum())
+                .build();
     }
 }

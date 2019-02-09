@@ -20,27 +20,14 @@ public class SocialService {
 
     @Transactional
     public SocialUser getOrSave(SocialUserForm socialUserForm) {
-        SocialUser newUser = new SocialUser();
+        SocialUser user = new SocialUser();
         Optional<SocialUser> saveUser = socialUserRepository.findBySocialId(socialUserForm.getSocial_id());
         if (!saveUser.isPresent()) {
-            newUser = socialUserForm.toEntity();
-            //newUser.addRole(new UserRole("ROLE_USER"));
-            newUser = socialUserRepository.save(newUser);
+            user = socialUserForm.toEntity();
+            user.setAuthority("ROLE_USER");
+            user = socialUserRepository.save(user);
         }
-        return newUser;
+        else user=saveUser.get();
+        return user;
     }
-//    public UsernamePasswordAuthenticationToken doAuthentication(SocialUserForm socialUserForm){
-//        userService.getOrSave(socialUserForm);
-//        return setAuthenticationToken(socialUserForm);
-//    }
-//
-//    private UsernamePasswordAuthenticationToken setAuthenticationToken(Object user){
-//        return new UsernamePasswordAuthenticationToken(user,null,getAuthorities("ROLE_USER"));
-//    }
-//
-//    private Collection<? extends GrantedAuthority> getAuthorities(String role){
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority(role));
-//        return authorities;
-//    }
 }

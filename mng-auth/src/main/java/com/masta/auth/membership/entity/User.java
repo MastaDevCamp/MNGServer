@@ -1,5 +1,6 @@
 package com.masta.auth.membership.entity;
 
+import com.masta.auth.membership.dto.UserDetailsDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,5 +22,9 @@ public abstract  class User {
 
     //later add created_at, updated_at.
     private String nickname;
+
+    public UserDetailsDTO touserDetailsDTO(){
+        return UserDetailsDTO.builder().username(num.toString()).authority(authority).build();
+    }
 
 }

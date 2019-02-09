@@ -1,6 +1,7 @@
 package com.masta.auth.membership.service;
 
 import com.masta.auth.membership.entity.NonSocialUser;
+import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.repository.NonSocialUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +19,9 @@ public class NonSocialService implements UserDetailsService {
         this.nonSocialUserRepository = nonSocialUserRepository;
     }
 
+    public NonSocialUser getUser(String username){
+        return nonSocialUserRepository.findByUsername(username);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

@@ -57,7 +57,7 @@ public class TestFSController {
         try {
             if (before.isPresent() && after.isPresent()) {
                 log.info("full json to patch json (string list)");
-                return new ResponseEntity<>(fileSystem.getPatchJson(before.get(),after.get()), HttpStatus.OK);
+                return new ResponseEntity<>(fileSystem.getPatchJson(before.get(), after.get()), HttpStatus.OK);
             }
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
 
@@ -83,5 +83,28 @@ public class TestFSController {
         }
     }
 
+    /**
+     * in param write version number
+     * ex ) 1 / 3
+     *
+     * @param before
+     * @param after
+     * @return
+     */
+    @GetMapping("merge")
+    public ResponseEntity getMergePatchJson(@RequestParam("before") String before, @RequestParam("after") String after) {
+        try {
+            if (!before.isEmpty() && !after.isEmpty()) {
+                log.info("merge two patch json (string list)");
+                return new ResponseEntity<>(fileSystem.makeMergeJson(before, after),HttpStatus.OK);
+            }
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_READ_JSON_FILE), HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            log.error(e.getCause().toString());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

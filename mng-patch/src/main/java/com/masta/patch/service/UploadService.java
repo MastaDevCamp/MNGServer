@@ -8,13 +8,13 @@ import com.masta.patch.utils.FileSystem.TypeConverter;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.sftp.SftpServer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.util.List;
 
 import static com.masta.patch.utils.Compress.unzip;
 
@@ -34,6 +34,12 @@ public class UploadService {
     @Value("${PMS.url}")
     private String pmsPath;
 
+    @Value("${local.newVersion.path}")
+    private String newVersionPath;
+
+    @Value("${local.merge.path}")
+    private String mergePath;
+
     @Value("${local.path}")
     private String localPath;
 
@@ -48,7 +54,8 @@ public class UploadService {
     }
 
     public File saveLocal(MultipartFile sourceFile) {
-        File file = new File(localPath + sourceFile.getName() + ".zip");
+        resetDir(newVersionPath);
+        File file = new File(newVersionPath + sourceFile.getName() + ".zip");
         try {
             sourceFile.transferTo(file);
             log.info("save file [" + file.getPath() + "]");
@@ -58,14 +65,24 @@ public class UploadService {
         return file;
     }
 
+
+    public void resetDir(String path) {
+        try {
+            FileUtils.deleteDirectory(new File(path));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        new File(path).mkdirs();
+    }
+
     public void uploadNewVersion(MultipartFile sourceFile, String version) {
         File localUploadFile = saveLocal(sourceFile);
         String dest = unzip(localUploadFile);
 
         DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
-        DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson();
+        DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson(newVersionPath);
 
-        List<String> newPatchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
+        File patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
 
         sftpServer.init();
         sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");

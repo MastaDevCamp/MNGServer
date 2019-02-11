@@ -4,9 +4,12 @@ import com.masta.patch.utils.FileSystem.model.DirEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.masta.patch.utils.FileSystem.TypeConverter.saveJsonFile;
 
 @Slf4j
 @Component
@@ -17,7 +20,7 @@ public class PatchJsonMaker {
 
     private TypeConverter typeConverter;
 
-    public PatchJsonMaker(final TypeConverter typeConverter){
+    public PatchJsonMaker(final TypeConverter typeConverter) {
         this.typeConverter = typeConverter;
     }
 
@@ -28,18 +31,19 @@ public class PatchJsonMaker {
      * @param afterJson
      * @return
      */
-    public List<String> getPatchJson(DirEntry beforeJson, DirEntry afterJson) {
-    if(beforeJson!= null){
-        beforeJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(beforeJson));
-        afterJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(afterJson));
+    public File getPatchJson(DirEntry beforeJson, DirEntry afterJson) {
+        if (beforeJson != null) {
+            beforeJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(beforeJson));
+            afterJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(afterJson));
 
-        HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
-        HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
+            HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
+            HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
 
-        return compareDiff(beforeHashMap, afterHashMap);
-    }
+            return saveJsonFile(compareDiff(beforeHashMap, afterHashMap),
+                    "Patch_ver" + afterJson.getVersion() + ".json");
+        }
 
-    return null; // create 만들기
+        return null; // create 만들기
     }
 
     public List<String> compareDiff(HashMap<String, Integer> before, HashMap<String, Integer> after) {

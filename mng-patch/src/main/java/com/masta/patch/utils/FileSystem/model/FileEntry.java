@@ -2,6 +2,7 @@ package com.masta.patch.utils.FileSystem.model;
 
 import lombok.*;
 
+@Setter
 @Getter
 @AllArgsConstructor
 @Builder

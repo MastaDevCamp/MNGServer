@@ -13,12 +13,12 @@ import java.util.List;
 @Slf4j
 public class MergeJsonMaker {
 
-    @Value("${patchJson.file.path}")
+    @Value("${local.path}")
     private String patchDir;
 
     private TypeConverter typeConverter;
 
-    public MergeJsonMaker(final TypeConverter typeConverter){
+    public MergeJsonMaker(final TypeConverter typeConverter) {
         this.typeConverter = typeConverter;
     }
 
@@ -150,6 +150,7 @@ public class MergeJsonMaker {
 
     /**
      * 타입 지정자도 만들기
+     *
      * @param fileString
      * @return
      */

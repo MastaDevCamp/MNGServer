@@ -1,30 +1,57 @@
 package com.masta.patch.service;
 
+import com.masta.patch.dto.VersionLog;
+import com.masta.patch.mapper.VersionMapper;
+import com.masta.patch.utils.FileSystem.FullJsonMaker;
+import com.masta.patch.utils.FileSystem.PatchJsonMaker;
+import com.masta.patch.utils.FileSystem.TypeConverter;
+import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.sftp.SftpServer;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
 
 @Slf4j
 @Service
 public class UploadService {
 
+
+    final static String JSON_EXTENTION = ".json";
+
     final SftpServer sftpServer;
+    final FullJsonMaker fullJsonMaker;
+    final PatchJsonMaker patchJsonMaker;
+    final VersionMapper versionMapper;
+    final TypeConverter typeConverter;
+
+    @Value("${PMS.url}")
+    private String pmsPath;
 
     @Value("${local.path}")
     private String localPath;
 
-    public UploadService(final SftpServer sftpServer) {
+    public UploadService(final SftpServer sftpServer, final FullJsonMaker fullJsonMaker,
+                         final PatchJsonMaker patchJsonMaker, final VersionMapper versionMapper,
+                         final TypeConverter typeConverter) {
         this.sftpServer = sftpServer;
+        this.fullJsonMaker = fullJsonMaker;
+        this.patchJsonMaker = patchJsonMaker;
+        this.versionMapper = versionMapper;
+        this.typeConverter = typeConverter;
     }
 
-    public void uploadNewVersion(MultipartFile sourceFile) {
+    public File saveLocal(MultipartFile sourceFile){
         File file = new File(localPath + sourceFile.getName() + ".zip");
         try {
             sourceFile.transferTo(file);
@@ -32,13 +59,32 @@ public class UploadService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        unzip(file);
+        return file;
+    }
+
+    public void uploadNewVersion(MultipartFile sourceFile, String version) {
+        File localUploadFile = saveLocal(sourceFile);
+        String dest = unzip(localUploadFile);
+
+        DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest);
+        DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson();
+
+        List<String> newPatchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
+
         sftpServer.init();
         sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
         sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");
+
+        VersionLog versionLog = VersionLog.builder()
+                .version(version)
+                .full(newFullJson.getPath())
+                .patch(pmsPath + "patch" + version + JSON_EXTENTION).build();
+
+        versionMapper.newVersionSave(versionLog);
     }
 
-    public static void unzip(File file) {
+
+    public static String unzip(File file) {
         String source = file.getPath();
         String destination = FilenameUtils.removeExtension(file.getPath());
         try {
@@ -47,6 +93,8 @@ public class UploadService {
         } catch (ZipException e) {
             e.printStackTrace();
         }
+
+        return destination;
     }
 
 

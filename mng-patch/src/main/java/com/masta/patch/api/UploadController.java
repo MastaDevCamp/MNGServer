@@ -14,7 +14,7 @@ import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
 @Slf4j
 @RestController
-@RequestMapping("testUpload")
+@RequestMapping("upload")
 public class UploadController {
 
     final UploadService uploadService;

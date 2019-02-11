@@ -1,5 +1,6 @@
 package com.masta.patch.utils.FileSystem;
 
+import com.masta.patch.utils.Compress;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 @Slf4j
 @Component
 public class FullJsonMaker {
+
+    public static final String compressType = "zip";
 
     private HashingSystem hashingSystem;
 
@@ -86,7 +89,7 @@ public class FullJsonMaker {
         DirEntry dirEntry = DirEntry.builder()
                 .type(fileType)
                 .path(file.getPath())
-                .compress("zip")
+                .compress(compressType)
                 .diffType('x') //patch
                 .version(version) //patch
                 .build();
@@ -101,8 +104,7 @@ public class FullJsonMaker {
     public FileEntry getFileEntry(File file, String version) {
 
         //out zip file
-
-        // outfolder zip
+        File compressFile = new File(Compress.zip(file));
 
         // set file type
         char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';
@@ -110,11 +112,11 @@ public class FullJsonMaker {
         FileEntry fileEntry = FileEntry.builder()
                 .type(fileType)
                 .path(file.getPath())
-                .compress("zip")
+                .compress(compressType)
                 .originalSize((int) file.length())
-                .compressSize((int) file.length())
+                .compressSize((int) compressFile.length())
                 .originalHash(hashingSystem.getMD5Hashing(file))
-                .compressHash(hashingSystem.getMD5Hashing(file))
+                .compressHash(hashingSystem.getMD5Hashing(compressFile))
                 .diffType('x') //patch
                 .version(version)
                 .build();

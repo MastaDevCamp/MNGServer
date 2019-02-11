@@ -4,6 +4,7 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
@@ -12,7 +13,7 @@ import java.io.RandomAccessFile;
 import java.security.MessageDigest;
 
 @Slf4j
-@Service
+@Component
 public class HashingSystem {
 
     public String getMD5Hashing(File file){

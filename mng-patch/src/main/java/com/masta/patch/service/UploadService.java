@@ -62,7 +62,7 @@ public class UploadService {
         File localUploadFile = saveLocal(sourceFile);
         String dest = unzip(localUploadFile);
 
-        DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest);
+        DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
         DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson();
 
         List<String> newPatchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);

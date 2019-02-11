@@ -24,9 +24,9 @@ public class FullJsonMaker {
      * @param path
      * @return Full DirEntry (return all file paths' contents)
      */
-    public DirEntry getFileTreeList(String path) {
-        DirEntry rootDir = getDirEntry(new File(path));
-        listFilesForFolder(rootDir);
+    public DirEntry getFileTreeList(String path, String version) {
+        DirEntry rootDir = getDirEntry(new File(path), version);
+        listFilesForFolder(rootDir, version);
         makeRelativePath(rootDir.getPath(), rootDir);
         log.info("version " + rootDir.getVersion() + " created.");
         return rootDir;
@@ -39,7 +39,7 @@ public class FullJsonMaker {
      *
      * @param parentDir
      */
-    public void listFilesForFolder(final DirEntry parentDir) {
+    public void listFilesForFolder(final DirEntry parentDir, final String version) {
 
         parentDir.fileEntryList = new ArrayList<>();
         parentDir.dirEntryList = new ArrayList<>();
@@ -49,14 +49,14 @@ public class FullJsonMaker {
         for (final File children : file.listFiles()) {
             if (children.isFile()) { //file
 
-                FileEntry childFile = getFileEntry(children); //childFile object setting
+                FileEntry childFile = getFileEntry(children, version); //childFile object setting
                 parentDir.fileEntryList.add(childFile); //child
 
             } else if (children.isDirectory()) { //dir
 
-                DirEntry childDir = getDirEntry(children);
+                DirEntry childDir = getDirEntry(children, version);
                 parentDir.dirEntryList.add(childDir);
-                listFilesForFolder(childDir); //자식 dir
+                listFilesForFolder(childDir, version); //자식 dir
             }
         }
     }
@@ -80,15 +80,15 @@ public class FullJsonMaker {
      * @param file
      * @return DirEntry Filled fields.
      */
-    public DirEntry getDirEntry(File file) {
+    public DirEntry getDirEntry(File file, String version) {
         char fileType = 'D';
 
         DirEntry dirEntry = DirEntry.builder()
                 .type(fileType)
                 .path(file.getPath())
-                .compress("gzip")
+                .compress("zip")
                 .diffType('x') //patch
-                .version("0.1.0") //patch
+                .version(version) //patch
                 .build();
 
         return dirEntry;
@@ -98,7 +98,9 @@ public class FullJsonMaker {
      * @param file
      * @return FileEntry Filled fields.
      */
-    public FileEntry getFileEntry(File file) {
+    public FileEntry getFileEntry(File file, String version) {
+
+        //out zip file
 
         // outfolder zip
 
@@ -108,16 +110,15 @@ public class FullJsonMaker {
         FileEntry fileEntry = FileEntry.builder()
                 .type(fileType)
                 .path(file.getPath())
-                .compress("gzip")
+                .compress("zip")
                 .originalSize((int) file.length())
                 .compressSize((int) file.length())
                 .originalHash(hashingSystem.getMD5Hashing(file))
                 .compressHash(hashingSystem.getMD5Hashing(file))
                 .diffType('x') //patch
-                .version("0.1.0")
+                .version(version)
                 .build();
 
         return fileEntry;
     }
-
 }

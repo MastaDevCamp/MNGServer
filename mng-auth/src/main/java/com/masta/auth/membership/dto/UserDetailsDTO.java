@@ -13,9 +13,14 @@ import java.util.Collection;
 @Getter
 @NoArgsConstructor
 public class UserDetailsDTO  implements UserDetails {
-    private String username;
+    private String usernum;
     private String authority;
     private Collection<? extends GrantedAuthority> authorities;
+
+    @Override
+    public String getUsername() {
+        return usernum;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -50,8 +55,8 @@ public class UserDetailsDTO  implements UserDetails {
     }
 
     @Builder
-    public UserDetailsDTO(String username, String authority) {
-        this.username = username;
+    public UserDetailsDTO(String usernum, String authority) {
+        this.usernum = usernum;
         this.authority = authority;
     }
 }

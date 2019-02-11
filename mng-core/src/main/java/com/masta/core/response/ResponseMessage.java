@@ -6,9 +6,12 @@ public class ResponseMessage {
     public static final String DB_ERROR = "데이터베이스 에러";
   
 	// version 관리
-	public static final String  READ_JSON_FILE = "JSON file 조회 성공";
+	public static final String READ_JSON_FILE = "JSON file 조회 성공";
 	public static final String NOT_READ_JSON_FILE = "JSON file 조회 실패";
-  public static final String NOT_ZIP_FILE = "version 업로드시에 zip파일만 가능";
+	public static final String NOT_ZIP_FILE = "version 업로드시에 zip파일만 가능";
+	public static final String SUCCESS_TO_NEW_VERSION = "새로운 버전 등록 성공";
+
+
 
 	//user 관리
 	public static final String EXIST_USER="이미 가입된 회원";

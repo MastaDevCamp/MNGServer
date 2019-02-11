@@ -3,19 +3,20 @@ package com.masta.patch.utils.FileSystem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.DatatypeConverter;
-import java.beans.beancontext.BeanContextSupport;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.attribute.FileTime;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 
 @Slf4j
@@ -52,6 +53,7 @@ public class FileSystem {
 //        long startTime = System.currentTimeMillis(); //time check
         DirEntry rootDir = getDirEntry(new File(path));
         listFilesForFolder(rootDir);
+        makeRelativePath(rootDir.getPath(), rootDir);
         log.info("version " + rootDir.getVersion() + " created.");
 //        long endTime = System.currentTimeMillis();
 //        System.out.println("That took " + (endTime - startTime) + " milliseconds");
@@ -84,6 +86,21 @@ public class FileSystem {
                 parentDir.dirEntryList.add(childDir);
                 listFilesForFolder(childDir); //자식 dir
             }
+        }
+    }
+
+    public void makeRelativePath(String rootPath, DirEntry parentDir) {
+        parentDir.setPath(parentDir.getPath().replace(rootPath, ""));
+        removeRootPath(parentDir, rootPath);
+    }
+
+    public void removeRootPath(DirEntry rootDir, String rootPath) {
+        for (FileEntry fileEntry : rootDir.fileEntryList) {
+            fileEntry.setPath(fileEntry.getPath().replace(rootPath, ""));
+        }
+        for (DirEntry dirEntry : rootDir.dirEntryList) {
+            dirEntry.setPath(dirEntry.getPath().replace(rootPath, ""));
+            removeRootPath(dirEntry, rootPath);
         }
     }
 

@@ -101,6 +101,8 @@ public class FullJsonMaker {
      */
     public FileEntry getFileEntry(File file) {
 
+        //outfolder zip
+
         // set file type
         char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';
 

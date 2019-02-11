@@ -8,18 +8,12 @@ import com.masta.patch.utils.FileSystem.TypeConverter;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.sftp.SftpServer;
 import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 @Slf4j
@@ -51,7 +45,7 @@ public class UploadService {
         this.typeConverter = typeConverter;
     }
 
-    public File saveLocal(MultipartFile sourceFile){
+    public File saveLocal(MultipartFile sourceFile) {
         File file = new File(localPath + sourceFile.getName() + ".zip");
         try {
             sourceFile.transferTo(file);
@@ -81,20 +75,6 @@ public class UploadService {
                 .patch(pmsPath + "patch" + version + JSON_EXTENTION).build();
 
         versionMapper.newVersionSave(versionLog);
-    }
-
-
-    public static String unzip(File file) {
-        String source = file.getPath();
-        String destination = FilenameUtils.removeExtension(file.getPath());
-        try {
-            ZipFile zipFile = new ZipFile(source);
-            zipFile.extractAll(destination);
-        } catch (ZipException e) {
-            e.printStackTrace();
-        }
-
-        return destination;
     }
 
 

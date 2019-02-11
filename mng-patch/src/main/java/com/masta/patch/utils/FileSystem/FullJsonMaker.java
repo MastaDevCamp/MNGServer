@@ -4,7 +4,6 @@ import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ public class FullJsonMaker {
 
     private HashingSystem hashingSystem;
 
-    public FullJsonMaker(final HashingSystem hashingSystem){
+    public FullJsonMaker(final HashingSystem hashingSystem) {
         this.hashingSystem = hashingSystem;
     }
 
@@ -100,6 +99,8 @@ public class FullJsonMaker {
      * @return FileEntry Filled fields.
      */
     public FileEntry getFileEntry(File file) {
+
+        // outfolder zip
 
         // set file type
         char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';

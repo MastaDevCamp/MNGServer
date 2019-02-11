@@ -8,8 +8,10 @@ import com.masta.patch.utils.sftp.SftpServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -46,19 +48,4 @@ public class TestUploadController {
         }
     }
 
-    @PostMapping("newVersion")
-    public ResponseEntity newVersion(@RequestPart MultipartFile sourceFile) {
-        try {
-            if (uploadService.checkFileExtension("zip", sourceFile)) {
-                uploadService.uploadNewVersion(sourceFile);
-            } else {
-                log.info("File is not .zip file.");
-                return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_ZIP_FILE), HttpStatus.OK);
-            }
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }

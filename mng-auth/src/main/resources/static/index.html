@@ -34,7 +34,7 @@
 </div>
 
 <div class="container authenticated">
-    Logged in as: <span id="user"></span>
+    Logged in as: <span id="userDto"></span>
     <div>
         <button onClick="logout()" class="btn btn-primary">Logout</button>
     </div>
@@ -42,14 +42,14 @@
 
 <script type="text/javascript">
     $.get("/auth/me", function(data) {
-        $("#user").html(data.userAuthentication.details.name);
+        $("#userDto").html(data.userAuthentication.details.name);
         $(".unauthenticated").hide()
         $(".authenticated").show()
     });
 
     var logout = function() {
         $.post("/logout", function() {
-            $("#user").html('');
+            $("#userDto").html('');
             $(".unauthenticated").show();
             $(".authenticated").hide();
         })

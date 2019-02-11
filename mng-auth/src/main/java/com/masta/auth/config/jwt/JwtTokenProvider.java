@@ -1,6 +1,8 @@
 package com.masta.auth.config.jwt;
 
 import com.masta.auth.config.JwtConfig;
+import com.masta.auth.exception.InvalidJwtAuthenticationException;
+import com.masta.auth.membership.dto.UserDetailsDTO;
 import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.repository.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -65,11 +67,14 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        User user = userRepository.findById(Long.parseLong(getUsername(token))).get();
+        String userrole = (String) Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("roles");
+        Long usernum = Long.parseLong(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject());
+        UserDetailsDTO userDetailsDTO = UserDetailsDTO.builder().authority(userrole).usernum(usernum.toString()).build();
         ArrayList<GrantedAuthority> auth = new ArrayList<>();
-        auth.add(new SimpleGrantedAuthority(user.getAuthority()));
-        return new UsernamePasswordAuthenticationToken(user.touserDetailsDTO(), "", auth);
+        auth.add(new SimpleGrantedAuthority(userrole));
+        return new UsernamePasswordAuthenticationToken(userDetailsDTO, "", auth);
     }
+
     public String getUsername(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }

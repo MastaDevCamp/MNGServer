@@ -5,6 +5,7 @@ import com.masta.auth.config.jwt.JwtTokenProvider;
 import com.masta.auth.membership.dto.SocialUserForm;
 import com.masta.auth.membership.entity.SocialUser;
 import com.masta.auth.membership.service.SocialService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class CommonSuccessComponent {
 
@@ -33,6 +35,11 @@ public class CommonSuccessComponent {
         SocialUserForm socialUserForm = objectMapper.convertValue(oAuth2Authentication.getUserAuthentication().getDetails(), SocialUserForm.class);
         socialUserForm.setProvider(provider);
         SocialUser socialUser = socialService.getOrSave(socialUserForm);
+
+        String token = jwtTokenProvider.createToken(socialUser.getNum(),"ROLE_USER");
+        response.addHeader("Authorization", "Bearer "+token);
+
+
         response.sendRedirect("/auth/me/"+ socialUser.getNum());
     }
 

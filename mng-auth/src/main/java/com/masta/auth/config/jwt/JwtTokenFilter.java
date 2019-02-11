@@ -1,7 +1,7 @@
 package com.masta.auth.config.jwt;
 
 import com.masta.auth.exception.ApiError;
-import com.masta.auth.membership.entity.User;
+import com.masta.auth.exception.InvalidJwtAuthenticationException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -33,7 +33,7 @@ public class JwtTokenFilter extends GenericFilterBean {
                 Authentication auth = token != null ? jwtTokenProvider.getAuthentication(token) : null;
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        } catch (JwtException e ) {
+        } catch (JwtException e) {
             ((HttpServletResponse) res).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             logger.error(e.getMessage());
             setErrorResponse(HttpStatus.FORBIDDEN, (HttpServletResponse) res, e, "Invalid Jwt");

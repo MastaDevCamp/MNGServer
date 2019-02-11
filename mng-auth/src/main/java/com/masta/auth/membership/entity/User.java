@@ -24,7 +24,7 @@ public abstract  class User {
     private String nickname;
 
     public UserDetailsDTO touserDetailsDTO(){
-        return UserDetailsDTO.builder().username(num.toString()).authority(authority).build();
+        return UserDetailsDTO.builder().usernum(num.toString()).authority(authority).build();
     }
 
 }

@@ -17,4 +17,8 @@ public class ResponseMessage {
 	public static final String EXIST_USER="이미 가입된 회원";
 	public static final String INVALID_ID_OR_PW ="잘못된 아이디 혹은 비밀번호";
 
+	//jwt 관리
+	public static final String INVALID_TOKEN="유효하지 않은 JWT 토큰";
+	public static final String INVALID_JWT_FORM="유효하지 않은 JWT 형식";
+
 }

@@ -36,11 +36,16 @@ public class PatchJsonMaker {
             beforeJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(beforeJson));
             afterJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(afterJson));
 
-            HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
-            HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
+            try {
+                HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
+                HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
 
-            return saveJsonFile(compareDiff(beforeHashMap, afterHashMap),
-                    "Patch_ver" + afterJson.getVersion() + ".json");
+                return saveJsonFile(compareDiff(beforeHashMap, afterHashMap),
+                        "Patch_ver" + afterJson.getVersion() + ".json");
+            } catch (Exception e) {
+                return null;
+            }
+
         }
 
         return null; // create 만들기

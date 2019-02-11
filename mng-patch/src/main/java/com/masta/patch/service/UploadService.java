@@ -43,6 +43,11 @@ public class UploadService {
     @Value("${local.path}")
     private String localPath;
 
+
+    @Value("${sftp.root.path}")
+    private String sftpRootPath;
+
+
     public UploadService(final SftpServer sftpServer, final FullJsonMaker fullJsonMaker,
                          final PatchJsonMaker patchJsonMaker, final VersionMapper versionMapper,
                          final TypeConverter typeConverter) {
@@ -85,8 +90,11 @@ public class UploadService {
         File patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
 
         sftpServer.init();
-        sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
-        sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");
+        sftpServer.uploadDir(patchJson, sftpRootPath + "log/patch");
+
+//
+//        sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
+//        sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");
 
         VersionLog versionLog = VersionLog.builder()
                 .version(version)

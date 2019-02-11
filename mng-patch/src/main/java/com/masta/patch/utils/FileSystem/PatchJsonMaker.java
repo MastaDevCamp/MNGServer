@@ -38,9 +38,10 @@ public class PatchJsonMaker {
 
         return compareDiff(beforeHashMap, afterHashMap);
     }
-
-    return null; // create 만들기
+    return null; //patchJson 안만들어도 된다.
     }
+
+
 
     public List<String> compareDiff(HashMap<String, Integer> before, HashMap<String, Integer> after) {
 

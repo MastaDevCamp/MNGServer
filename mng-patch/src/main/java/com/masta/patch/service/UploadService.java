@@ -22,8 +22,8 @@ import static com.masta.patch.utils.Compress.unzip;
 @Service
 public class UploadService {
 
-
-    final static String JSON_EXTENTION = ".json";
+    final static String PATCH_NAME = "patch_ver";
+    final static String FULL_NAME = "full_ver";
 
     final SftpServer sftpServer;
     final FullJsonMaker fullJsonMaker;
@@ -62,10 +62,12 @@ public class UploadService {
         File localUploadFile = saveLocal(sourceFile);
         String dest = unzip(localUploadFile);
 
-        DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
         DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson();
+        DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
 
         List<String> newPatchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
+
+        typeConverter.saveJsonFile(newFullJson, PATCH_NAME + version + typeConverter.JSON_EXTENTION);
 
         sftpServer.init();
         sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
@@ -74,7 +76,7 @@ public class UploadService {
         VersionLog versionLog = VersionLog.builder()
                 .version(version)
                 .full(newFullJson.getPath())
-                .patch(pmsPath + "patch" + version + JSON_EXTENTION).build();
+                .patch(pmsPath + "patch" + version + typeConverter.JSON_EXTENTION).build();
 
         versionMapper.newVersionSave(versionLog);
     }
@@ -84,6 +86,5 @@ public class UploadService {
         String sourceFileName = sourceFile.getOriginalFilename();
         return extension.equals(FilenameUtils.getExtension(sourceFileName).toLowerCase());
     }
-
 
 }

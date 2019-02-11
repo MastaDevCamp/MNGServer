@@ -27,7 +27,7 @@ import java.util.List;
 @Component
 public class TypeConverter
 {
-    final static String JSON_EXTENTION = ".json";
+    public final static String JSON_EXTENTION = ".json";
 
     @Value("${PMS.url}")
     private String pmsPath;
@@ -212,11 +212,11 @@ public class TypeConverter
         return dirEntry;
     }
 
-    public String saveJsonFile(DirEntry dir, String fileName) {
+    public String saveJsonFile(Object object, String fileName) {
         File file = new File(fileName);
         try {
             Gson gson = new Gson();
-            String dirJson = gson.toJson(dir);
+            String dirJson = gson.toJson(object);
             FileUtils.writeStringToFile(file, dirJson);
         } catch (Exception e) {
             log.error(e.getMessage());

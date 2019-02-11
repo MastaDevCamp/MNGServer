@@ -25,11 +25,11 @@ public class UploadController {
 
 
     @PostMapping("newVersion")
-    public ResponseEntity uploadNewVersion(@RequestPart MultipartFile sourceFile, @RequestBody String versionName) {
+    public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile sourceFile, @RequestParam("version") final String versionName) {
         try {
             if (uploadService.checkFileExtension("zip", sourceFile)) {
                 uploadService.uploadNewVersion(sourceFile, versionName);
-                return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, ResponseMessage.SUCCESS_TO_NEW_VERSION),HttpStatus.OK);
+                return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, ResponseMessage.SUCCESS_TO_NEW_VERSION), HttpStatus.OK);
             } else {
                 log.info("File is not .zip file.");
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_ZIP_FILE), HttpStatus.OK);

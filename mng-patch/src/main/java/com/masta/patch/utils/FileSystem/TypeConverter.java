@@ -181,6 +181,11 @@ public class TypeConverter
 
     }
 
+    public static String absoluteToRelative(String rootPath, String absolutePath){
+        return absolutePath.replace(rootPath, "");
+    }
+
+
     /**
      * convert version format 0.0.1 to 000001
      */

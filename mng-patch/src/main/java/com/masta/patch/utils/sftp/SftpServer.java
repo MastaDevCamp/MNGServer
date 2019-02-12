@@ -1,15 +1,24 @@
 package com.masta.patch.utils.sftp;
 
 import com.jcraft.jsch.*;
+import com.masta.patch.utils.FileSystem.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Vector;
 
 @Slf4j
 @Component
 public class SftpServer {
+
+    @Value("${local.merge.path}")
+    private String localMergePath;
 
     @Value("${sftp.url}")
     private String url;
@@ -19,6 +28,9 @@ public class SftpServer {
 
     @Value("${sftp.password}")
     private String password;
+
+    @Value("${sftp.root.path}")
+    private String rootPath;
 
     private Session session = null;
     private Channel channel = null;
@@ -35,6 +47,7 @@ public class SftpServer {
 
             //password 설정
             session.setPassword(password);
+
 
             //세션관련 설정정보 설정
             java.util.Properties config = new java.util.Properties();
@@ -53,13 +66,18 @@ public class SftpServer {
         } catch (JSchException e) {
             e.printStackTrace();
         }
-        channelSftp = (ChannelSftp) channel;
 
+        try {
+            channelSftp = (ChannelSftp) channel;
+            channelSftp.cd(rootPath);
+            System.out.println("in init"+channelSftp.pwd());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
     // 단일 파일 업로드
-    public void upload(String dir, String path) {
-        File file = new File(path);
+    public void upload(File file, String dir) {
         FileInputStream in = null;
 
         try {
@@ -80,12 +98,18 @@ public class SftpServer {
     }
 
     // 단일 파일 다운로드
-    public InputStream download(String dir, String fileNm) {
+    public InputStream download(String dir, String fileNm) { // 절대경로로 이동
         InputStream in = null;
-        String path = "...";
         try { //경로탐색후 inputStream에 데이터를 넣음
-            channelSftp.cd(path + dir);
+            channelSftp.cd(rootPath);
+            channelSftp.cd(dir);
             in = channelSftp.get(fileNm);
+
+            try {
+                Files.copy(in, Paths.get(localMergePath+fileNm), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         } catch (SftpException se) {
             se.printStackTrace();
@@ -93,6 +117,32 @@ public class SftpServer {
 
         return in;
     }
+
+    public void downloadDir(String dirPath) {
+        Vector<ChannelSftp.LsEntry> list = null;
+        try {
+//            channelSftp.cd(path);
+            System.out.println(" pwd : " + channelSftp.pwd());
+
+            list = channelSftp.ls(dirPath);
+            log.info(list.toString());
+
+            for(ChannelSftp.LsEntry file : list){
+
+                String fileName = file.getFilename();
+                String fileExtention = FilenameUtils.getExtension(fileName).toLowerCase();
+
+                if(fileExtention.equals("json")){
+                    InputStream is = download(dirPath, fileName);
+                    log.info(is.toString());
+                }
+            }
+
+        } catch (SftpException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void backupDir(String srcDir, String backPath) {
         try {

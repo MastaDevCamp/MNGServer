@@ -60,13 +60,14 @@ public class MergeJsonMaker {
 
         File[] files = dir.listFiles();
         for (File file : files) {
-            int pos = file.getName().lastIndexOf(".");
-            if (pos != -1) {
-                String name = file.getName().substring(0, pos);
-                String[] version = name.split("v");
-                int fileStart = typeConverter.convertVer(version[1]);
-                int fileEnd = typeConverter.convertVer(version[2]);
-                if (start <= fileStart && end >= fileEnd) { //범위 안에 들면
+            int startPos = file.getName().lastIndexOf("_")+1;
+            int endPos = file.getName().lastIndexOf(".");
+            if (startPos != -1 && endPos != -1) {
+
+                String fileName = file.getName().substring(startPos, endPos);
+                int fileVersion = typeConverter.convertVer(fileName);
+
+                if (start < fileVersion && end >= fileVersion) { //범위 안에 들면
                     patchJsonFiles.add(file);
                 }
             }

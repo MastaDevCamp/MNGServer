@@ -27,7 +27,6 @@ public class TestController {
     public ResponseEntity updateClientResource() {
         try {
             sftpServer.init();
-            sftpServer.downloadDir("log/patch");
             return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, ResponseMessage.SUCCESS_TO_NEW_VERSION), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());

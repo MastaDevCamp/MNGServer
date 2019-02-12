@@ -32,8 +32,9 @@ public class UpdateResourceController {
     @PostMapping("Merge")
     public ResponseEntity updateClientResource(@RequestParam("version") final String clientVersion){
         try {
-            updateService.updateNewVersion(clientVersion);
-            return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, ResponseMessage.SUCCESS_TO_NEW_VERSION), HttpStatus.OK);
+            ;
+            return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion),
+                    updateService.updateNewVersion(clientVersion)), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

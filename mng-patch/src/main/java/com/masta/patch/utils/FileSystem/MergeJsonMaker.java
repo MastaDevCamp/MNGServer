@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 public class MergeJsonMaker {
 
-    @Value("${local.path}")
+    @Value("${local.merge.path}")
     private String patchDir;
 
     private TypeConverter typeConverter;
@@ -31,16 +31,13 @@ public class MergeJsonMaker {
     public static HashMap<String, Integer> intermediateHashMap;
     public static List<String[]> diffArrayList;
 
-    public List<String> makeMergeJson(String before, String after) {
+    public List<String> makeMergeJson() {
         mergeJsonList = new ArrayList<>();
         intermediateList = new ArrayList<>();
         intermediateHashMap = new HashMap<>();
 
-        log.info("before version : " + before);
-        log.info("after version : " + after);
-        int start = typeConverter.convertVer(before);
-        int end = typeConverter.convertVer(after);
-        List<File> files = patchJsonList(start, end);
+        List<File> files = patchJsonList();
+
         for (File file : files) {
             intermediateHashMap = typeConverter.makePathHashMap(intermediateList);
             fileRead(file);
@@ -53,26 +50,15 @@ public class MergeJsonMaker {
         return mergeJsonList;
     }
 
-    public List<File> patchJsonList(int start, int end) {
+    public List<File> patchJsonList() {
         log.info("patchJsonList");
         File dir = new File(patchDir);
         List<File> patchJsonFiles = new ArrayList<>();
 
         File[] files = dir.listFiles();
         for (File file : files) {
-            int startPos = file.getName().lastIndexOf("_")+1;
-            int endPos = file.getName().lastIndexOf(".");
-            if (startPos != -1 && endPos != -1) {
-
-                String fileName = file.getName().substring(startPos, endPos);
-                int fileVersion = typeConverter.convertVer(fileName);
-
-                if (start < fileVersion && end >= fileVersion) { //범위 안에 들면
-                    patchJsonFiles.add(file);
-                }
-            }
+            patchJsonFiles.add(file);
         }
-        log.info(files.toString());
         return patchJsonFiles;
     }
 

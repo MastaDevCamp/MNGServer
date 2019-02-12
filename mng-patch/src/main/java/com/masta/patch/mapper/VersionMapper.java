@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 @Mapper
 public interface VersionMapper {
 
@@ -15,4 +17,10 @@ public interface VersionMapper {
 
     @Select("SELECT * FROM version_log ORDER BY id DESC LIMIT 1")
     VersionLog latestVersion();
+
+    @Select("SELECT id FROM version_log WHERE version = #{version}")
+    int getVersionId(@Param("version")String version);
+
+    @Select("SELECT * FROM version_log WHERE id > #{versionId}")
+    List<VersionLog> getUpdateVersionList(@Param("versionId") int versionId);
 }

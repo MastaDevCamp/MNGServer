@@ -97,31 +97,14 @@ public class SftpServer {
         }
     }
 
-    // 단일 파일 다운로드
-    public InputStream download(String dir, String fileNm) { // 절대경로로 이동
-        InputStream in = null;
-        try { //경로탐색후 inputStream에 데이터를 넣음
-            channelSftp.cd(rootPath);
-            channelSftp.cd(dir);
-            in = channelSftp.get(fileNm);
+    public void getDirList(String dirPath){
 
-            try {
-                Files.copy(in, Paths.get(localMergePath+fileNm), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        } catch (SftpException se) {
-            se.printStackTrace();
-        }
-
-        return in;
     }
 
-    public void downloadDir(String dirPath) {
+    public void downloadJsonFileInDir(String dirPath) {
         Vector<ChannelSftp.LsEntry> list = null;
         try {
-//            channelSftp.cd(path);
+//            channelSftp.cd(path);   // after init
             System.out.println(" pwd : " + channelSftp.pwd());
 
             list = channelSftp.ls(dirPath);
@@ -133,14 +116,33 @@ public class SftpServer {
                 String fileExtention = FilenameUtils.getExtension(fileName).toLowerCase();
 
                 if(fileExtention.equals("json")){
-                    InputStream is = download(dirPath, fileName);
-                    log.info(is.toString());
+                    download(dirPath, fileName);
                 }
             }
 
         } catch (SftpException e) {
             e.printStackTrace();
         }
+    }
+
+    // 단일 파일 다운로드
+    public void download(String dir, String fileNm) { // 절대경로로 이동
+        InputStream in = null;
+
+        try { //경로탐색후 inputStream에 데이터를 넣음
+            channelSftp.cd(rootPath);
+            channelSftp.cd(dir);
+            in = channelSftp.get(fileNm);
+
+            try {
+                Files.copy(in, Paths.get(localMergePath+fileNm), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (SftpException se) {
+            se.printStackTrace();
+        }
+
     }
 
 

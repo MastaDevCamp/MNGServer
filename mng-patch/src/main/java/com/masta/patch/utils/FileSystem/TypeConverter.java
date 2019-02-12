@@ -29,7 +29,7 @@ public class TypeConverter
 {
     public final static String JSON_EXTENTION = ".json";
 
-    @Value("${PMS.url}")
+    @Value("${nginx.url}")
     private String pmsPath;
 
     @Value("${file.path}")
@@ -170,11 +170,10 @@ public class TypeConverter
 
         HashMap<String, Integer> hashMap = new HashMap<>();
 
-        int dirIndex = mainDir.length();
 
         int i = 0;
         for (String[] jsonString : jsonStringList) {
-            String pathString = jsonString[1].substring(dirIndex);
+            String pathString = jsonString[1];
             hashMap.put(pathString, i++);
         }
         return hashMap;
@@ -198,6 +197,7 @@ public class TypeConverter
         }
         return intVer;
     }
+
 
     public DirEntry getRemoteLastVersionJson() {
         DirEntry dirEntry = new DirEntry();

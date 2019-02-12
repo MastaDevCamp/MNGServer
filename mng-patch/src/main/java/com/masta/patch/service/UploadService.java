@@ -8,12 +8,17 @@ import com.masta.patch.utils.FileSystem.TypeConverter;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.sftp.SftpServer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import static com.masta.patch.utils.Compress.unzip;
@@ -73,13 +78,14 @@ public class UploadService {
         sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
         sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");
 
-        VersionLog versionLog = VersionLog.builder()
+        VersionLog newVersion = VersionLog.builder()
                 .version(version)
                 .full(newFullJson.getPath())
                 .patch(pmsPath + "patch" + version + typeConverter.JSON_EXTENTION).build();
 
-        versionMapper.newVersionSave(versionLog);
+        versionMapper.newVersionSave(newVersion);
     }
+
 
 
     public boolean checkFileExtension(String extension, MultipartFile sourceFile) {

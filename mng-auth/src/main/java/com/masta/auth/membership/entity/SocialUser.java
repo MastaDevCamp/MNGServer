@@ -19,7 +19,8 @@ public class SocialUser extends User{
     private String tokenValue;
 
     @Builder
-    public SocialUser(String socialId, String provider, String tokenValue) {
+    public SocialUser(Long num, String authority, String socialId, String provider, String tokenValue) {
+        super(num, authority);
         this.socialId = socialId;
         this.provider = provider;
         this.tokenValue = tokenValue;

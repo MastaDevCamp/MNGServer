@@ -2,7 +2,7 @@ package com.masta.auth.config;
 
 import com.masta.auth.jwt.JwtConfigurer;
 import com.masta.auth.jwt.JwtTokenProvider;
-import com.masta.auth.membership.service.NonSocialService;
+import com.masta.auth.membership.service.AccountUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import javax.servlet.Filter;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    NonSocialService nonSocialService;
+    AccountUserService accountUserService;
 
     @Autowired
     Filter ssoFilter;
@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(nonSocialService).passwordEncoder(nonSocialService.passwordEncoder());
+        auth.userDetailsService(accountUserService).passwordEncoder(accountUserService.passwordEncoder());
     }
 
     @Override

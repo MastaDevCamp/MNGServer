@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masta.auth.jwt.JwtTokenProvider;
 import com.masta.auth.membership.dto.SocialUserForm;
 import com.masta.auth.membership.entity.SocialUser;
-import com.masta.auth.membership.service.SocialService;
+import com.masta.auth.membership.service.SocialUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -22,12 +22,12 @@ import java.net.URLEncoder;
 public class CommonSuccessComponent {
 
     private ObjectMapper objectMapper;
-    private SocialService socialService;
+    private SocialUserService socialUserService;
     private JwtTokenProvider jwtTokenProvider;
 
-    public CommonSuccessComponent(ObjectMapper objectMapper, SocialService socialService, JwtTokenProvider jwtTokenProvider) {
+    public CommonSuccessComponent(ObjectMapper objectMapper, SocialUserService socialUserService, JwtTokenProvider jwtTokenProvider) {
         this.objectMapper = objectMapper;
-        this.socialService = socialService;
+        this.socialUserService = socialUserService;
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
@@ -35,7 +35,7 @@ public class CommonSuccessComponent {
         OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) authentication;
         SocialUserForm socialUserForm = objectMapper.convertValue(oAuth2Authentication.getUserAuthentication().getDetails(), SocialUserForm.class);
         socialUserForm.setProvider(provider);
-        SocialUser socialUser = socialService.getOrSave(socialUserForm);
+        SocialUser socialUser = socialUserService.getOrSave(socialUserForm);
 
         String token ="Bearer "+ jwtTokenProvider.createToken(socialUser.getNum(),"ROLE_USER");
 

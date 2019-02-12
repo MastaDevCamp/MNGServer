@@ -2,15 +2,27 @@ package com.masta.auth.membership.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Entity
 @Getter
+@DiscriminatorValue("guest")
+@NoArgsConstructor
 public class GuestUser extends User{
-    @Builder
-    public GuestUser(){
 
+    private String guestId;
+
+    public void setGuestId(String guestId) {
+        this.guestId = guestId;
     }
+
+    @Builder
+    public GuestUser(Long num, String authority, String guestId) {
+        super(num, authority);
+        this.guestId = guestId;
+    }
+
 }

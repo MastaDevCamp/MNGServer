@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
-@DiscriminatorValue("member")
+@DiscriminatorValue("account")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-public class NonSocialUser extends User implements UserDetails {
+public class AccountUser extends User implements UserDetails {
 
     private String username;
     private String password;
@@ -75,9 +75,12 @@ public class NonSocialUser extends User implements UserDetails {
     }
 
     @Builder
-    public NonSocialUser(String username, String password) {
+    public AccountUser(Long num, String authority, String username, String password, String email, boolean emailConfirm) {
+        super(num, authority);
         this.username = username;
         this.password = password;
+        this.email = email;
+        this.emailConfirm = emailConfirm;
     }
 
     public LoginRes toLoginRes(){

@@ -17,7 +17,7 @@ import javax.persistence.*;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long num;
 
     private String authority; //need another setting!

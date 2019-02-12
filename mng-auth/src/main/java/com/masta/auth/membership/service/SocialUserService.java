@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Component
-public class SocialService {
+public class SocialUserService {
 
     private final SocialUserRepository socialUserRepository;
 
-    public SocialService(SocialUserRepository socialUserRepository) {
+    public SocialUserService(SocialUserRepository socialUserRepository) {
         this.socialUserRepository = socialUserRepository;
     }
 

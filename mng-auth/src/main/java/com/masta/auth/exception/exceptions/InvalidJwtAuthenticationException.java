@@ -1,4 +1,4 @@
-package com.masta.auth.exception;
+package com.masta.auth.exception.exceptions;
 
 
 import org.springframework.security.core.AuthenticationException;

@@ -4,11 +4,14 @@ import com.masta.auth.jwt.JwtTokenProvider;
 import com.masta.auth.membership.dto.LoginRes;
 import com.masta.auth.membership.dto.UserForm;
 import com.masta.auth.membership.entity.NonSocialUser;
+import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.service.NonSocialService;
+import com.masta.auth.membership.service.UserService;
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +23,16 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
+/**
+ * 소셜, 게스트, 계정 유저 모두를 위한 api
+ * 게스트, 계정 로그인 및 유저 정보 찾기 기능 담당
+ */
 @Slf4j
 @RestController
-@RequestMapping(value = "/member")
-public class MembershipController {
+public class UserController {
 
+    @Autowired
+    UserService userService;
 
     @Autowired
     NonSocialService nonSocialService;
@@ -46,7 +54,7 @@ public class MembershipController {
      * @param userForm
      * @return  if success HttpStatus.OK return
      */
-    @PostMapping("/join")
+    @PostMapping("/join/account")
     public ResponseEntity create(@RequestBody UserForm userForm) {
         try {
             NonSocialUser newUser = nonSocialService.getUser(userForm.getUsername());
@@ -55,7 +63,7 @@ public class MembershipController {
             }
             // + 이메일 인증했는지 확인
             nonSocialService.createUser(userForm.toNonSocailUser());
-            return new ResponseEntity(HttpStatus.OK);
+            return new ResponseEntity("success", HttpStatus.OK);
         }catch (Exception e){
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -67,7 +75,7 @@ public class MembershipController {
      * @param userForm(String username, String password)
      * @return if login success return LoginRes(String username, Long userNum)
      */
-    @PostMapping("/login")
+    @PostMapping("/login/account")
     public ResponseEntity login(@RequestBody UserForm userForm){
            try{
                Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userForm.getUsername(), userForm.getPassword()));
@@ -88,4 +96,18 @@ public class MembershipController {
                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
            }
     }
+
+    @PostMapping("/join/guest")
+    public ResponseEntity join(){
+        try{
+            userService.saveUser();
+            return new ResponseEntity(ResponseMessage.REGIST_USER,HttpStatus.OK);
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

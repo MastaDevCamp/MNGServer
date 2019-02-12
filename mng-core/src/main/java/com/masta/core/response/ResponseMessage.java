@@ -21,4 +21,7 @@ public class ResponseMessage {
 	public static final String INVALID_TOKEN="유효하지 않은 JWT 토큰";
 	public static final String INVALID_JWT_FORM="유효하지 않은 JWT 형식";
 
+
+	//
+	public static final String NOT_FOUND_USER="찾을 수 없는 사용자";
 }

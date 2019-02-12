@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.util.Vector;
 
 @Slf4j
 @Component
@@ -19,6 +20,9 @@ public class SftpServer {
 
     @Value("${sftp.password}")
     private String password;
+
+    @Value("${sftp.root.path}")
+    private String rootPath;
 
     private Session session = null;
     private Channel channel = null;
@@ -53,18 +57,21 @@ public class SftpServer {
         } catch (JSchException e) {
             e.printStackTrace();
         }
-        channelSftp = (ChannelSftp) channel;
-
+        try {
+            channelSftp = (ChannelSftp) channel;
+            channelSftp.cd(rootPath);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
     // 단일 파일 업로드
-    public void upload(String dir, String path) {
-        File file = new File(path);
+    public void upload(File file, String dir) {
         FileInputStream in = null;
 
         try {
             in = new FileInputStream(file);
-            channelSftp.cd(dir);
+            channelSftp.cd(rootPath + dir);
             channelSftp.put(in, file.getName());
         } catch (SftpException se) {
             se.printStackTrace();
@@ -127,6 +134,21 @@ public class SftpServer {
             log.error(e.getMessage());
         }
 
+    }
+
+
+    public String checkFile(String name, String path) {
+        try {
+            Vector<ChannelSftp.LsEntry> list = channelSftp.ls(rootPath + path);
+            for (ChannelSftp.LsEntry entry : list) {
+                if (entry.getFilename().contains(name)) {
+                    return path + "/" + entry.getFilename();
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return "";
     }
 
     // 파일서버와 세션 종료

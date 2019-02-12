@@ -22,22 +22,21 @@ import java.util.HashMap;
 import java.util.List;
 
 
-
 @Slf4j
 @Component
 public class TypeConverter
 {
     public final static String JSON_EXTENTION = ".json";
 
-    @Value("${PMS.url}")
-    private String pmsPath;
+    @Value("${nginx.url}")
+    private String nginxUrl;
 
     @Value("${file.path}")
     private String mainDir;
 
     private VersionMapper versionMapper;
 
-    public TypeConverter (final VersionMapper versionMapper){
+    public TypeConverter(final VersionMapper versionMapper) {
         this.versionMapper = versionMapper;
     }
 
@@ -47,7 +46,7 @@ public class TypeConverter
      * @param rootDir
      * @return
      */
-    public List<String> makeFileList(DirEntry rootDir){
+    public List<String> makeFileList(DirEntry rootDir) {
         List<String> fileList = new ArrayList<>();
         searchFile(rootDir, fileList);
 
@@ -56,8 +55,6 @@ public class TypeConverter
 
         return fileList;
     }
-
-
 
 
     /**
@@ -99,7 +96,6 @@ public class TypeConverter
     }
 
     /**
-     *
      * convert StringList To Json
      *
      * @param jsonPath
@@ -119,7 +115,6 @@ public class TypeConverter
 
 
     /**
-     *
      * convert jsonString to Array String List
      *
      * @param jsonList
@@ -139,7 +134,6 @@ public class TypeConverter
 
 
     /**
-     *
      * convert Array To String
      *
      * @param strings
@@ -159,7 +153,6 @@ public class TypeConverter
     }
 
     /**
-     *
      * make HashMap
      *
      * @param jsonStringList
@@ -170,11 +163,9 @@ public class TypeConverter
 
         HashMap<String, Integer> hashMap = new HashMap<>();
 
-        int dirIndex = mainDir.length();
-
         int i = 0;
         for (String[] jsonString : jsonStringList) {
-            String pathString = jsonString[1].substring(dirIndex);
+            String pathString = jsonString[1];
             hashMap.put(pathString, i++);
         }
         return hashMap;
@@ -194,34 +185,35 @@ public class TypeConverter
         return intVer;
     }
 
-    public DirEntry getRemoteLastVersionJson() {
+    public DirEntry getRemoteLastVersionJson(String savePath) {
         DirEntry dirEntry = new DirEntry();
         VersionLog latestVersion = versionMapper.latestVersion(); //local에 저장 후 file읽기 or 그냥 바로 file 읽기
 
-        try{
-            File file = new File(latestVersion.getVersion() + JSON_EXTENTION);
-            URL url = new URL(pmsPath + latestVersion.getFull());
+        try {
+            File file = new File(savePath + latestVersion.getVersion() + JSON_EXTENTION);
+            URL url = new URL(nginxUrl + latestVersion.getFull());
             URLConnection connection = url.openConnection();
             InputStream is = connection.getInputStream();
             FileUtils.copyInputStreamToFile(is, file);
             dirEntry = readVersionJson(file.getPath());
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
         return dirEntry;
     }
 
-    public String saveJsonFile(Object object, String fileName) {
+    public static File saveJsonFile(Object obj, String fileName) {
         File file = new File(fileName);
         try {
             Gson gson = new Gson();
-            String dirJson = gson.toJson(object);
+            String dirJson = gson.toJson(obj);
             FileUtils.writeStringToFile(file, dirJson);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
 
-        return file.getPath();
+        return file;
     }
+
 }

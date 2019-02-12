@@ -110,8 +110,8 @@ public class UploadService {
     public void uploadJsonToRemote(Object fullJson, Object patchJson, String version) {
         sftpServer.init();
 
-        File fullJsonFile = saveJsonFile(fullJson, "Full_ver" + version + JSON_EXTENTION);
-        File patchJsonFile = saveJsonFile(patchJson, "Patch_ver" + version + JSON_EXTENTION);
+        File fullJsonFile = saveJsonFile(fullJson, "Full_Ver_" + version + JSON_EXTENTION);
+        File patchJsonFile = saveJsonFile(patchJson, "Patch_Ver_" + version + JSON_EXTENTION);
 
         try {
             sftpServer.upload(fullJsonFile, "log/full");

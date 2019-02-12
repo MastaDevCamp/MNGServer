@@ -1,5 +1,6 @@
 package com.masta.patch.service;
 
+import com.masta.core.response.ResponseMessage;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.utils.FileSystem.FullJsonMaker;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static com.masta.patch.utils.Compress.unzip;
 import static com.masta.patch.utils.FileSystem.TypeConverter.saveJsonFile;
+import static com.masta.patch.utils.VersionUtils.compareVersion;
 
 @Slf4j
 @Service
@@ -68,7 +70,6 @@ public class UploadService {
         return file;
     }
 
-
     public void resetDir(String path) {
         try {
             FileUtils.deleteDirectory(new File(path));
@@ -78,16 +79,28 @@ public class UploadService {
         new File(path).mkdirs();
     }
 
-    public void uploadNewVersion(MultipartFile sourceFile, String version) {
+    public String uploadNewVersion(MultipartFile sourceFile, String version) {
         File localUploadFile = saveLocal(sourceFile);
         String dest = unzip(localUploadFile);
 
         DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
         DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson(newVersionPath);
 
-        List<String> patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
+        int compareResult = compareVersion(newFullJson.getVersion(), beforeFullJson.getVersion());
 
-        uploadJsonToRemote(newFullJson, patchJson, version);
+        switch (compareResult) {
+            case 1:
+                List<String> patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
+                uploadJsonToRemote(newFullJson, patchJson, version);
+
+                return ResponseMessage.SUCCESS_TO_NEW_VERSION;
+            case 0:
+                return ResponseMessage.ALREADY_REGISTERED_VERSION;
+            case -1:
+                return ResponseMessage.NOT_LAST_VERSION;
+            default:
+                return ResponseMessage.VERSION_ERROR;
+        }
 
 //        sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
 //        sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");

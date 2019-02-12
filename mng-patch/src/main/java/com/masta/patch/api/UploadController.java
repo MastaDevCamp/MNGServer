@@ -28,8 +28,8 @@ public class UploadController {
     public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile sourceFile, @RequestParam("version") final String versionName) {
         try {
             if (uploadService.checkFileExtension("zip", sourceFile)) {
-                uploadService.uploadNewVersion(sourceFile, versionName);
-                return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, ResponseMessage.SUCCESS_TO_NEW_VERSION), HttpStatus.OK);
+                String responseMessage = uploadService.uploadNewVersion(sourceFile, versionName);
+                return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, responseMessage), HttpStatus.OK);
             } else {
                 log.info("File is not .zip file.");
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_ZIP_FILE), HttpStatus.OK);

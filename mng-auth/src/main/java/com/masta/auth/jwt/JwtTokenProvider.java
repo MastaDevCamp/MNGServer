@@ -1,4 +1,4 @@
-package com.masta.auth.config.jwt;
+package com.masta.auth.jwt;
 
 import com.masta.auth.config.JwtConfig;
 import com.masta.auth.exception.InvalidJwtAuthenticationException;

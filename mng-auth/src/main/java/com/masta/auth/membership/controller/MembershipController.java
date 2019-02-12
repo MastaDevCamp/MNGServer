@@ -1,10 +1,9 @@
 package com.masta.auth.membership.controller;
 
-import com.masta.auth.config.jwt.JwtTokenProvider;
+import com.masta.auth.jwt.JwtTokenProvider;
 import com.masta.auth.membership.dto.LoginRes;
 import com.masta.auth.membership.dto.UserForm;
 import com.masta.auth.membership.entity.NonSocialUser;
-import com.masta.auth.membership.repository.NonSocialUserRepository;
 import com.masta.auth.membership.service.NonSocialService;
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;

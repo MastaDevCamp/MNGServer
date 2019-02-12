@@ -4,12 +4,9 @@ import com.masta.patch.utils.FileSystem.model.DirEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.masta.patch.utils.FileSystem.TypeConverter.saveJsonFile;
 
 @Slf4j
 @Component
@@ -31,7 +28,7 @@ public class PatchJsonMaker {
      * @param afterJson
      * @return
      */
-    public File getPatchJson(DirEntry beforeJson, DirEntry afterJson) {
+    public List<String> getPatchJson(DirEntry beforeJson, DirEntry afterJson) {
         if (beforeJson != null) {
             beforeJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(beforeJson));
             afterJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(afterJson));
@@ -40,8 +37,8 @@ public class PatchJsonMaker {
                 HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
                 HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
 
-                return saveJsonFile(compareDiff(beforeHashMap, afterHashMap),
-                        "Patch_ver" + afterJson.getVersion() + ".json");
+                return compareDiff(beforeHashMap, afterHashMap);
+
             } catch (Exception e) {
                 return null;
             }

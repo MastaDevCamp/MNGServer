@@ -36,7 +36,7 @@ public class TestUploadController {
             if (path.isPresent()) {
                 log.info("create version json to POJO");
                 sftpServer.init();
-                sftpServer.upload(dir, path.get());
+                //sftpServer.upload(dir, path.get());
                 sftpServer.disconnect();
                 return new ResponseEntity<>(HttpStatus.OK);
             }

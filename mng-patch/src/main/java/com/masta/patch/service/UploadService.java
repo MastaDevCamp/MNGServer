@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.List;
 
 import static com.masta.patch.utils.Compress.unzip;
+import static com.masta.patch.utils.FileSystem.TypeConverter.saveJsonFile;
 
 @Slf4j
 @Service
@@ -31,9 +33,6 @@ public class UploadService {
     final VersionMapper versionMapper;
     final TypeConverter typeConverter;
 
-    @Value("${PMS.url}")
-    private String pmsPath;
-
     @Value("${local.newVersion.path}")
     private String newVersionPath;
 
@@ -42,7 +41,6 @@ public class UploadService {
 
     @Value("${local.path}")
     private String localPath;
-
 
     @Value("${sftp.root.path}")
     private String sftpRootPath;
@@ -87,19 +85,35 @@ public class UploadService {
         DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
         DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson(newVersionPath);
 
-        File patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
+        List<String> patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
 
-        sftpServer.init();
-        sftpServer.uploadDir(patchJson, sftpRootPath + "log/patch");
+        uploadJsonToRemote(newFullJson, patchJson, version);
 
-//
 //        sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
 //        sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");
 
+    }
+
+    public void uploadJsonToRemote(Object fullJson, Object patchJson, String version) {
+        sftpServer.init();
+
+        File fullJsonFile = saveJsonFile(fullJson, "Full_ver" + version + JSON_EXTENTION);
+        File patchJsonFile = saveJsonFile(patchJson, "Patch_ver" + version + JSON_EXTENTION);
+
+        try {
+            sftpServer.upload(fullJsonFile, "log/full");
+            sftpServer.upload(patchJsonFile, "log/patch");
+        } catch (Exception e) {
+            log.info("Only upload full version json");
+        }
+
+        String remoteFullJsonPath = sftpServer.checkFile(version, "log/full");
+        String remotePatchJsonPath = sftpServer.checkFile(version, "log/patch");
+
         VersionLog versionLog = VersionLog.builder()
                 .version(version)
-                .full(newFullJson.getPath())
-                .patch(pmsPath + "patch" + version + JSON_EXTENTION).build();
+                .full(remoteFullJsonPath)
+                .patch(remotePatchJsonPath).build();
 
         versionMapper.newVersionSave(versionLog);
     }

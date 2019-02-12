@@ -27,8 +27,8 @@ import java.util.List;
 public class TypeConverter {
     final static String JSON_EXTENTION = ".json";
 
-    @Value("${PMS.url}")
-    private String pmsUrl;
+    @Value("${nginx.url}")
+    private String nginxUrl;
 
     @Value("${file.path}")
     private String mainDir;
@@ -192,7 +192,7 @@ public class TypeConverter {
 
         try {
             File file = new File(savePath + latestVersion.getVersion() + JSON_EXTENTION);
-            URL url = new URL(pmsUrl + latestVersion.getFull());
+            URL url = new URL(nginxUrl + latestVersion.getFull());
             URLConnection connection = url.openConnection();
             InputStream is = connection.getInputStream();
             FileUtils.copyInputStreamToFile(is, file);

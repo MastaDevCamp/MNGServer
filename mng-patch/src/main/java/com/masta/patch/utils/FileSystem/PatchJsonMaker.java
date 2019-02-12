@@ -17,7 +17,7 @@ public class PatchJsonMaker {
 
     private TypeConverter typeConverter;
 
-    public PatchJsonMaker(final TypeConverter typeConverter){
+    public PatchJsonMaker(final TypeConverter typeConverter) {
         this.typeConverter = typeConverter;
     }
 
@@ -29,16 +29,23 @@ public class PatchJsonMaker {
      * @return
      */
     public List<String> getPatchJson(DirEntry beforeJson, DirEntry afterJson) {
-    if(beforeJson!= null){
-        beforeJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(beforeJson));
-        afterJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(afterJson));
+        if (beforeJson != null) {
+            beforeJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(beforeJson));
+            afterJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(afterJson));
 
-        HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
-        HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
+            try {
+                HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
+                HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
 
-        return compareDiff(beforeHashMap, afterHashMap);
-    }
-    return null; //patchJson 안만들어도 된다.
+                return compareDiff(beforeHashMap, afterHashMap);
+
+            } catch (Exception e) {
+                return null;
+            }
+
+        }
+
+        return null; // create 만들기
     }
 
 

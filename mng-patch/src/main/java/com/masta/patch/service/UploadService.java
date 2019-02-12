@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.List;
 
 import static com.masta.patch.utils.Compress.unzip;
+import static com.masta.patch.utils.FileSystem.TypeConverter.JSON_EXTENTION;
 import static com.masta.patch.utils.FileSystem.TypeConverter.saveJsonFile;
 import static com.masta.patch.utils.VersionUtils.compareVersion;
 

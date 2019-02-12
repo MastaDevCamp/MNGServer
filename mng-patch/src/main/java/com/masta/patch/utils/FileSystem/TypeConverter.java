@@ -31,6 +31,7 @@ public class TypeConverter
     @Value("${nginx.url}")
     private String nginxUrl;
 
+
     @Value("${file.path}")
     private String mainDir;
 
@@ -171,6 +172,11 @@ public class TypeConverter
         return hashMap;
 
     }
+
+    public static String absoluteToRelative(String rootPath, String absolutePath){
+        return absolutePath.replace(rootPath, "");
+    }
+
 
     /**
      * convert version format 0.0.1 to 000001

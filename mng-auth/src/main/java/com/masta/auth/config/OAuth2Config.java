@@ -1,10 +1,10 @@
 package com.masta.auth.config;
 
 
-import com.masta.auth.ClientResources;
-import com.masta.auth.config.Handler.FacebookSuccessHandler;
-import com.masta.auth.config.Handler.GoogleSuccessHandler;
-import com.masta.auth.config.Handler.KakaoSuccessHandler;
+import com.masta.auth.oauth2.ClientResources;
+import com.masta.auth.oauth2.Handler.FacebookSuccessHandler;
+import com.masta.auth.oauth2.Handler.GoogleSuccessHandler;
+import com.masta.auth.oauth2.Handler.KakaoSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;

@@ -13,6 +13,10 @@ import java.util.List;
 @Slf4j
 public class MergeJsonMaker {
 
+    private final int FILE_TYPE = 0;
+    private final int DIR_DIFF_TYPE = 4;
+    private final int FILE_DIFF_TYPE = 8;
+
     @Value("${local.merge.path}")
     private String patchDir;
 
@@ -45,6 +49,7 @@ public class MergeJsonMaker {
 
         //arrayToFormat
         for (String[] mergeList : intermediateList) {
+
             mergeJsonList.add(typeConverter.arrayToStringFormat(mergeList, mergeList[0]));
         }
         return mergeJsonList;
@@ -62,13 +67,6 @@ public class MergeJsonMaker {
         return patchJsonFiles;
     }
 
-    public void checkDiff(String path, int index) {
-        if (intermediateHashMap.containsKey(path)) {
-            diffTypeChange(path, index);
-        } else {
-            intermediateList.add(diffArrayList.get(index));
-        }
-    }
 
     public void fileRead(File file) {
         diffArrayList = typeConverter.jsonStringToArray(typeConverter.readStringListToJson(file.getPath()));
@@ -78,6 +76,15 @@ public class MergeJsonMaker {
         }
     }
 
+    public void checkDiff(String path, int index) {
+        if (intermediateHashMap.containsKey(path)) {
+            diffTypeChange(path, index);
+        } else {
+            intermediateList.add(diffArrayList.get(index));
+        }
+    }
+
+
     public void diffTypeChange(String path, int index) {
         int interIdx = intermediateHashMap.get(path);
         String[] interString = intermediateList.get(interIdx);
@@ -86,7 +93,7 @@ public class MergeJsonMaker {
         String[] nowString = diffArrayList.get(index);
         String nowType = getDiffType(nowString);
 
-        String fileType = nowString[0]; // fileType = F or D
+        String fileType = nowString[FILE_TYPE]; // fileType = F or D
 
         /**
          * Rule
@@ -142,17 +149,18 @@ public class MergeJsonMaker {
      * @return
      */
     public String getDiffType(String[] fileString) {
-        if (fileString[0].equals("F")) {
-            return fileString[8];
+        if (fileString[FILE_TYPE].equals("F")) {
+            return fileString[FILE_DIFF_TYPE];
         }
-        return fileString[4];
+        return fileString[DIR_DIFF_TYPE];
     }
 
     public void setDiffType(String[] fileString, String type) {
-        if (fileString[0].equals("F")) {
-            fileString[8] = type;
-        }
-        fileString[4] = type;
-    }
 
+        if (fileString[FILE_TYPE].equals("F")) {
+            fileString[FILE_DIFF_TYPE] = type;
+        }else{
+            fileString[DIR_DIFF_TYPE] = type;
+        }
+    }
 }

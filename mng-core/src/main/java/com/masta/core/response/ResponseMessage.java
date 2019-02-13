@@ -14,6 +14,7 @@ public class ResponseMessage {
 	public static final String UPDATE_NEW_VERSION (String client){
 		return client + "버전에서 새로운 버전으로 업데이트 리스트 전달";
 	}
+	public static final String ALREADY_UPDATED_VERSION = "이미 최신버전으로 업데이트 완료";
     public static final String NOT_LAST_VERSION = "최신 버전 등록 실패";
     public static final String ALREADY_REGISTERED_VERSION = "이미 등록된 버전";
     public static final String VERSION_ERROR = "확인되지 않은 버전";

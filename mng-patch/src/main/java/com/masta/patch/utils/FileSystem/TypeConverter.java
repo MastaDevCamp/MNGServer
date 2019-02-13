@@ -127,6 +127,7 @@ public class TypeConverter
 
         for (String jsonString : jsonList) {
             String stringList[] = jsonString.split(" \\| ");
+            stringList[stringList.length-1] = stringList[stringList.length-1].trim();
             strings.add(stringList);
         }
 
@@ -144,11 +145,11 @@ public class TypeConverter
 
     public String arrayToStringFormat(String strings[], String type) {
         if (type.equals("D")) {
-            System.out.println(String.format("%s | %s | %s | %s | %s ", strings));
-            return String.format("%s | %s | %s | %s | %s ", strings);
+            System.out.println(String.format("%s | %s | %s | %s | %s", strings));
+            return String.format("%s | %s | %s | %s | %s", strings);
         } else {
-            System.out.println(String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s ", strings));
-            return String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s ", strings);
+            System.out.println(String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s", strings));
+            return String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s", strings);
         }
 
     }

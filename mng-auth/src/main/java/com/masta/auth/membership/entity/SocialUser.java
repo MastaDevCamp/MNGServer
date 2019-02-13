@@ -1,9 +1,6 @@
 package com.masta.auth.membership.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -11,6 +8,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("social")
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class SocialUser extends User{
 

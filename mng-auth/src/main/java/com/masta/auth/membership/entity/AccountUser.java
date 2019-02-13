@@ -2,10 +2,7 @@ package com.masta.auth.membership.entity;
 
 
 import com.masta.auth.membership.dto.LoginRes;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +17,7 @@ import java.util.Collection;
 @DiscriminatorValue("account")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
+@ToString
 public class AccountUser extends User implements UserDetails {
 
     private String username;

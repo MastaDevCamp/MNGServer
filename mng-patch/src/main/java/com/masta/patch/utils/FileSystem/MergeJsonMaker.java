@@ -16,6 +16,7 @@ public class MergeJsonMaker {
     private final int FILE_TYPE = 0;
     private final int DIR_DIFF_TYPE = 4;
     private final int FILE_DIFF_TYPE = 8;
+    private final int PATH = 1;
 
     @Value("${local.merge.path}")
     private String patchDir;
@@ -30,26 +31,22 @@ public class MergeJsonMaker {
      * make merge json
      */
 
-    public static List<String> mergeJsonList;
-    public static List<String[]> intermediateList;
-    public static HashMap<String, Integer> intermediateHashMap;
-    public static List<String[]> diffArrayList;
+
+    public static HashMap<String, String[]> intermediateHashMap;
+
 
     public List<String> makeMergeJson() {
-        mergeJsonList = new ArrayList<>();
-        intermediateList = new ArrayList<>();
+        List<String> mergeJsonList = new ArrayList<>();
         intermediateHashMap = new HashMap<>();
 
         List<File> files = patchJsonList();
 
-        for (File file : files) {
-            intermediateHashMap = typeConverter.makePathHashMap(intermediateList);
+        for(File file : files){
             fileRead(file);
         }
 
         //arrayToFormat
-        for (String[] mergeList : intermediateList) {
-
+        for (String[] mergeList : intermediateHashMap.values()) {
             mergeJsonList.add(typeConverter.arrayToStringFormat(mergeList, mergeList[0]));
         }
         return mergeJsonList;
@@ -67,33 +64,32 @@ public class MergeJsonMaker {
         return patchJsonFiles;
     }
 
-
     public void fileRead(File file) {
-        diffArrayList = typeConverter.jsonStringToArray(typeConverter.readStringListToJson(file.getPath()));
-        HashMap<String, Integer> pathNowHashMap = typeConverter.makePathHashMap(diffArrayList);
+        List<String[]> diffArrayList = typeConverter.jsonStringToArray(typeConverter.readStringListToJson(file.getPath()));
+        HashMap<String, String[]> pathNowHashMap = new HashMap<>();
+        for(String[] nowPath : diffArrayList){
+            pathNowHashMap.put(nowPath[PATH], nowPath);
+        }
         for (String nowPath : pathNowHashMap.keySet()) {
             checkDiff(nowPath, pathNowHashMap.get(nowPath));
         }
     }
 
-    public void checkDiff(String path, int index) {
-        if (intermediateHashMap.containsKey(path)) {
-            diffTypeChange(path, index);
-        } else {
-            intermediateList.add(diffArrayList.get(index));
+    public void checkDiff(String path, String[] fileInfo){
+        if(intermediateHashMap.containsKey(path)){
+            diffTypeChange(path, fileInfo);
+        }else{
+            intermediateHashMap.put(path, fileInfo);
         }
     }
 
+    public void diffTypeChange(String path, String[] fileInfo) {
+        String[] interFileString = intermediateHashMap.get(path);
+        String beforeType = getDiffType(interFileString);
 
-    public void diffTypeChange(String path, int index) {
-        int interIdx = intermediateHashMap.get(path);
-        String[] interString = intermediateList.get(interIdx);
-        String beforeType = getDiffType(interString);
+        String nowType = getDiffType(fileInfo);
 
-        String[] nowString = diffArrayList.get(index);
-        String nowType = getDiffType(nowString);
-
-        String fileType = nowString[FILE_TYPE]; // fileType = F or D
+        String fileType = fileInfo[FILE_TYPE]; // fileType = F or D
 
         /**
          * Rule
@@ -107,18 +103,18 @@ public class MergeJsonMaker {
 
         if (fileType.equals("D")) {
             if (beforeType.equals("D") && nowType.equals("C") || beforeType.equals("C") && nowType.equals("D")) {
-                intermediateList.remove(interIdx);
+                intermediateHashMap.remove(path);
             }
         } else { //F
             switch (beforeType) {
                 case "C":
                     switch (nowType) {
                         case "U":
-                            setDiffType(nowString, "C");
-                            intermediateList.set(interIdx, nowString);
+                            setDiffType(fileInfo, "C");
+                            intermediateHashMap.put(path, fileInfo);
                             break;
                         case "D":
-                            intermediateList.remove(interIdx);
+                            intermediateHashMap.remove(path);
                             break;
                     }
                     break;
@@ -126,15 +122,15 @@ public class MergeJsonMaker {
                     switch (nowType) {
                         case "U":
                         case "D":
-                            setDiffType(nowString, nowType);
-                            intermediateList.set(interIdx, nowString);
+                            setDiffType(fileInfo, nowType);
+                            intermediateHashMap.put(path, fileInfo);
                             break;
                     }
                 case "D":
                     switch (nowType) {
                         case "C":
-                            setDiffType(nowString, "U");
-                            intermediateList.set(interIdx, nowString);
+                            setDiffType(fileInfo, "U");
+                            intermediateHashMap.put(path, fileInfo);
                             break;
                     }
             }

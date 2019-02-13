@@ -174,6 +174,7 @@ public class TypeConverter
 
     }
 
+
     public static String absoluteToRelative(String rootPath, String absolutePath){
         return absolutePath.replace(rootPath, "");
     }

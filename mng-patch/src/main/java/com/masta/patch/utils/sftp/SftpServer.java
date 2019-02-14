@@ -96,34 +96,6 @@ public class SftpServer {
         }
     }
 
-    public void getDirList(String dirPath){
-
-    }
-
-    public void downloadJsonFileInDir(String dirPath) {
-        Vector<ChannelSftp.LsEntry> list = null;
-        try {
-//            channelSftp.cd(path);   // after init
-            System.out.println(" pwd : " + channelSftp.pwd());
-
-            list = channelSftp.ls(dirPath);
-            log.info(list.toString());
-
-            for(ChannelSftp.LsEntry file : list){
-
-                String fileName = file.getFilename();
-                String fileExtention = FilenameUtils.getExtension(fileName).toLowerCase();
-
-                if(fileExtention.equals("json")){
-                    download(dirPath, fileName);
-                }
-            }
-
-        } catch (SftpException e) {
-            e.printStackTrace();
-        }
-    }
-
     // 단일 파일 다운로드
     public void download(String dir, String fileNm) { // 절대경로로 이동
         InputStream in = null;

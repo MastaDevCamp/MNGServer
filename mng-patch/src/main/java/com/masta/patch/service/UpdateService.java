@@ -1,5 +1,8 @@
 package com.masta.patch.service;
 
+import com.masta.core.response.DefaultRes;
+import com.masta.core.response.ResponseMessage;
+import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.utils.FileSystem.MergeJsonMaker;
@@ -28,7 +31,7 @@ public class UpdateService {
     @Value("${local.merge.path}")
     private String localMergePath;
 
-    final static String PATCH_NAME = "patch_ver_";
+    final static String PATCH_NAME = "Patch_Ver_";
 
     private MergeJsonMaker mergeJsonMaker;
     private VersionMapper versionMapper;
@@ -41,9 +44,16 @@ public class UpdateService {
         this.sftpServer = sftpServer;
     }
 
-    public List<String> updateNewVersion(String clientVersion){
+    public DefaultRes updateNewVersion(String clientVersion){
+        String latestVersion = versionMapper.latestVersion().getVersion();
+        if(latestVersion.equals(clientVersion)){
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.ALREADY_UPDATED_VERSION);
+        }
+        log.info(clientVersion+ " to " +latestVersion + " update File List ");
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion, latestVersion), getUpdateFileList(clientVersion));
+    }
 
-        String latestVersion = null;
+    public List<String> getUpdateFileList(String clientVersion){
 
         int clientVersionId = versionMapper.getVersionId(clientVersion);
 
@@ -54,16 +64,11 @@ public class UpdateService {
          */
         for(VersionLog versionLog : updateVersionList){
             downLoadVersionJson(versionLog.getVersion(), versionLog.getPatch());
-            latestVersion = versionLog.getVersion();
         }
 
         List<String> updateFileList =  mergeJsonMaker.makeMergeJson();
 
-        log.info(clientVersion+ " to " +latestVersion + " update File List ");
-
         return updateFileList;
-
-
     }
 
 

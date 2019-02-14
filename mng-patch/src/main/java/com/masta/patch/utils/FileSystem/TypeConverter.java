@@ -49,7 +49,6 @@ public class TypeConverter
      */
     public List<String> makeFileList(DirEntry rootDir) {
         List<String> fileList = new ArrayList<>();
-        searchFile(rootDir, fileList);
 
         searchFile(rootDir, fileList);
         Collections.sort(fileList);
@@ -68,13 +67,11 @@ public class TypeConverter
         for (FileEntry fileEntry : rootDir.fileEntryList) {
             fileList.add(fileEntry.print());
         }
-
-        if (rootDir.dirEntryList.size() == 0) {
+        if(!rootDir.getPath().equals("")){
             fileList.add(rootDir.print());
-        } else {
-            for (DirEntry dirEntry : rootDir.dirEntryList) {
-                searchFile(dirEntry, fileList);
-            }
+        }
+        for (DirEntry dirEntry : rootDir.dirEntryList) {
+            searchFile(dirEntry, fileList);
         }
     }
 
@@ -127,6 +124,7 @@ public class TypeConverter
 
         for (String jsonString : jsonList) {
             String stringList[] = jsonString.split(" \\| ");
+            stringList[stringList.length-1] = stringList[stringList.length-1].trim();
             strings.add(stringList);
         }
 
@@ -144,11 +142,11 @@ public class TypeConverter
 
     public String arrayToStringFormat(String strings[], String type) {
         if (type.equals("D")) {
-            System.out.println(String.format("%s | %s | %s | %s | %s ", strings));
-            return String.format("%s | %s | %s | %s | %s ", strings);
+            System.out.println(String.format("%s | %s | %s | %s | %s", strings));
+            return String.format("%s | %s | %s | %s | %s", strings);
         } else {
-            System.out.println(String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s ", strings));
-            return String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s ", strings);
+            System.out.println(String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s", strings));
+            return String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s", strings);
         }
 
     }
@@ -171,24 +169,6 @@ public class TypeConverter
         }
         return hashMap;
 
-    }
-
-    public static String absoluteToRelative(String rootPath, String absolutePath){
-        return absolutePath.replace(rootPath, "");
-    }
-
-
-    /**
-     * convert version format 0.0.1 to 000001
-     */
-    public int convertVer(String version) {
-        String[] strVer = version.split("\\.");
-        int intVer = 0;
-        for (int i = 0; i < strVer.length; i++) {
-            int digit = Integer.parseInt(strVer[strVer.length - 1 - i]);
-            intVer += digit * Math.pow(10, 2 * i);
-        }
-        return intVer;
     }
 
     public DirEntry getRemoteLastVersionJson(String savePath) {

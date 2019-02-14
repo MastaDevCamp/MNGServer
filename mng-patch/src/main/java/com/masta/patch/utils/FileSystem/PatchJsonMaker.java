@@ -12,6 +12,12 @@ import java.util.List;
 @Component
 public class PatchJsonMaker {
 
+    private final int FILE_TYPE = 0;
+    private final int FILE_SIZE = 5;
+    private final int DIR_DIFF_TYPE = 4;
+    private final int FILE_DIFF_TYPE = 8;
+
+
     private List<String[]> beforeJsonStrings;
     private List<String[]> afterJsonStrings;
 
@@ -54,6 +60,11 @@ public class PatchJsonMaker {
 
         List<String> diffStringList = new ArrayList<>();
 
+        log.info("before array");
+        log.info(before.toString());
+        log.info("after array");
+        log.info(after.toString());
+
         //addDeleteList
         addDeleteList(before, after, diffStringList);
 
@@ -71,32 +82,38 @@ public class PatchJsonMaker {
         List<String> deleteList = new ArrayList<>();
         deleteList.addAll(before.keySet());
         deleteList.removeAll(after.keySet());
-        int idx;
+
         for (String path : deleteList) {
-            String type;
-            if (beforeJsonStrings.get(before.get(path))[0].equals("D")) {
-                if (dirMostCheck(path, before)) {
-                    continue;
-                }
-                type = "D";
-                idx = 4;
+            if (beforeJsonStrings.get(before.get(path))[FILE_TYPE].equals("D")) {
+                beforeJsonStrings.get(before.get(path))[DIR_DIFF_TYPE] = "D";
+                diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), "D"));
             } else {
-                type = "F";
-                idx = 8;
+                beforeJsonStrings.get(before.get(path))[FILE_DIFF_TYPE] = "D";
+                diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), "F"));
             }
-            beforeJsonStrings.get(before.get(path))[idx] = "D";
-            diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), type));
         }
     }
 
-    public boolean dirMostCheck(String path, HashMap<String, Integer> before) {
-        for (String childPath : before.keySet()) {
-            if (childPath.contains(path)) {
-                return true; //삭제하면 안되는 dir
+
+    public boolean unitDirCreateCheck(String path, HashMap<String, Integer> before, HashMap<String, Integer> after) {
+        int beforeCount = 0;
+        for(String childPath : before.keySet()){
+            if(childPath.contains(path)){
+                beforeCount++;
             }
         }
-        return false;
+        int afterCount =0;
+        for (String childPath : after.keySet()){
+            if(childPath.contains(path)){
+                afterCount++;
+            }
+        }
 
+        log.info("afterCount " + afterCount + " beforeCount " + beforeCount);
+        if(beforeCount ==0 && afterCount == 1){
+            return true;
+        }
+        return false;
     }
 
     public void addCreateList(HashMap<String, Integer> before, HashMap<String, Integer> after, List<String> diffStringList) {
@@ -104,33 +121,34 @@ public class PatchJsonMaker {
         createList.addAll(after.keySet());
         createList.removeAll(before.keySet());
 
-        int idx;
         for (String path : createList) {
-            String type;
-            if (afterJsonStrings.get(after.get(path))[0].equals("D")) {
-                type = "D";
-                idx = 4;
+            if (afterJsonStrings.get(after.get(path))[FILE_TYPE].equals("D")) {
+//                if(!unitDirCreateCheck(path, before, after)){
+//                    continue;
+//                }
+                afterJsonStrings.get(after.get(path))[DIR_DIFF_TYPE] = "C";
+                diffStringList.add(typeConverter.arrayToStringFormat(afterJsonStrings.get(after.get(path)), "D"));
             } else {
-                type = "F";
-                idx = 8;
+                afterJsonStrings.get(after.get(path))[FILE_DIFF_TYPE] = "C";
+                diffStringList.add(typeConverter.arrayToStringFormat(afterJsonStrings.get(after.get(path)), "F"));
             }
-            afterJsonStrings.get(after.get(path))[idx] = "C";
-            diffStringList.add(typeConverter.arrayToStringFormat(afterJsonStrings.get(after.get(path)), type));
+
         }
     }
 
     public void addUpdateList(HashMap<String, Integer> before, HashMap<String, Integer> after, List<String> diffStringList) {
         List<String> updateList = new ArrayList<>();
         updateList.addAll(before.keySet());
-        updateList.retainAll(after.keySet()); //교집합
+        updateList.retainAll(after.keySet()); //교집합 : 빈 dir 파일이 있으면 file delete로 인해 빈 dir 파일로 create 해주어야 한다.
 
         for (String path : updateList) {
-            if (beforeJsonStrings.get(before.get(path))[0].equals("F")) {
-                if (!beforeJsonStrings.get(before.get(path))[5].equals(afterJsonStrings.get(after.get(path))[5])) {
-                    beforeJsonStrings.get(before.get(path))[8] = "U";
+            if (beforeJsonStrings.get(before.get(path))[FILE_TYPE].equals("F")) {
+                if (!beforeJsonStrings.get(before.get(path))[FILE_SIZE].equals(afterJsonStrings.get(after.get(path))[FILE_SIZE])) {
+                    beforeJsonStrings.get(before.get(path))[FILE_DIFF_TYPE] = "U";
                     diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), "F"));
                 }
             }
+
         }
     }
 

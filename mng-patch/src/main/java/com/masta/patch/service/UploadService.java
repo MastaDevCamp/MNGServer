@@ -31,9 +31,6 @@ import static com.masta.patch.utils.VersionUtils.compareVersion;
 @Service
 public class UploadService {
 
-    final static String PATCH_NAME = "patch_ver";
-    final static String FULL_NAME = "full_ver";
-
     final SftpServer sftpServer;
     final FullJsonMaker fullJsonMaker;
     final PatchJsonMaker patchJsonMaker;

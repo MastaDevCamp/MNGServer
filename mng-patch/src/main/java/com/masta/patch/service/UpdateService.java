@@ -50,7 +50,7 @@ public class UpdateService {
             return DefaultRes.res(StatusCode.OK, ResponseMessage.ALREADY_UPDATED_VERSION);
         }
         log.info(clientVersion+ " to " +latestVersion + " update File List ");
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion), getUpdateFileList(clientVersion));
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion, latestVersion), getUpdateFileList(clientVersion));
     }
 
     public List<String> getUpdateFileList(String clientVersion){

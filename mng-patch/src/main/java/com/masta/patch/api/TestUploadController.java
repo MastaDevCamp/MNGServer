@@ -79,6 +79,13 @@ public class TestUploadController {
         return patchJson;
     }
 
+    @GetMapping("testingFullConvert")
+    public List<String> fullConvert(@RequestParam("path")final String path){
+        DirEntry jsonFile = typeConverter.readVersionJson(path);
+        List<String> stringList = typeConverter.makeFileList(jsonFile);
+        return stringList;
+    }
+
     @GetMapping("testPathToMerge")
     public List<String> PatchToMerge() {
         List<String> patchJson = mergeJsonMaker.makeMergeJson();

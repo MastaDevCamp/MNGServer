@@ -8,13 +8,15 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue("social")
 @Getter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class SocialUser extends User{
+
 
     private String socialId;
     private String provider;
     private String tokenValue;
+
+
 
     @Builder
     public SocialUser(Long num, String authority, String socialId, String provider, String tokenValue) {

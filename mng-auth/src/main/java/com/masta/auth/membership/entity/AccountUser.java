@@ -17,7 +17,7 @@ import java.util.Collection;
 @DiscriminatorValue("account")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@ToString
+//@ToString
 public class AccountUser extends User implements UserDetails {
 
     private String username;

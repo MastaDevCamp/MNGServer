@@ -25,6 +25,10 @@ public class ResponseMessage {
 	public static final String INVALID_JWT_FORM="유효하지 않은 JWT 형식";
 
 
+	// admin 관리
+    public static final String CHANGE_USER_ROLE = "유저 권한 변경 성공";
+    public static final String ALREADY_GOT_ROLE = "유저 권한 변경 에러";
+
 	//
 	public static final String NOT_FOUND_USER="찾을 수 없는 사용자";
 }

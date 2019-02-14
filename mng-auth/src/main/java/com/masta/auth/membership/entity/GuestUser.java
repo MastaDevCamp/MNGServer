@@ -12,7 +12,7 @@ import javax.persistence.Entity;
 @Getter
 @DiscriminatorValue("guest")
 @NoArgsConstructor
-@ToString
+//@ToString
 public class GuestUser extends User{
 
     private String guestId;

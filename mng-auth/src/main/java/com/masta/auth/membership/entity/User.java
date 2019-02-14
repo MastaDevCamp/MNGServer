@@ -1,10 +1,7 @@
 package com.masta.auth.membership.entity;
 
 import com.masta.auth.membership.dto.UserDetailsDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -26,7 +23,10 @@ public abstract class User {
     //private String nickname;
 
     public UserDetailsDTO touserDetailsDTO(){
-        return UserDetailsDTO.builder().usernum(num.toString()).authority(authority).build();
+        return UserDetailsDTO.builder()
+                .usernum(num.toString())
+                .authority(authority)
+                .build();
     }
 
 }

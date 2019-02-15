@@ -10,6 +10,7 @@ import com.masta.auth.membership.entity.GuestUser;
 import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.service.AccountUserService;
 import com.masta.auth.membership.service.GuestUserService;
+import com.masta.auth.membership.service.UserService;
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
@@ -27,7 +28,6 @@ import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 /**
  * 소셜, 게스트, 계정 유저 모두를 위한 api
  * 게스트, 계정 회원가입 및 로그인
- * ++ 유저 정보 조회
  * ++ 유저 탈퇴
  * ++ 로그아웃
  */
@@ -35,13 +35,15 @@ import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 @RestController
 public class UserController {
 
+    final UserService userService;
     final GuestUserService guestUserService;
     final AccountUserService accountUserService;
     final AuthenticationManager authenticationManager;
     final JwtTokenProvider jwtTokenProvider;
 
-    public UserController(GuestUserService guestUserService, AccountUserService accountUserService,
+    public UserController(UserService userService, GuestUserService guestUserService, AccountUserService accountUserService,
                           AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
+        this.userService=userService;
         this.guestUserService = guestUserService;
         this.accountUserService = accountUserService;
         this.authenticationManager = authenticationManager;
@@ -120,6 +122,19 @@ public class UserController {
         }
     }
 
+    @DeleteMapping("/user/{usernum}")
+    public ResponseEntity DeleteUser(@PathVariable Long usernum){
+        try{
+            userService.DeleteUser(usernum);
+            return new ResponseEntity("Delete Success", HttpStatus.OK);
+        } catch (NoSuchDataException e){
+            return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.INVALID_USER_DATA), HttpStatus.OK);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * 로그인 과정에서 jwt를 발급하는 method
      * @param user
@@ -132,5 +147,6 @@ public class UserController {
                     .token(token)
                     .build();
         }
+
 
 }

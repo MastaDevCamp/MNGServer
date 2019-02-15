@@ -172,20 +172,20 @@ public class TypeConverter
     }
 
     public DirEntry getRemoteLastVersionJson(String savePath) {
-        DirEntry dirEntry = new DirEntry();
+        DirEntry dirEntry = null;
         VersionLog latestVersion = versionMapper.latestVersion(); //local에 저장 후 file읽기 or 그냥 바로 file 읽기
-
-        try {
-            File file = new File(savePath + latestVersion.getVersion() + JSON_EXTENTION);
-            URL url = new URL(nginxUrl + latestVersion.getFull());
-            URLConnection connection = url.openConnection();
-            InputStream is = connection.getInputStream();
-            FileUtils.copyInputStreamToFile(is, file);
-            dirEntry = readVersionJson(file.getPath());
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        if(latestVersion!=null){
+            try {
+                File file = new File(savePath + latestVersion.getVersion() + JSON_EXTENTION);
+                URL url = new URL(nginxUrl + latestVersion.getFull());
+                URLConnection connection = url.openConnection();
+                InputStream is = connection.getInputStream();
+                FileUtils.copyInputStreamToFile(is, file);
+                dirEntry = readVersionJson(file.getPath());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
         }
-
         return dirEntry;
     }
 

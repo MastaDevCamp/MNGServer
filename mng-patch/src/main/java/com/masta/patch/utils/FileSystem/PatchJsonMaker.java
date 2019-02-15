@@ -46,11 +46,9 @@ public class PatchJsonMaker {
                 return compareDiff(beforeHashMap, afterHashMap);
 
             } catch (Exception e) {
-                return null;
+                log.error(e.getMessage());
             }
-
         }
-
         return null; // create 만들기
     }
 

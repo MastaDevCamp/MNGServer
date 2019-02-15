@@ -49,6 +49,9 @@ public class UploadService {
     @Value("${sftp.root.path}")
     private String sftpRootPath;
 
+    @Value("${local.verUpZip.path}")
+    public String verUpZipPath;
+
 
     public UploadService(final SftpServer sftpServer, final FullJsonMaker fullJsonMaker,
                          final PatchJsonMaker patchJsonMaker, final VersionMapper versionMapper,
@@ -82,19 +85,22 @@ public class UploadService {
     }
 
     public String uploadNewVersion(MultipartFile sourceFile, String version) {
+        resetDir(verUpZipPath);
         File localUploadFile = saveLocal(sourceFile);
         String dest = unzip(localUploadFile);
 
         DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
         DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson(newVersionPath);
 
-        int compareResult = compareVersion(newFullJson.getVersion(), beforeFullJson.getVersion());
+        int compareResult = 1;
+        if(beforeFullJson != null){
+            compareResult = compareVersion(newFullJson.getVersion(), beforeFullJson.getVersion());
+        }
 
         switch (compareResult) {
             case 1:
                 List<String> patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
                 uploadJsonToRemote(newFullJson, patchJson, version);
-
                 return ResponseMessage.SUCCESS_TO_NEW_VERSION;
             case 0:
                 return ResponseMessage.ALREADY_REGISTERED_VERSION;
@@ -104,12 +110,14 @@ public class UploadService {
                 return ResponseMessage.VERSION_ERROR;
         }
 
+
 //        sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
 //        sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");
 
     }
 
     public void uploadJsonToRemote(Object fullJson, Object patchJson, String version) {
+
         sftpServer.init();
 
         File fullJsonFile = saveJsonFile(fullJson, "Full_Ver_" + version + JSON_EXTENTION);

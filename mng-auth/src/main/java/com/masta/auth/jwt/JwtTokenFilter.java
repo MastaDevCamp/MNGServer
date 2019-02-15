@@ -1,7 +1,7 @@
 package com.masta.auth.jwt;
 
 import com.masta.auth.exception.ApiError;
-import com.masta.auth.exception.InvalidJwtAuthenticationException;
+import com.masta.auth.exception.exceptions.InvalidJwtAuthenticationException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

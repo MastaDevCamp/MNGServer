@@ -1,9 +1,9 @@
 package com.masta.auth.jwt;
 
 import com.masta.auth.config.JwtConfig;
-import com.masta.auth.exception.InvalidJwtAuthenticationException;
+import com.masta.auth.exception.ExceptionMessage;
+import com.masta.auth.exception.exceptions.InvalidJwtAuthenticationException;
 import com.masta.auth.membership.dto.UserDetailsDTO;
-import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -62,7 +62,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)//
                 .compact();
         redisTemplate.opsForValue().set(usernum.toString(), jwts);
-        redisTemplate.expire(usernum.toString(),30, TimeUnit.MINUTES);
+        redisTemplate.expire(usernum.toString(),7, TimeUnit.DAYS);
         return jwts;
     }
 
@@ -91,7 +91,7 @@ public class JwtTokenProvider {
         String redistoken = (String) redisTemplate.opsForValue().get(usernum);
         if (token.equals(redistoken)) return true;
         else {
-            throw new InvalidJwtAuthenticationException("Expired or invalid JWT token");
+            throw new InvalidJwtAuthenticationException(ExceptionMessage.INVALID_JWT_TOKEN);
         }
     }
 

@@ -5,17 +5,19 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
 
 public class Compress {
 
     private static final String zipFilePath = "C:/WorkSpace/verUpZip/";
     private static final String VersionPath = "C:\\WorkSpace\\newVersion\\";
 
-    public static String pathToString(String path){
-        return(path.replace(VersionPath, "").replace("\\","_"));
+    public static String pathToString(String path) {
+        return (path.replace(VersionPath, "").replace("\\", "_"));
     }
 
     public static String zip(File file) {
@@ -36,6 +38,26 @@ public class Compress {
         }
 
         return source;
+    }
+
+    public static ZipEntry getCompressedSize(String path) {
+        try {
+            java.util.zip.ZipFile zipFile = new java.util.zip.ZipFile(path);
+            Enumeration e = zipFile.entries();
+            while (e.hasMoreElements()) {
+                ZipEntry entry = (ZipEntry) e.nextElement();
+                if(!entry.isDirectory()){
+                    return entry;
+                }
+            }
+
+            zipFile.close();
+
+        } catch (IOException ioe) {
+            System.out.println("Error opening zip file" + ioe);
+        }
+        
+        return null;
     }
 
     public static String unzip(File file) {

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.zip.ZipEntry;
 
 @Slf4j
 @Component
@@ -67,9 +68,6 @@ public class FullJsonMaker {
                 listFilesForFolder(childDir, version); //자식 dir
             }
         }
-
-
-
     }
 
     public void makeRelativePath(String rootPath, DirEntry parentDir) {
@@ -112,23 +110,22 @@ public class FullJsonMaker {
      */
     public FileEntry getFileEntry(File file, String version) {
 
-        log.info(file.getPath());
-
         String compressFilePath = Compress.zip(file);
         File compressFile = new File(compressFilePath);
 
-        log.info(compressFile.getPath());
-
+        log.info(compressFile.toString());
+        ZipEntry compressed = Compress.getCompressedSize(compressFilePath);
+        System.out.println(compressed);
         char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';
 
         FileEntry fileEntry = FileEntry.builder()
                 .type(fileType)
                 .path(file.getPath())
                 .compress(compressType)
-                .originalSize((int) file.length())
-                .compressSize((int) compressFile.length())
+                .originalSize((int) compressed.getSize())
+                .compressSize((int) compressed.getCompressedSize())
                 .originalHash(hashingSystem.getMD5Hashing(file))
-                .compressHash(hashingSystem.getMD5Hashing(compressFile))
+                .compressHash(Long.toBinaryString(compressed.getCrc())) //CRC가 데이터 무결성 검사에 사용
                 .diffType('x') //patch
                 .version(version)
                 .build();

@@ -85,6 +85,7 @@ public class UploadService {
     }
 
     public String uploadNewVersion(MultipartFile sourceFile, String version) {
+        resetDir(verUpZipPath);
         File localUploadFile = saveLocal(sourceFile);
         String dest = unzip(localUploadFile);
 
@@ -108,6 +109,7 @@ public class UploadService {
             default:
                 return ResponseMessage.VERSION_ERROR;
         }
+
 
 //        sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
 //        sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");

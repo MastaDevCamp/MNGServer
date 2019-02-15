@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import static com.masta.patch.utils.Compress.unzip;
@@ -26,9 +30,6 @@ import static com.masta.patch.utils.VersionUtils.compareVersion;
 @Slf4j
 @Service
 public class UploadService {
-
-    final static String PATCH_NAME = "patch_ver";
-    final static String FULL_NAME = "full_ver";
 
     final SftpServer sftpServer;
     final FullJsonMaker fullJsonMaker;
@@ -124,13 +125,14 @@ public class UploadService {
         String remoteFullJsonPath = sftpServer.checkFile(version, "log/full");
         String remotePatchJsonPath = sftpServer.checkFile(version, "log/patch");
 
-        VersionLog versionLog = VersionLog.builder()
+        VersionLog newVersion = VersionLog.builder()
                 .version(version)
                 .full(remoteFullJsonPath)
                 .patch(remotePatchJsonPath).build();
 
-        versionMapper.newVersionSave(versionLog);
+        versionMapper.newVersionSave(newVersion);
     }
+
 
 
     public boolean checkFileExtension(String extension, MultipartFile sourceFile) {

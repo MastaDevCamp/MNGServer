@@ -5,15 +5,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Component
 @Slf4j
 public class MergeJsonMaker {
 
-    @Value("${local.path}")
+    private final int FILE_TYPE = 0;
+    private final int DIR_DIFF_TYPE = 4;
+    private final int FILE_DIFF_TYPE = 8;
+    private final int PATH = 1;
+
+    @Value("${local.merge.path}")
     private String patchDir;
 
     private TypeConverter typeConverter;
@@ -26,80 +29,70 @@ public class MergeJsonMaker {
      * make merge json
      */
 
-    public static List<String> mergeJsonList;
-    public static List<String[]> intermediateList;
-    public static HashMap<String, Integer> intermediateHashMap;
-    public static List<String[]> diffArrayList;
 
-    public List<String> makeMergeJson(String before, String after) {
-        mergeJsonList = new ArrayList<>();
-        intermediateList = new ArrayList<>();
+    public static HashMap<String, String[]> intermediateHashMap;
+
+
+    public List<String> makeMergeJson() {
+        List<String> mergeJsonList = new ArrayList<>();
         intermediateHashMap = new HashMap<>();
 
-        log.info("before version : " + before);
-        log.info("after version : " + after);
-        int start = typeConverter.convertVer(before);
-        int end = typeConverter.convertVer(after);
-        List<File> files = patchJsonList(start, end);
-        for (File file : files) {
-            intermediateHashMap = typeConverter.makePathHashMap(intermediateList);
+        List<File> files = patchJsonList();
+        log.info(files.toString());
+
+        for(File file : files){
             fileRead(file);
         }
 
         //arrayToFormat
-        for (String[] mergeList : intermediateList) {
+        for (String[] mergeList : intermediateHashMap.values()) {
             mergeJsonList.add(typeConverter.arrayToStringFormat(mergeList, mergeList[0]));
         }
         return mergeJsonList;
     }
 
-    public List<File> patchJsonList(int start, int end) {
+    public List<File> patchJsonList() {
         log.info("patchJsonList");
         File dir = new File(patchDir);
         List<File> patchJsonFiles = new ArrayList<>();
 
         File[] files = dir.listFiles();
         for (File file : files) {
-            int pos = file.getName().lastIndexOf(".");
-            if (pos != -1) {
-                String name = file.getName().substring(0, pos);
-                String[] version = name.split("v");
-                int fileStart = typeConverter.convertVer(version[1]);
-                int fileEnd = typeConverter.convertVer(version[2]);
-                if (start <= fileStart && end >= fileEnd) { //범위 안에 들면
-                    patchJsonFiles.add(file);
-                }
-            }
+            patchJsonFiles.add(file);
         }
-        log.info(files.toString());
         return patchJsonFiles;
     }
 
-    public void checkDiff(String path, int index) {
-        if (intermediateHashMap.containsKey(path)) {
-            diffTypeChange(path, index);
-        } else {
-            intermediateList.add(diffArrayList.get(index));
-        }
-    }
-
     public void fileRead(File file) {
-        diffArrayList = typeConverter.jsonStringToArray(typeConverter.readStringListToJson(file.getPath()));
-        HashMap<String, Integer> pathNowHashMap = typeConverter.makePathHashMap(diffArrayList);
+
+        List<String[]> diffArrayList = typeConverter.jsonStringToArray(typeConverter.readStringListToJson(file.getPath()));
+
+
+
+        HashMap<String, String[]> pathNowHashMap = new HashMap<>();
+        for(String[] nowPath : diffArrayList){
+            pathNowHashMap.put(nowPath[PATH], nowPath);
+        }
         for (String nowPath : pathNowHashMap.keySet()) {
             checkDiff(nowPath, pathNowHashMap.get(nowPath));
         }
     }
 
-    public void diffTypeChange(String path, int index) {
-        int interIdx = intermediateHashMap.get(path);
-        String[] interString = intermediateList.get(interIdx);
-        String beforeType = getDiffType(interString);
+    public void checkDiff(String path, String[] fileInfo){
+        if(intermediateHashMap.containsKey(path)){
+            diffTypeChange(path, fileInfo);
+        }else{
+            intermediateHashMap.put(path, fileInfo);
+        }
+    }
 
-        String[] nowString = diffArrayList.get(index);
-        String nowType = getDiffType(nowString);
+    public void diffTypeChange(String path, String[] fileInfo) {
+        String[] interFileString = intermediateHashMap.get(path);
+        String beforeType = getDiffType(interFileString);
 
-        String fileType = nowString[0]; // fileType = F or D
+        String nowType = getDiffType(fileInfo);
+
+        String fileType = fileInfo[FILE_TYPE]; // fileType = F or D
 
         /**
          * Rule
@@ -113,18 +106,18 @@ public class MergeJsonMaker {
 
         if (fileType.equals("D")) {
             if (beforeType.equals("D") && nowType.equals("C") || beforeType.equals("C") && nowType.equals("D")) {
-                intermediateList.remove(interIdx);
+                intermediateHashMap.remove(path);
             }
         } else { //F
             switch (beforeType) {
                 case "C":
                     switch (nowType) {
                         case "U":
-                            setDiffType(nowString, "C");
-                            intermediateList.set(interIdx, nowString);
+                            setDiffType(fileInfo, "C");
+                            intermediateHashMap.put(path, fileInfo);
                             break;
                         case "D":
-                            intermediateList.remove(interIdx);
+                            intermediateHashMap.remove(path);
                             break;
                     }
                     break;
@@ -132,15 +125,15 @@ public class MergeJsonMaker {
                     switch (nowType) {
                         case "U":
                         case "D":
-                            setDiffType(nowString, nowType);
-                            intermediateList.set(interIdx, nowString);
+                            setDiffType(fileInfo, nowType);
+                            intermediateHashMap.put(path, fileInfo);
                             break;
                     }
                 case "D":
                     switch (nowType) {
                         case "C":
-                            setDiffType(nowString, "U");
-                            intermediateList.set(interIdx, nowString);
+                            setDiffType(fileInfo, "U");
+                            intermediateHashMap.put(path, fileInfo);
                             break;
                     }
             }
@@ -155,17 +148,18 @@ public class MergeJsonMaker {
      * @return
      */
     public String getDiffType(String[] fileString) {
-        if (fileString[0].equals("F")) {
-            return fileString[8];
+        if (fileString[FILE_TYPE].equals("F")) {
+            return fileString[FILE_DIFF_TYPE];
         }
-        return fileString[4];
+        return fileString[DIR_DIFF_TYPE];
     }
 
     public void setDiffType(String[] fileString, String type) {
-        if (fileString[0].equals("F")) {
-            fileString[8] = type;
-        }
-        fileString[4] = type;
-    }
 
+        if (fileString[FILE_TYPE].equals("F")) {
+            fileString[FILE_DIFF_TYPE] = type;
+        }else{
+            fileString[DIR_DIFF_TYPE] = type;
+        }
+    }
 }

@@ -5,14 +5,18 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
 
 public class Compress {
 
+    @Value("${fullJson.file.path}")
+    private static String zipFilePath;
+
     public static String zip(File file) {
         String source = file.getPath();
-        String destination = file.getPath() + ".zip";
+        String destination = zipFilePath + file.getPath() + ".zip";
 
         try {
             ZipFile zipFile = new ZipFile(source);
@@ -25,7 +29,6 @@ public class Compress {
         }
 
         return destination;
-
     }
 
     public static String unzip(File file) {

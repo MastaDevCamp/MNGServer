@@ -11,24 +11,31 @@ import java.io.File;
 
 public class Compress {
 
-    @Value("${fullJson.file.path}")
-    private static String zipFilePath;
+    private static final String zipFilePath = "C:/WorkSpace/verUpZip/";
+    private static final String VersionPath = "C:\\WorkSpace\\newVersion\\";
+
+    public static String pathToString(String path){
+        return(path.replace(VersionPath, "").replace("\\","_"));
+    }
 
     public static String zip(File file) {
-        String source = file.getPath();
-        String destination = zipFilePath + file.getPath() + ".zip";
+
+        String destination = file.getPath();
+        String source = zipFilePath + pathToString(file.getPath()) + ".zip";
+
+        File destFile = new File(destination);
 
         try {
             ZipFile zipFile = new ZipFile(source);
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-            zipFile.addFolder(destination, parameters);
+            zipFile.addFile(destFile, parameters);
         } catch (ZipException e) {
             e.printStackTrace();
         }
 
-        return destination;
+        return source;
     }
 
     public static String unzip(File file) {

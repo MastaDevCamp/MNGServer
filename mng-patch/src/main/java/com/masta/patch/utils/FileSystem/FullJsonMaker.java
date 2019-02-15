@@ -4,9 +4,14 @@ import com.masta.patch.utils.Compress;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 @Slf4j
@@ -62,6 +67,9 @@ public class FullJsonMaker {
                 listFilesForFolder(childDir, version); //자식 dir
             }
         }
+
+
+
     }
 
     public void makeRelativePath(String rootPath, DirEntry parentDir) {
@@ -97,16 +105,20 @@ public class FullJsonMaker {
         return dirEntry;
     }
 
+
     /**
      * @param file
      * @return FileEntry Filled fields.
      */
     public FileEntry getFileEntry(File file, String version) {
 
-        //out zip file
-        File compressFile = new File(Compress.zip(file));
+        log.info(file.getPath());
 
-        // set file type
+        String compressFilePath = Compress.zip(file);
+        File compressFile = new File(compressFilePath);
+
+        log.info(compressFile.getPath());
+
         char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';
 
         FileEntry fileEntry = FileEntry.builder()
@@ -121,6 +133,8 @@ public class FullJsonMaker {
                 .version(version)
                 .build();
 
+
         return fileEntry;
+
     }
 }

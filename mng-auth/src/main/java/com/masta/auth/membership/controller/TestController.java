@@ -1,7 +1,9 @@
 package com.masta.auth.membership.controller;
 
 import com.masta.auth.membership.service.AccountUserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 단순 test API
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "/test")
 public class TestController {
@@ -21,7 +24,8 @@ public class TestController {
      * @return
      */
     @GetMapping("/test")
-    public String test(){
+    public String test(Authentication authentication){
+        log.info(authentication.toString());
         return "hello";
     }
 

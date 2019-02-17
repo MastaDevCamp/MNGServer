@@ -14,7 +14,7 @@ public class AccountUserForm {
     private String username;
     private String password;
 
-    public AccountUser toNonSocailUser(){
+    public AccountUser toAccountUser(){
         return AccountUser.builder()
                 .username(username)
                 .password(password)

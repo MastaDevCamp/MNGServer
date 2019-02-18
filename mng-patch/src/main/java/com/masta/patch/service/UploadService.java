@@ -50,6 +50,9 @@ public class UploadService {
     @Value("${local.verUpZip.path}")
     public String verUpZipPath;
 
+    @Value("${local.zipFile.path}")
+    public String zipFilePath;
+
 
     public UploadService(final SftpServer sftpServer, final FullJsonMaker fullJsonMaker,
                          final PatchJsonMaker patchJsonMaker, final VersionMapper versionMapper,
@@ -73,7 +76,7 @@ public class UploadService {
         return file;
     }
 
-    public void resetDir(String path) {
+    public static void resetDir(String path) {
         try {
             FileUtils.deleteDirectory(new File(path));
         } catch (Exception e) {
@@ -90,10 +93,15 @@ public class UploadService {
         DirEntry newFullJson = fullJsonMaker.getFileTreeList(dest, version);
         DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson(newVersionPath);
 
-        int compareResult = 1;
-        if (beforeFullJson != null) {
-            compareResult = compareVersion(newFullJson.getVersion(), beforeFullJson.getVersion());
+        if (beforeFullJson == null) {   // first upload version
+            List<String> fileList = typeConverter.makeFileList(newFullJson);
+            uploadJsonToRemote(newFullJson, null, version);
+            uploadPatchFileToRemote(fileList, null);
+            return ResponseMessage.UPLOAD_FIREST_VERSION;
         }
+
+        int compareResult = compareVersion(newFullJson.getVersion(), beforeFullJson.getVersion());
+        String lastestVersion = beforeFullJson.getVersion();
 
         switch (compareResult) {
             case 1:
@@ -107,6 +115,30 @@ public class UploadService {
             default:
                 return DefaultRes.FAIL_DEFAULT_RES;
         }
+    }
+
+    public void uploadPatchFileToRemote(List<String> patchList, String lastestVersion) {
+
+        sftpServer.init();
+
+        if (lastestVersion != null)
+            sftpServer.backupRelease("file/release", lastestVersion);
+
+        for (String patchFile : patchList) {
+            String[] fileInfo = patchFile.replace(" ", "").split("\\|");
+
+            if ("D".equals(fileInfo[0])) {  // not dir
+                continue;
+            }
+
+            if (!"D".equals(fileInfo[8])) {     // Upload only Update, create patch file
+                String relativePath = fileInfo[1].replace("\\", "/").substring(0, fileInfo[1].lastIndexOf("\\"));
+                sftpServer.mkdir(relativePath, "file/release");
+                sftpServer.upload(new File(zipFilePath + fileInfo[1] + "." + fileInfo[2]), "file/release" + relativePath);
+            }
+        }
+
+        sftpServer.disconnect();
     }
 
     public void uploadJsonToRemote(Object fullJson, Object patchJson, String version) {
@@ -123,6 +155,9 @@ public class UploadService {
             log.info("Only upload full version json");
         }
 
+        fullJsonFile.delete();
+        patchJsonFile.delete();
+
         String remoteFullJsonPath = sftpServer.checkFile(version, "log/full");
         String remotePatchJsonPath = sftpServer.checkFile(version, "log/patch");
 
@@ -132,8 +167,9 @@ public class UploadService {
                 .patch(remotePatchJsonPath).build();
 
         versionMapper.newVersionSave(newVersion);
-    }
 
+        sftpServer.disconnect();
+    }
 
     public boolean checkFileExtension(String extension, MultipartFile sourceFile) {
         String sourceFileName = sourceFile.getOriginalFilename();

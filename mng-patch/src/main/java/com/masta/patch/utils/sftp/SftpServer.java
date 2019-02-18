@@ -1,9 +1,7 @@
 package com.masta.patch.utils.sftp;
 
 import com.jcraft.jsch.*;
-import com.masta.patch.utils.FileSystem.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -69,7 +67,7 @@ public class SftpServer {
         try {
             channelSftp = (ChannelSftp) channel;
             channelSftp.cd(rootPath);
-            System.out.println("in init"+channelSftp.pwd());
+            System.out.println("in init" + channelSftp.pwd());
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -96,6 +94,21 @@ public class SftpServer {
         }
     }
 
+    public void mkdir(String path, String parentPath) {
+        if ("".equals(path)) return;
+        try {
+            channelSftp.cd(rootPath + parentPath);
+            String[] dirs = path.split("/");
+            for (String dir : dirs) {
+                if ("".equals(dir)) continue;
+                channelSftp.mkdir(dir);
+                channelSftp.cd(dir);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
     // 단일 파일 다운로드
     public void download(String dir, String fileNm) { // 절대경로로 이동
         InputStream in = null;
@@ -106,7 +119,7 @@ public class SftpServer {
             in = channelSftp.get(fileNm);
 
             try {
-                Files.copy(in, Paths.get(localMergePath+fileNm), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(in, Paths.get(localMergePath + fileNm), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -117,34 +130,33 @@ public class SftpServer {
     }
 
 
-    public void backupDir(String srcDir, String backPath) {
+    public void backupRelease(String srcDir, String version) {
         try {
-            channelSftp.rmdir(backPath);
-            //log.info(channelSftp.ls("\\gameFiles").toString());
-            channelSftp.rename(srcDir, backPath);
-            channelSftp.mkdir(srcDir);
+            mkdir(version, "file/history");
+            channelSftp.rename(rootPath + srcDir, rootPath + "file/history/" + version);
+            channelSftp.mkdir(rootPath + srcDir);
         } catch (Exception e) {
             log.error(e.getMessage());
         }
     }
 
-    public void uploadDir(File localFile, String destPath) {
+    public void uploadDir(File localDir, String destPath) {
         try {
-            if (localFile.isDirectory()) {
+            if (localDir.isDirectory()) {
                 channelSftp.mkdir(destPath);
                 //System.out.println("Created Folder: " + localFile.getName() + " in " + destPath);
 
-                destPath = destPath + "/" + localFile.getName();
+                destPath = destPath + "/" + localDir.getName();
                 channelSftp.cd(destPath);
 
-                for (File file : localFile.listFiles()) {
+                for (File file : localDir.listFiles()) {
                     uploadDir(file, destPath);
                 }
 
                 channelSftp.cd(destPath.substring(0, destPath.lastIndexOf('/')));
             } else {
-                System.out.println("Copying File: " + localFile.getName() + " to " + destPath);
-                channelSftp.put(new FileInputStream(localFile), localFile.getName(), ChannelSftp.OVERWRITE);
+                System.out.println("Copying File: " + localDir.getName() + " to " + destPath);
+                channelSftp.put(new FileInputStream(localDir), localDir.getName(), ChannelSftp.OVERWRITE);
             }
         } catch (Exception e) {
             log.error(e.getMessage());

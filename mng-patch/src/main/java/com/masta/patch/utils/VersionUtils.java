@@ -20,7 +20,10 @@ public class VersionUtils {
         String[] versions = version.split("\\.");
         int res = 0;
         for (String ver : versions) {
-            res *= 1000;
+            if (Integer.parseInt(ver) > 10) {
+                return -1;
+            }
+            res *= 100;
             res = res + Integer.parseInt(ver);
         }
         return res;

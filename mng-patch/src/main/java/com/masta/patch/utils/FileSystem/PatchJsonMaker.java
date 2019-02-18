@@ -53,7 +53,6 @@ public class PatchJsonMaker {
     }
 
 
-
     public List<String> compareDiff(HashMap<String, Integer> before, HashMap<String, Integer> after) {
 
         List<String> diffStringList = new ArrayList<>();
@@ -95,20 +94,20 @@ public class PatchJsonMaker {
 
     public boolean unitDirCreateCheck(String path, HashMap<String, Integer> before, HashMap<String, Integer> after) {
         int beforeCount = 0;
-        for(String childPath : before.keySet()){
-            if(childPath.contains(path)){
+        for (String childPath : before.keySet()) {
+            if (childPath.contains(path)) {
                 beforeCount++;
             }
         }
-        int afterCount =0;
-        for (String childPath : after.keySet()){
-            if(childPath.contains(path)){
+        int afterCount = 0;
+        for (String childPath : after.keySet()) {
+            if (childPath.contains(path)) {
                 afterCount++;
             }
         }
 
         log.info("afterCount " + afterCount + " beforeCount " + beforeCount);
-        if(beforeCount ==0 && afterCount == 1){
+        if (beforeCount == 0 && afterCount == 1) {
             return true;
         }
         return false;

@@ -4,14 +4,10 @@ import com.masta.patch.utils.Compress;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 
@@ -113,19 +109,16 @@ public class FullJsonMaker {
         String compressFilePath = Compress.zip(file);
         File compressFile = new File(compressFilePath);
 
-        log.info(compressFile.toString());
-        ZipEntry compressed = Compress.getCompressedSize(compressFilePath);
-        System.out.println(compressed);
         char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';
 
         FileEntry fileEntry = FileEntry.builder()
                 .type(fileType)
                 .path(file.getPath())
                 .compress(compressType)
-                .originalSize((int) compressed.getSize())
-                .compressSize((int) compressed.getCompressedSize())
+                .originalSize((int) file.length())
+                .compressSize((int) compressFile.length())
                 .originalHash(hashingSystem.getMD5Hashing(file))
-                .compressHash(Long.toBinaryString(compressed.getCrc())) //CRC가 데이터 무결성 검사에 사용
+                .compressHash(hashingSystem.getMD5Hashing(compressFile))
                 .diffType('x') //patch
                 .version(version)
                 .build();

@@ -16,14 +16,13 @@ import java.util.zip.ZipFile;
 
 public class GetCompressedSize {
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         try {
             java.util.zip.ZipFile zipFile = new java.util.zip.ZipFile("C:\\WorkSpace\\verUpZip\\sourceFile_dir4_dir5_file2.txt.zip");
             Enumeration e = zipFile.entries();
             while (e.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
-                if(!entry.isDirectory()){
+                if (!entry.isDirectory()) {
                     String entryName = entry.getName();
                     long compressedSize = entry.getCompressedSize();
                     long originalSize = entry.getSize();

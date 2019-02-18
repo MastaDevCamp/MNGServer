@@ -24,8 +24,7 @@ import java.util.List;
 
 @Slf4j
 @Component
-public class TypeConverter
-{
+public class TypeConverter {
     public final static String JSON_EXTENTION = ".json";
 
     @Value("${nginx.url}")
@@ -67,7 +66,7 @@ public class TypeConverter
         for (FileEntry fileEntry : rootDir.fileEntryList) {
             fileList.add(fileEntry.print());
         }
-        if(!rootDir.getPath().equals("")){
+        if (!rootDir.getPath().equals("")) {
             fileList.add(rootDir.print());
         }
         for (DirEntry dirEntry : rootDir.dirEntryList) {
@@ -124,7 +123,7 @@ public class TypeConverter
 
         for (String jsonString : jsonList) {
             String stringList[] = jsonString.split(" \\| ");
-            stringList[stringList.length-1] = stringList[stringList.length-1].trim();
+            stringList[stringList.length - 1] = stringList[stringList.length - 1].trim();
             strings.add(stringList);
         }
 
@@ -174,7 +173,7 @@ public class TypeConverter
     public DirEntry getRemoteLastVersionJson(String savePath) {
         DirEntry dirEntry = null;
         VersionLog latestVersion = versionMapper.latestVersion(); //local에 저장 후 file읽기 or 그냥 바로 file 읽기
-        if(latestVersion!=null){
+        if (latestVersion != null) {
             try {
                 File file = new File(savePath + latestVersion.getVersion() + JSON_EXTENTION);
                 URL url = new URL(nginxUrl + latestVersion.getFull());

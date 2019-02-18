@@ -40,7 +40,7 @@ public class MergeJsonMaker {
         List<File> files = patchJsonList();
         log.info(files.toString());
 
-        for(File file : files){
+        for (File file : files) {
             fileRead(file);
         }
 
@@ -68,9 +68,8 @@ public class MergeJsonMaker {
         List<String[]> diffArrayList = typeConverter.jsonStringToArray(typeConverter.readStringListToJson(file.getPath()));
 
 
-
         HashMap<String, String[]> pathNowHashMap = new HashMap<>();
-        for(String[] nowPath : diffArrayList){
+        for (String[] nowPath : diffArrayList) {
             pathNowHashMap.put(nowPath[PATH], nowPath);
         }
         for (String nowPath : pathNowHashMap.keySet()) {
@@ -78,10 +77,10 @@ public class MergeJsonMaker {
         }
     }
 
-    public void checkDiff(String path, String[] fileInfo){
-        if(intermediateHashMap.containsKey(path)){
+    public void checkDiff(String path, String[] fileInfo) {
+        if (intermediateHashMap.containsKey(path)) {
             diffTypeChange(path, fileInfo);
-        }else{
+        } else {
             intermediateHashMap.put(path, fileInfo);
         }
     }
@@ -158,7 +157,7 @@ public class MergeJsonMaker {
 
         if (fileString[FILE_TYPE].equals("F")) {
             fileString[FILE_DIFF_TYPE] = type;
-        }else{
+        } else {
             fileString[DIR_DIFF_TYPE] = type;
         }
     }

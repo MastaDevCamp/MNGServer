@@ -16,14 +16,14 @@ import java.security.MessageDigest;
 @Component
 public class HashingSystem {
 
-    public String getMD5Hashing(File file){
+    public String getMD5Hashing(File file) {
         String hashing = "";
 
         if (file.isFile()) {
             String ext = Files.getFileExtension(file.getPath());
-            if (ext.equals("txt")){
-                hashing =  MD5FullHashing(file);
-            }else{
+            if (ext.equals("txt")) {
+                hashing = MD5FullHashing(file);
+            } else {
                 hashing = MD5PartHashing(file);
             }
         }
@@ -31,7 +31,7 @@ public class HashingSystem {
     }
 
 
-    public String MD5PartHashing(File file){
+    public String MD5PartHashing(File file) {
 
         if (file.isDirectory()) {
             return "";
@@ -69,8 +69,7 @@ public class HashingSystem {
     }
 
 
-
-    public String MD5FullHashing(File file){
+    public String MD5FullHashing(File file) {
 
         if (file.isDirectory()) {
             return "";

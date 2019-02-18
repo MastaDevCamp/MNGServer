@@ -16,10 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 import static com.masta.patch.utils.Compress.unzip;

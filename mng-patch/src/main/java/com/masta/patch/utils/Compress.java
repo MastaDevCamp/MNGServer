@@ -1,29 +1,32 @@
 package com.masta.patch.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 
+@Slf4j
+@Component
 public class Compress {
 
-    private static final String zipFilePath = "C:/WorkSpace/verUpZip/";
-    private static final String VersionPath = "C:\\WorkSpace\\newVersion\\";
+    private static String originalFilePath = "C:\\WorkSpace\\newVersion\\";
 
-    public static String pathToString(String path) {
-        return (path.replace(VersionPath, "").replace("\\", "_"));
-    }
+    private static String zipFilePath = "C:\\WorkSpace\\ZipDir\\";
 
     public static String zip(File file) {
 
+        String relPath = file.getParent().replace(originalFilePath, "") + "/";
         String destination = file.getPath();
-        String source = zipFilePath + pathToString(file.getPath()) + ".zip";
+        new File(zipFilePath + relPath).mkdirs();
+        String source = zipFilePath + relPath + file.getName() + ".zip";
 
         File destFile = new File(destination);
 
@@ -46,17 +49,15 @@ public class Compress {
             Enumeration e = zipFile.entries();
             while (e.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) e.nextElement();
-                if(!entry.isDirectory()){
+                if (!entry.isDirectory()) {
                     return entry;
                 }
             }
-
             zipFile.close();
-
         } catch (IOException ioe) {
             System.out.println("Error opening zip file" + ioe);
         }
-        
+
         return null;
     }
 

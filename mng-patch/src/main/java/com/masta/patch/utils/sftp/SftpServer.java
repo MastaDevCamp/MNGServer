@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Vector;
 
 @Slf4j
@@ -108,27 +108,6 @@ public class SftpServer {
             log.error(e.getMessage());
         }
     }
-
-    // 단일 파일 다운로드
-    public void download(String dir, String fileNm) { // 절대경로로 이동
-        InputStream in = null;
-
-        try { //경로탐색후 inputStream에 데이터를 넣음
-            channelSftp.cd(rootPath);
-            channelSftp.cd(dir);
-            in = channelSftp.get(fileNm);
-
-            try {
-                Files.copy(in, Paths.get(localMergePath + fileNm), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (SftpException se) {
-            se.printStackTrace();
-        }
-
-    }
-
 
     public void backupRelease(String srcDir, String version) {
         try {

@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
+@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("upload")
@@ -27,11 +28,11 @@ public class UploadController {
 
     @Transactional
     @PostMapping("newVersion")
-    public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile sourceFile, @RequestParam("version") final String versionName) {
+    public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile sourceFile, @RequestParam("version") final String version) {
         try {
-            if (uploadService.checkFileExtension("zip", sourceFile)) {
-                String responseMessage = uploadService.uploadNewVersion(sourceFile, versionName);
-                return new ResponseEntity<>(DefaultRes.res(StatusCode.OK, responseMessage), HttpStatus.OK);
+            log.info(version);
+            if (!version.isEmpty() && uploadService.checkFileExtension("zip", sourceFile)) {
+                return new ResponseEntity(uploadService.uploadNewVersion(sourceFile, version), HttpStatus.OK);
             } else {
                 log.info("File is not .zip file.");
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_ZIP_FILE), HttpStatus.OK);

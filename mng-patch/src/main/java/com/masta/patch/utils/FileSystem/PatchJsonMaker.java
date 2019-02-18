@@ -13,7 +13,7 @@ import java.util.List;
 public class PatchJsonMaker {
 
     private final int FILE_TYPE = 0;
-    private final int FILE_SIZE = 5;
+    private final int FILE_HASHING = 5;
     private final int DIR_DIFF_TYPE = 4;
     private final int FILE_DIFF_TYPE = 8;
 
@@ -140,7 +140,7 @@ public class PatchJsonMaker {
 
         for (String path : updateList) {
             if (beforeJsonStrings.get(before.get(path))[FILE_TYPE].equals("F")) {
-                if (!beforeJsonStrings.get(before.get(path))[FILE_SIZE].equals(afterJsonStrings.get(after.get(path))[FILE_SIZE])) {
+                if (!beforeJsonStrings.get(before.get(path))[FILE_HASHING].equals(afterJsonStrings.get(after.get(path))[FILE_HASHING])) {
                     beforeJsonStrings.get(before.get(path))[FILE_DIFF_TYPE] = "U";
                     diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), "F"));
                 }

@@ -1,6 +1,8 @@
 package com.masta.patch.service;
 
+import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
+import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.utils.FileSystem.FullJsonMaker;
@@ -80,7 +82,7 @@ public class UploadService {
         new File(path).mkdirs();
     }
 
-    public String uploadNewVersion(MultipartFile sourceFile, String version) {
+    public DefaultRes uploadNewVersion(MultipartFile sourceFile, String version) {
         resetDir(verUpZipPath);
         File localUploadFile = saveLocal(sourceFile);
         String dest = unzip(localUploadFile);
@@ -89,7 +91,7 @@ public class UploadService {
         DirEntry beforeFullJson = typeConverter.getRemoteLastVersionJson(newVersionPath);
 
         int compareResult = 1;
-        if(beforeFullJson != null){
+        if (beforeFullJson != null) {
             compareResult = compareVersion(newFullJson.getVersion(), beforeFullJson.getVersion());
         }
 
@@ -97,19 +99,14 @@ public class UploadService {
             case 1:
                 List<String> patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
                 uploadJsonToRemote(newFullJson, patchJson, version);
-                return ResponseMessage.SUCCESS_TO_NEW_VERSION;
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.SUCCESS_TO_NEW_VERSION);
             case 0:
-                return ResponseMessage.ALREADY_REGISTERED_VERSION;
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.ALREADY_REGISTERED_VERSION);
             case -1:
-                return ResponseMessage.NOT_LAST_VERSION;
+                return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.NOT_LAST_VERSION);
             default:
-                return ResponseMessage.VERSION_ERROR;
+                return DefaultRes.FAIL_DEFAULT_RES;
         }
-
-
-//        sftpServer.backupDir("/gameFiles/release", "/gameFiles/backupVersion");
-//        sftpServer.uploadDir(new File(localPath + sourceFile.getName()), "/gameFiles/release");
-
     }
 
     public void uploadJsonToRemote(Object fullJson, Object patchJson, String version) {
@@ -136,7 +133,6 @@ public class UploadService {
 
         versionMapper.newVersionSave(newVersion);
     }
-
 
 
     public boolean checkFileExtension(String extension, MultipartFile sourceFile) {

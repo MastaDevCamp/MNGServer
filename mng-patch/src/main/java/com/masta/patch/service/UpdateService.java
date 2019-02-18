@@ -7,13 +7,11 @@ import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.utils.FileSystem.MergeJsonMaker;
 import com.masta.patch.utils.FileSystem.TypeConverter;
-import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.sftp.SftpServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.InputStream;
@@ -85,8 +83,6 @@ public class UpdateService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-
-
     }
 
 

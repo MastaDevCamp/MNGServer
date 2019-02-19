@@ -3,6 +3,7 @@ package com.masta.auth.membership.service;
 import com.masta.auth.exception.ExceptionMessage;
 import com.masta.auth.exception.exceptions.NoSuchDataException;
 import com.masta.auth.membership.entity.GuestUser;
+import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.repository.GuestUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,9 @@ public class GuestUserService {
 
     @Autowired
     GuestUserRepository guestUserRepository;
+
+    @Autowired
+    UserService userService;
 
     @Transactional
     public GuestUser saveGuestUser() {
@@ -27,6 +31,10 @@ public class GuestUserService {
 
     public GuestUser findGuestUser(String id) {
         return guestUserRepository.findByGuestId(id).orElseThrow(() -> new NoSuchDataException(ExceptionMessage.INVALID_USER_DATA));
+    }
+
+    public void deleteUser(User user){
+        guestUserRepository.delete((GuestUser) user);
     }
 
 }

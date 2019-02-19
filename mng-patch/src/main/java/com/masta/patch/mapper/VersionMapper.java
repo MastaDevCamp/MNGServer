@@ -23,4 +23,7 @@ public interface VersionMapper {
     @Select("SELECT * FROM version_log WHERE id > #{versionId}")
     List<VersionLog> getUpdateVersionList(@Param("versionId") int versionId);
 
+    @Select("SELECT * FROM version_log")
+    List<VersionLog> getAllVersionList();
+
 }

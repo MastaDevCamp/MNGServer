@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -52,7 +54,7 @@ public class TestUploadController {
         this.mergeJsonMaker = mergeJsonMaker;
     }
 
-    @GetMapping("test")
+    @GetMapping("test") //삭제
     public ResponseEntity upload(@RequestParam("path") final Optional<String> path, @RequestParam("dir") final String dir) {
         try {
             if (path.isPresent()) {
@@ -80,7 +82,7 @@ public class TestUploadController {
     }
 
     @GetMapping("testingFullConvert")
-    public List<String> fullConvert(@RequestParam("path")final String path){
+    public List<String> fullConvert(@RequestParam("path") final String path) {
         DirEntry jsonFile = typeConverter.readVersionJson(path);
         List<String> stringList = typeConverter.makeFileList(jsonFile);
         return stringList;
@@ -98,5 +100,6 @@ public class TestUploadController {
         DirEntry newFullJson = fullJsonMaker.getFileTreeList(newVersionPath, version);
         return newFullJson;
     }
+
 
 }

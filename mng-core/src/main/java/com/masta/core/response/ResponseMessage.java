@@ -23,7 +23,8 @@ public class ResponseMessage {
     public static final String NOT_LAST_VERSION = "최신 버전 등록 실패";
     public static final String ALREADY_REGISTERED_VERSION = "이미 등록된 버전";
     public static final String VERSION_ERROR = "확인되지 않은 버전";
-
+    public static final String READ_VERSION = "버전 조회 성공";
+    public static final String EMPTY_VERSION = "버전 리스트가 없음";
 
     // user 관리
     public static final String EXIST_USER = "이미 가입된 회원";

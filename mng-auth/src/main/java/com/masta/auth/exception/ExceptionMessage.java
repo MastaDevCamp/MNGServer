@@ -7,4 +7,5 @@ public class ExceptionMessage {
     //jwt
     public static final String INVALID_JWT_TOKEN="유효하지 않은 JWT 토큰";
     public static final String INVALID_JWT_FORM="유효하지 않은 JWT 형식";
+
 }

@@ -41,6 +41,7 @@ public class CommonSuccessComponent {
 
         Cookie cookie  = new Cookie("Authorization", URLEncoder.encode(token,"UTF-8").replace("+","%20"));
         response.addCookie(cookie);
+        response.setContentType("application/json");
         response.setStatus(200);
     }
 

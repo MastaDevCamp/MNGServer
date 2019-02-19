@@ -6,6 +6,8 @@ dependencies {
     compile project(':mng-core')
     compile('org.springframework.boot:spring-boot-starter-aop')
 
+    compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+    
     //security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.1.1.RELEASE'

@@ -1,11 +1,13 @@
 package com.masta.auth.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="jwt")
-public class JwtConfig {
+//@ConfigurationProperties("google")
+@Configuration("google")
+public class SocialConfig {
     private String secret;
 
     public String getSecret() {

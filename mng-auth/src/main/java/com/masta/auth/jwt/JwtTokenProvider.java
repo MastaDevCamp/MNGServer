@@ -1,6 +1,6 @@
 package com.masta.auth.jwt;
 
-import com.masta.auth.config.JwtConfig;
+import com.masta.auth.config.YmlConfig;
 import com.masta.auth.exception.ExceptionMessage;
 import com.masta.auth.exception.exceptions.InvalidJwtAuthenticationException;
 import com.masta.auth.membership.dto.UserDetailsDTO;
@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class JwtTokenProvider {
 
     @Autowired
-    JwtConfig jwtConfig;
+    YmlConfig ymlConfig;
 
     private String secretKey;
 
@@ -47,7 +47,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(jwtConfig.getSecret().getBytes());
+        secretKey = Base64.getEncoder().encodeToString(ymlConfig.getJwt().getSecret().getBytes());
     }
 
     public String createToken(Long usernum, String roles) {

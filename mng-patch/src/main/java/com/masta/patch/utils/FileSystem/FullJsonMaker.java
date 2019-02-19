@@ -4,12 +4,13 @@ import com.masta.patch.utils.Compress;
 import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.FileSystem.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.zip.ZipEntry;
+
+import static com.masta.patch.service.UploadService.resetDir;
 
 @Slf4j
 @Component
@@ -18,6 +19,9 @@ public class FullJsonMaker {
     public static final String compressType = "zip";
 
     private HashingSystem hashingSystem;
+
+    @Value("{local.zipFile.path}")
+    private String zipFilePath;
 
     public FullJsonMaker(final HashingSystem hashingSystem) {
         this.hashingSystem = hashingSystem;
@@ -48,6 +52,8 @@ public class FullJsonMaker {
 
         parentDir.fileEntryList = new ArrayList<>();
         parentDir.dirEntryList = new ArrayList<>();
+
+        resetDir(zipFilePath);
 
         File file = new File(parentDir.getPath());
 

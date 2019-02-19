@@ -85,5 +85,13 @@ public class UpdateService {
         }
     }
 
-
+    public String getLastestVersion() {
+        try {
+            VersionLog versionLog = versionMapper.latestVersion();
+            return versionLog.getVersion();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
 }

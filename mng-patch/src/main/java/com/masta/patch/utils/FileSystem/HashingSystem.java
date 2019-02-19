@@ -1,11 +1,7 @@
 package com.masta.patch.utils.FileSystem;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -20,35 +16,27 @@ public class HashingSystem {
         String hashing = "";
 
         if (file.isFile()) {
-            String ext = Files.getFileExtension(file.getPath());
-            if (ext.equals("txt")) {
-                hashing = MD5FullHashing(file);
-            } else {
-                hashing = MD5PartHashing(file);
-            }
+            hashing = MD5Hashing(file);
         }
         return hashing;
     }
 
 
-    public String MD5PartHashing(File file) {
-
-        if (file.isDirectory()) {
-            return "";
-        }
+    public String MD5Hashing(File file) {
 
         String md5 = "";
-        byte[] fileByte = new byte[20];
+        byte[] fileByte = new byte[40];
 
         try {
-            if (file.length() > 20) {
-                byte[] last = new byte[10];
-                byte[] first = new byte[10];
+            if (file.length() > 40) {
+                byte[] last = new byte[20];
+                byte[] first = new byte[20];
 
                 RandomAccessFile raf = new RandomAccessFile(file, "r");
-                raf.read(first, 0, 10);
-                raf.seek(file.length() - 10);
-                raf.read(last, 0, 10);
+                raf.read(first, 0, 20);
+                raf.seek(file.length() - 20);
+                raf.read(last, 0, 20);
+                raf.close();
 
                 // combine byte[]
                 System.arraycopy(first, 0, fileByte, 0, first.length);
@@ -56,6 +44,7 @@ public class HashingSystem {
             } else {
                 RandomAccessFile raf = new RandomAccessFile(file, "r");
                 raf.read(fileByte, 0, (int) file.length());
+                raf.close();
             }
 
             byte[] res = MessageDigest.getInstance("MD5").digest(fileByte);
@@ -68,21 +57,4 @@ public class HashingSystem {
         return md5;
     }
 
-
-    public String MD5FullHashing(File file) {
-
-        if (file.isDirectory()) {
-            return "";
-        }
-
-        HashCode hc = null;
-        try {
-            hc = Files.asByteSource(file).hash(Hashing.md5());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-        return hc.toString();
-
-    }
 }

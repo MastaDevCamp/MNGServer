@@ -1,7 +1,9 @@
 package com.masta.cms.Push;
 
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -20,12 +22,15 @@ public class PushService {
 
         ArrayList<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 
-        interceptors.add(new HeaderRequestInterceptor("Authorization" + "key=" + FIREBASE_SERVER_KEY));
+        interceptors.add(new HeaderRequestInterceptor("Authorization", "key=" + FIREBASE_SERVER_KEY));
         interceptors.add(new HeaderRequestInterceptor("Content-Type", "application/json"));
+
         restTemplate.setInterceptors(interceptors);
 
         String firebaseResponse = restTemplate.postForObject(FIREBASE_API_URL, entity, String.class);
 
         return CompletableFuture.completedFuture(firebaseResponse);
     }
+
+
 }

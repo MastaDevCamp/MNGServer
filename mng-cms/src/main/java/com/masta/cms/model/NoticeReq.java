@@ -9,6 +9,7 @@ public class NoticeReq {
     private int type;
     private String title;
     private String contents;
+    private Date begin_at;
     private Date finish_at;
     private String file_link;
 }

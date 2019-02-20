@@ -8,6 +8,9 @@ import java.util.List;
 
 @Mapper
 public interface NoticeMapper {
+    @Select("SELECT * FROM notice")
+    List<Notice> findPerfectlyAllNotice();
+
     //공지사항 타입별 조회
     @Select("SELECT * FROM notice WHERE type = #{type}")
     List<Notice> findAllNotice(@Param("type") int type);
@@ -17,11 +20,11 @@ public interface NoticeMapper {
     Notice findOneNotice(@Param("notice_id") int notice_id);
 
     //공지사항 등록
-    @Insert("INSERT INTO notice (type, title, contents, finish_at) VALUES (#{notice.type}, #{notice.title}, #{notice.contents}, #{notice.finish_at})")
+    @Insert("INSERT INTO notice (type, title, contents, finish_at, begin_at) VALUES (#{notice.type}, #{notice.title}, #{notice.contents}, #{notice.finish_at}, #{notice.begin_at})")
     void insertNotice(@Param("notice") NoticeReq noticeReq);
 
     //공지사항 수정
-    @Update("UPDATE notice SET type=#{notice.type}, title=#{notice.title}, contents=#{notice.contents}, finish_at=#{notice.finish_at} WHERE notice_id=#{notice_id}")
+    @Update("UPDATE notice SET title=#{notice.title}, contents=#{notice.contents}, finish_at=#{notice.finish_at}, begin_at=#{notice.begin_at} WHERE notice_id=#{notice_id}")
     void updateNotice(@Param("notice") NoticeReq noticeReq, @Param("notice_id") int notice_id);
 
     @Delete("DELETE FROM notice WHERE notice_id=#{notice_id}")

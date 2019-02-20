@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
+@CrossOrigin(origins="*")
 @RestController
 @RequestMapping("/notice")
 public class NoticeController {
@@ -17,9 +18,14 @@ public class NoticeController {
         this.noticeService = noticeService;
     }
 
-    //공지사항 타입별 보기
     @GetMapping("")
-    public ResponseEntity getAllNotice(@RequestParam("type") final int type) {
+    public ResponseEntity getAllNotice() {
+        return new ResponseEntity<>(noticeService.getNotice(), HttpStatus.OK);
+    }
+
+    //공지사항 타입별 보기
+    @GetMapping("/type/{type}")
+    public ResponseEntity getAllNoticeWithType(@PathVariable final int type) {
         return new ResponseEntity<>(noticeService.getNoticeByType(type), HttpStatus.OK);
     }
 

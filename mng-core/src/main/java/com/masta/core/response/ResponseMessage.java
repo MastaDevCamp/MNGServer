@@ -31,6 +31,10 @@ public class ResponseMessage {
     public static final String INVALID_USER_DATA = "잘못된 유저 정보";
     public static final String REGIST_USER = "회원가입 성공";
 
+    //social 관리
+    public static final String FAILED_GET_APP_TOKEN ="소셜에서 app token 발행시 에러 발생";
+    public static final String FAILED_GET_SOCIALUSERINFO ="잘못된 social user access token ";
+
     // jwt 관리
     public static final String INVALID_TOKEN = "유효하지 않은 JWT 토큰";
     public static final String INVALID_JWT_FORM = "유효하지 않은 JWT 형식";

@@ -1,7 +1,12 @@
 package com.masta.auth.membership.service;
 
+import com.masta.auth.exception.ExceptionMessage;
+import com.masta.auth.exception.exceptions.NoSuchDataException;
 import com.masta.auth.membership.entity.AccountUser;
+import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.repository.AccountUserRepository;
+import com.masta.auth.membership.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,13 +16,16 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+@Slf4j
 @Service
 public class AccountUserService implements UserDetailsService {
     final AccountUserRepository accountUserRepository;
+    final UserRepository userRepository;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AccountUserService(AccountUserRepository accountUserRepository) {
+    public AccountUserService(AccountUserRepository accountUserRepository, UserRepository userRepository) {
         this.accountUserRepository = accountUserRepository;
+        this.userRepository = userRepository;
     }
 
     public AccountUser getUser(String username){
@@ -37,6 +45,18 @@ public class AccountUserService implements UserDetailsService {
         String encodedPw = new BCryptPasswordEncoder().encode(pw);
         accountUser.setPassword(encodedPw);
         accountUserRepository.save(accountUser);
+    }
+
+    @Transactional
+    public void switchUser(AccountUser accountUser, long num) {
+        User user = userRepository.findById(num).orElseThrow(()-> new NoSuchDataException(ExceptionMessage.INVALID_USER_DATA));
+        userRepository.delete(user);
+        String pw = accountUser.getPassword();
+        String encodedPw = new BCryptPasswordEncoder().encode(pw);
+        accountUser.setPassword(encodedPw);
+        AccountUser newaccountUser = accountUserRepository.save(accountUser);
+        accountUserRepository.updateUserNum(num, newaccountUser.getNum());
+        userRepository.updateUserNum(num, newaccountUser.getNum());
     }
 
     public PasswordEncoder passwordEncoder() {

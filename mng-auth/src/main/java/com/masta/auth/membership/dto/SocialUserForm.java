@@ -3,6 +3,7 @@ package com.masta.auth.membership.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.masta.auth.membership.entity.SocialUser;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,14 @@ public class SocialUserForm implements Serializable {
     private String provider;
     @JsonProperty("token")
     private String token;
+
+    @Builder
+    public SocialUserForm(String social_id, String provider, String token) {
+        this.social_id = social_id;
+        this.provider = provider;
+        this.token = token;
+    }
+
 
 
     public void setProvider(String provider) {

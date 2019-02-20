@@ -96,8 +96,9 @@ public class UploadService {
         if (beforeFullJson == null) {   // first upload version
             List<String> fileList = typeConverter.makeFileList(newFullJson);
             uploadJsonToRemote(newFullJson, null, version);
-            uploadPatchFileToRemote(fileList, null);
-            return ResponseMessage.UPLOAD_FIREST_VERSION;
+            uploadFullFileToRemote(fileList, version);
+            uploadPatchFileToRemote(fileList, version);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPLOAD_FIREST_VERSION);
         }
 
         int compareResult = compareVersion(newFullJson.getVersion(), beforeFullJson.getVersion());
@@ -107,6 +108,9 @@ public class UploadService {
             case 1:
                 List<String> patchJson = patchJsonMaker.getPatchJson(beforeFullJson, newFullJson);
                 uploadJsonToRemote(newFullJson, patchJson, version);
+                uploadFullFileToRemote(typeConverter.makeFileList(newFullJson), version);
+                uploadPatchFileToRemote(patchJson, version);
+
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.SUCCESS_TO_NEW_VERSION);
             case 0:
                 return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.ALREADY_REGISTERED_VERSION);
@@ -117,14 +121,13 @@ public class UploadService {
         }
     }
 
-    public void uploadPatchFileToRemote(List<String> patchList, String lastestVersion) {
+    public void uploadFullFileToRemote(List<String> fullList, String lastestVersion) {
 
         sftpServer.init();
+        sftpServer.rmDir("file/release");
+        sftpServer.mkdir("file/release");
 
-        if (lastestVersion != null)
-            sftpServer.backupRelease("file/release", lastestVersion);
-
-        for (String patchFile : patchList) {
+        for (String patchFile : fullList) {
             String[] fileInfo = patchFile.replace(" ", "").split("\\|");
 
             if ("D".equals(fileInfo[0])) {  // not dir
@@ -135,6 +138,30 @@ public class UploadService {
                 String relativePath = fileInfo[1].replace("\\", "/").substring(0, fileInfo[1].lastIndexOf("\\"));
                 sftpServer.mkdir(relativePath, "file/release");
                 sftpServer.upload(new File(zipFilePath + fileInfo[1] + "." + fileInfo[2]), "file/release" + relativePath);
+            }
+
+        }
+
+        sftpServer.disconnect();
+    }
+
+
+    public void uploadPatchFileToRemote(List<String> patchList, String lastestVersion) {
+
+        sftpServer.init();
+        sftpServer.mkdir("file/history/" + lastestVersion);
+
+        for (String patchFile : patchList) {
+            String[] fileInfo = patchFile.replace(" ", "").split("\\|");
+
+            if ("D".equals(fileInfo[0])) {  // not dir
+                continue;
+            }
+
+            if (!"D".equals(fileInfo[8])) {     // Upload only Update, create patch file
+                String relativePath = fileInfo[1].replace("\\", "/").substring(0, fileInfo[1].lastIndexOf("\\"));
+                sftpServer.mkdir(relativePath, "file/history/" + lastestVersion);
+                sftpServer.upload(new File(zipFilePath + fileInfo[1] + "." + fileInfo[2]), "file/history/" + lastestVersion + "/" + relativePath);
             }
         }
 

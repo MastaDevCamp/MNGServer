@@ -94,6 +94,16 @@ public class SftpServer {
         }
     }
 
+    public void mkdir(String path) {
+        try {
+            channelSftp.mkdir(rootPath + path);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+    }
+
     public void mkdir(String path, String parentPath) {
         if ("".equals(path)) return;
         try {
@@ -114,6 +124,14 @@ public class SftpServer {
             mkdir(version, "file/history");
             channelSftp.rename(rootPath + srcDir, rootPath + "file/history/" + version);
             channelSftp.mkdir(rootPath + srcDir);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    public void rmDir(String srcDir) {
+        try {
+            channelSftp.rmdir(rootPath + srcDir);
         } catch (Exception e) {
             log.error(e.getMessage());
         }

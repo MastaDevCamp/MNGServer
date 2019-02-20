@@ -36,6 +36,17 @@ public class NoticeService {
         }
     }
 
+    public DefaultRes getNotice() {
+        try {
+            List<Notice> notices = noticeMapper.findPerfectlyAllNotice();
+            return DefaultRes.res(StatusCode.OK, "Get All Notices", notices);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
     //타입별 공지 보기
     public DefaultRes getNoticeByType(final int type) {
         try {

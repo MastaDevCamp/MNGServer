@@ -9,6 +9,7 @@ import com.masta.auth.membership.entity.SocialUser;
 import com.masta.auth.membership.repository.SocialUserRepository;
 import com.masta.auth.oauth2.response.AuthToken;
 import com.masta.auth.oauth2.response.UserData;
+import com.masta.auth.oauth2.response.UserId;
 import com.masta.core.response.ResponseMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.omg.IOP.ExceptionDetailMessage;
@@ -32,6 +33,7 @@ public class SocialUserService {
 
     private final SocialUserRepository socialUserRepository;
     private final String fbaseUrl = "https://graph.facebook.com/";
+    private final String gUrl = "https://www.googleapis.com/oauth2/v2/userinfo";
     private String gclientId;
     private String gclientSecret;
     private String fclientId;
@@ -67,29 +69,48 @@ public class SocialUserService {
         return user;
     }
 
-    public UserData getSocialUser(String token, String provider) {
-        String clientId = null, clientSecret = null, getAccessUrl = null;
+    public SocialUserForm getFacebookUser(String token) {
         ResponseEntity<AuthToken> appAccessToken = null;
-        if (provider.equals("facebook")) {
-            clientId = fclientId;
-            clientSecret = fclientSecret;
-            getAccessUrl = fbaseUrl + "oauth/access_token";
-        } else {
-            clientId = gclientId;
-            clientSecret = gclientSecret;
-        }
+
+        String clientId = fclientId;
+        String clientSecret = fclientSecret;
+        String getAccessUrl = fbaseUrl + "oauth/access_token";
+
         String appToken = getAccessAppToken(getAccessUrl, clientId, clientSecret);
-        if (appToken== null)
-            throw new InternalServerException(ResponseMessage.FAILED_GET_APP_TOKEN);
+        if (appToken == null) throw new InternalServerException(ResponseMessage.FAILED_GET_APP_TOKEN);
         UserData userData = getUserInfo(token, appToken);
 
         log.info(userData.getData().getUser_id());
-        if (userData.getData().getUser_id() == null)
-            throw new InternalServerException(ResponseMessage.FAILED_GET_SOCIALUSERINFO);
-        return userData;
+        if (userData.getData().getUser_id() == null) throw new InternalServerException(ResponseMessage.FAILED_GET_SOCIALUSERINFO);
+
+        SocialUserForm socialUserForm = SocialUserForm.builder()
+                .social_id(userData.getData().getUser_id())
+                .provider("facebook")
+                .token(token)
+                .build();
+        return socialUserForm;
     }
 
-    public UserData getUserInfo(String userToken, String AppToken){
+    public SocialUserForm getGoogleUser(String token){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization","Bearer "+token);
+        ResponseEntity<UserId> userInfo = restTemplate.exchange(
+                gUrl,
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                new ParameterizedTypeReference<UserId>() {
+                }
+        );
+
+        SocialUserForm socialUserForm = SocialUserForm.builder()
+                .social_id(userInfo.getBody().getId())
+                .provider("google")
+                .token(token)
+                .build();
+        return socialUserForm;
+    }
+
+    private UserData getUserInfo(String userToken, String AppToken) {
         UriComponentsBuilder getUserInfoUrl = UriComponentsBuilder.fromHttpUrl(fbaseUrl + "debug_token")
                 .queryParam("input_token", userToken)
                 .queryParam("access_token", AppToken);
@@ -104,7 +125,7 @@ public class SocialUserService {
         return userInfo.getBody();
     }
 
-    public String getAccessAppToken(String getAccessUrl, String clientId, String clientSecret){
+    private String getAccessAppToken(String getAccessUrl, String clientId, String clientSecret) {
         UriComponentsBuilder getAccessTokenUrl = UriComponentsBuilder.fromHttpUrl(getAccessUrl)
                 .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
@@ -114,7 +135,8 @@ public class SocialUserService {
                 getAccessTokenUrl.toUriString(),
                 HttpMethod.GET,
                 new HttpEntity<>(new HttpHeaders()),
-                new ParameterizedTypeReference<AuthToken>() {}
+                new ParameterizedTypeReference<AuthToken>() {
+                }
         );
         return appAccessToken.getBody().getAccess_token();
     }

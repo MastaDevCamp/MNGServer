@@ -34,18 +34,27 @@ public class SocialController {
     public ResponseEntity facebookLogin(@PathVariable String token) {
 
         try {
-            UserData userData = socialUserService.getSocialUser(token, "facebook");
-            SocialUser socialUser = socialUserService.getOrSave(SocialUserForm.builder()
-                    .social_id(userData.getData().getUser_id())
-                    .provider("facebook")
-                    .token(token)
-                    .build()
-            );
+            SocialUserForm socialUserForm= socialUserService.getFacebookUser(token);
+            SocialUser socialUser = socialUserService.getOrSave(socialUserForm);
             String jwt = "Bearer " + jwtTokenProvider.createToken(socialUser.getNum(), "ROLE_USER");
             return new ResponseEntity(jwt, HttpStatus.OK);
         }catch (InternalServerException e){
             log.error(e.getMessage());
             return new ResponseEntity(DefaultRes.res(StatusCode.OK, e.getMessage()), HttpStatus.OK);
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/login/google/{token}")
+    public ResponseEntity googleLogin(@PathVariable String token) {
+        try {
+            SocialUserForm socialUserForm= socialUserService.getGoogleUser(token);
+            SocialUser socialUser = socialUserService.getOrSave(socialUserForm);
+            String jwt = "Bearer " + jwtTokenProvider.createToken(socialUser.getNum(), "ROLE_USER");
+            return new ResponseEntity(jwt, HttpStatus.OK);
         }
         catch (Exception e){
             log.error(e.getMessage());

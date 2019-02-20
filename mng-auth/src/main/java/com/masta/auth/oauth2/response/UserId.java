@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class UserId {
     private String user_id;
-
+    private String id;
 }

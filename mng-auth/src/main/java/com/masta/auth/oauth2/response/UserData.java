@@ -8,4 +8,5 @@ import lombok.ToString;
 public class UserData {
 
     UserId data;
+
 }

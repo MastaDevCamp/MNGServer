@@ -10,6 +10,7 @@ public class ResponseMessage {
     public static final String READ_JSON_FILE = "JSON file 조회 성공";
     public static final String NOT_READ_JSON_FILE = "JSON file 조회 실패";
     public static final String LASTEST_VERSION = "최신 버전 조회 성공";
+    public static final String NOT_VERSION_FORMAT = "버전 포멧 오류";
     public static final String FILA_TO_GET_VERSION = "최신 버전 조회 실패";
     public static final String NOT_ZIP_FILE = "version 업로드시에 zip파일만 가능";
     public static final String UPLOAD_FIREST_VERSION = "처음 버전 등록 성공";
@@ -32,8 +33,8 @@ public class ResponseMessage {
     public static final String REGIST_USER = "회원가입 성공";
 
     //social 관리
-    public static final String FAILED_GET_APP_TOKEN ="소셜에서 app token 발행시 에러 발생";
-    public static final String FAILED_GET_SOCIALUSERINFO ="잘못된 social user access token ";
+    public static final String FAILED_GET_APP_TOKEN = "소셜에서 app token 발행시 에러 발생";
+    public static final String FAILED_GET_SOCIALUSERINFO = "잘못된 social user access token ";
 
     // jwt 관리
     public static final String INVALID_TOKEN = "유효하지 않은 JWT 토큰";

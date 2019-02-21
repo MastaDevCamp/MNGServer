@@ -16,6 +16,10 @@ public class EntrySystem {
     @Autowired
     private HashingSystem hashingSystem;
 
+    @Autowired
+    private Compress compress;
+
+
     private final String COMPRESS_TYPE = "zip";
 
     /**
@@ -43,7 +47,7 @@ public class EntrySystem {
      */
     public FileEntry getFileEntry(File file, String version) {
 
-        String compressFilePath = Compress.zip(file);
+        String compressFilePath = compress.zip(file);
         File compressFile = new File(compressFilePath);
 
         char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';

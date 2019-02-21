@@ -34,10 +34,10 @@ public class PatchJsonMaker {
      * @param afterJson
      * @return
      */
-    public List<String> getPatchJson(DirEntry beforeJson, DirEntry afterJson) {
+    public List<String> getPatchFileList(DirEntry beforeJson, DirEntry afterJson) {
         if (beforeJson != null) {
-            beforeJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(beforeJson));
-            afterJsonStrings = typeConverter.jsonStringToArray(typeConverter.makeFileList(afterJson));
+            beforeJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(beforeJson));
+            afterJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(afterJson));
 
             try {
                 HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);

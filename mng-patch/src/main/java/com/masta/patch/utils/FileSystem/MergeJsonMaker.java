@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -65,7 +67,7 @@ public class MergeJsonMaker {
 
     public void fileRead(File file) {
 
-        List<String[]> diffArrayList = typeConverter.jsonStringToArray(typeConverter.readStringListToJson(file.getPath()));
+        List<String[]> diffArrayList = typeConverter.jsonToList(typeConverter.patchJsonToFileList(file.getPath()));
 
 
         HashMap<String, String[]> pathNowHashMap = new HashMap<>();

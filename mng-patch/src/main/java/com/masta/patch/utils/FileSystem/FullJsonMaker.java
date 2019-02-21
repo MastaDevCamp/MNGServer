@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.masta.patch.service.UploadService.resetDir;
+import static com.masta.patch.service.UpdateService.resetDir;
 
 @Slf4j
 @Component
@@ -23,13 +23,14 @@ public class FullJsonMaker {
 
     @Autowired
     private EntrySystem entrySystem;
+
     /**
      * Be called from controller
      *
      * @param path
      * @return Full DirEntry (return all file paths' contents)
      */
-    public DirEntry getFileTreeList(String path, String version) {
+    public DirEntry getVersionFileTree(String path, String version) {
         DirEntry rootDir = entrySystem.getDirEntry(new File(path), version);
         listFilesForFolder(rootDir, version);
         makeRelativePath(rootDir.getPath(), rootDir);

@@ -31,6 +31,9 @@ public class TypeConverter {
     private String nginXPath;
 
 
+    @Value("${local.path}")
+    private String localPath;
+
     @Value("${file.path}")
     private String mainDir;
 
@@ -80,7 +83,7 @@ public class TypeConverter {
      * @param jsonPath
      * @return DirEntry
      */
-    public DirEntry readVersionJson(String jsonPath) {
+    public DirEntry fullJsonToFileTree(String jsonPath) {
         DirEntry dirEntry = new DirEntry();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -92,13 +95,18 @@ public class TypeConverter {
         return dirEntry;
     }
 
+    public List<String> fullJsonToFileList(String jsonPath) {
+        DirEntry fullFileTree = fullJsonToFileTree(jsonPath);
+        return makeFileList(fullFileTree);
+    }
+
     /**
      * convert StringList To Json
      *
      * @param jsonPath
      * @return
      */
-    public List<String> readStringListToJson(String jsonPath) {
+    public List<String> patchJsonToFileList(String jsonPath) {
         List<String> strings = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -117,7 +125,7 @@ public class TypeConverter {
      * @param jsonList
      * @return
      */
-    public List<String[]> jsonStringToArray(List<String> jsonList) {
+    public List<String[]> jsonToList(List<String> jsonList) {
 
         List<String[]> strings = new ArrayList<>();
 
@@ -168,17 +176,17 @@ public class TypeConverter {
 
     }
 
-    public DirEntry getRemoteLastVersionJson(String savePath) {
+    public DirEntry getRemoteLatestVersionJson() {
         DirEntry dirEntry = null;
         VersionLog latestVersion = versionMapper.latestVersion(); //local에 저장 후 file읽기 or 그냥 바로 file 읽기
         if (latestVersion != null) {
             try {
-                File file = new File(savePath + latestVersion.getVersion() + JSON_EXTENTION);
+                File file = new File(localPath + String.format("Full_Ver_%s.json", latestVersion.getVersion()));
                 URL url = new URL(nginXPath + latestVersion.getFull());
                 URLConnection connection = url.openConnection();
                 InputStream is = connection.getInputStream();
                 FileUtils.copyInputStreamToFile(is, file);
-                dirEntry = readVersionJson(file.getPath());
+                dirEntry = fullJsonToFileTree(file.getPath());
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
@@ -186,8 +194,8 @@ public class TypeConverter {
         return dirEntry;
     }
 
-    public static File saveJsonFile(Object obj, String fileName) {
-        File file = new File(fileName);
+    public File saveJsonFile(Object obj, String path) {
+        File file = new File(localPath + path);
         try {
             Gson gson = new Gson();
             String dirJson = gson.toJson(obj);

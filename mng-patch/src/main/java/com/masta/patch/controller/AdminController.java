@@ -1,11 +1,9 @@
 package com.masta.patch.controller;
 
 import com.masta.core.response.DefaultRes;
-import com.masta.core.response.ResponseMessage;
-import com.masta.core.response.StatusCode;
 import com.masta.patch.model.JsonType;
 import com.masta.patch.service.AdminClientService;
-import com.masta.patch.service.UploadService;
+import com.masta.patch.service.UpdateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,7 +21,7 @@ import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 public class AdminController {
 
     private final AdminClientService adminClientService;
-    private final UploadService uploadService;
+    private final UpdateService updateService;
 
     @GetMapping("all")
     public ResponseEntity viewAllVersion() {
@@ -51,15 +49,9 @@ public class AdminController {
     }
 
     @PostMapping("newVersion")
-    public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile sourceFile, @RequestParam("version") final String version) {
+    public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile newPatchFile, @RequestParam("newVersion") final String newVersion) {
         try {
-            log.info(version);
-            if (!version.isEmpty() && uploadService.checkFileExtension("zip", sourceFile)) {
-                return new ResponseEntity(uploadService.uploadNewVersion(sourceFile, version), HttpStatus.OK);
-            } else {
-                log.info("File is not .zip file.");
-                return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.NOT_ZIP_FILE), HttpStatus.OK);
-            }
+            return new ResponseEntity(updateService.updateVersion(newPatchFile, newVersion), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -59,7 +59,7 @@ public class SocialUserService {
 
     @Transactional
     public SocialUser getOrSave(SocialUserForm socialUserForm) {
-        SocialUser user = new SocialUser();
+        SocialUser user = null;
         Optional<SocialUser> saveUser = socialUserRepository.findBySocialId(socialUserForm.getSocial_id());
         if (!saveUser.isPresent()) {
             user = socialUserForm.toEntity();

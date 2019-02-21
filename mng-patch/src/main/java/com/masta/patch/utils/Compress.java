@@ -9,9 +9,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
 
 @Slf4j
 @Component
@@ -41,24 +38,6 @@ public class Compress {
         }
 
         return source;
-    }
-
-    public static ZipEntry getCompressedSize(String path) {
-        try {
-            java.util.zip.ZipFile zipFile = new java.util.zip.ZipFile(path);
-            Enumeration e = zipFile.entries();
-            while (e.hasMoreElements()) {
-                ZipEntry entry = (ZipEntry) e.nextElement();
-                if (!entry.isDirectory()) {
-                    return entry;
-                }
-            }
-            zipFile.close();
-        } catch (IOException ioe) {
-            System.out.println("Error opening zip file" + ioe);
-        }
-
-        return null;
     }
 
     public static String unzip(File file) {

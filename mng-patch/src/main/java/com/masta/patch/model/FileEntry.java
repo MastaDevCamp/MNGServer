@@ -1,13 +1,15 @@
-package com.masta.patch.utils.FileSystem.model;
+package com.masta.patch.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-@ToString
 public class FileEntry {
     private char type;          //고정값
     private String path;
@@ -20,8 +22,11 @@ public class FileEntry {
 
     private char diffType;      //c, d, u //parch
 
+    public static final String compressType = "zip";
+
     public String print() {
         return String.format("%c | %s | %s | %d | %d | %s | %s | %s | %c ",
                 this.type, this.path, this.compress, this.originalSize, this.compressSize, this.originalHash, this.compressHash, this.version, this.diffType);
     }
+
 }

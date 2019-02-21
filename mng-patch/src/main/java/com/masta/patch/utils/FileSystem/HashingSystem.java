@@ -12,16 +12,6 @@ import java.security.MessageDigest;
 @Component
 public class HashingSystem {
 
-    public String getMD5Hashing(File file) {
-        String hashing = "";
-
-        if (file.isFile()) {
-            hashing = MD5Hashing(file);
-        }
-        return hashing;
-    }
-
-
     public String MD5Hashing(File file) {
 
         String md5 = "";

@@ -60,7 +60,6 @@ public class JwtTokenFilter extends GenericFilterBean {
         ApiError apiError = new ApiError(status, ex, message);
         try {
             String json = apiError.convertToJson();
-            System.out.println(json);
             response.getWriter().write(json);
         } catch (IOException e) {
             e.printStackTrace();

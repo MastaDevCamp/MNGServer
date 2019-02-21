@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -73,8 +74,8 @@ public class AccountUser extends User implements UserDetails {
     }
 
     @Builder
-    public AccountUser(Long num, String authority, String username, String password, String email, boolean emailConfirm) {
-        super(num, authority);
+    public AccountUser(Long num, String authority, LocalDateTime createdAt, LocalDateTime updatedAt, String username, String password, String email, boolean emailConfirm) {
+        super(num, authority, createdAt, updatedAt);
         this.username = username;
         this.password = password;
         this.email = email;

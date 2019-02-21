@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,7 @@ public class UserService {
 
     public String updateUserRole(final Long id, final String role) {
         User user = userRepository.getOne(id);
+        LocalDateTime now = LocalDateTime.now();
 
         if (user == null) {
             return ResponseMessage.NOT_FOUND_USER;
@@ -53,6 +55,7 @@ public class UserService {
         }
 
         user.setAuthority(role);
+        user.setUpdatedAt(now);
         userRepository.save(user);
 
         return ResponseMessage.CHANGE_USER_ROLE;

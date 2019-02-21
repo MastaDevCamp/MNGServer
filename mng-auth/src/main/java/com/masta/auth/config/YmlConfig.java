@@ -18,5 +18,4 @@ public class YmlConfig {
     private SocialYmlConfig google;
     private JwtYmlConfig jwt;
 
-
 }

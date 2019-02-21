@@ -69,20 +69,18 @@ public class UserDetailController {
         try {
             log.info("user_id " + uid);
             return new ResponseEntity<>(userDetailService.updateUserMoney(money.getRuby(), money.getGold(), uid), HttpStatus.OK);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    //유저 하트 -1로 수정 (게임 실행시 호출되는 api)
+    //유저 하트 -1로 수정 (게임 실행시 호출되는 controller)
     @PutMapping("/heart/spend/{uid}")
     public ResponseEntity updateUserHeartInfo(@PathVariable final int uid) {
         try {
             return new ResponseEntity<>(userDetailService.spendOneHeart(uid), HttpStatus.OK);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }

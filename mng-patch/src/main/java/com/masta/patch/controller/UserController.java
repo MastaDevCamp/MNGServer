@@ -1,4 +1,4 @@
-package com.masta.patch.api;
+package com.masta.patch.controller;
 
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
@@ -15,11 +15,11 @@ import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 @Slf4j
 @RequestMapping("updateResource")
 @RestController
-public class UpdateResourceController {
+public class UserController {
     final UpdateService updateService;
 
 
-    public UpdateResourceController(final UpdateService updateService) {
+    public UserController(final UpdateService updateService) {
         this.updateService = updateService;
     }
 

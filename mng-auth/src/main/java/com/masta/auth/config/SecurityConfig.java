@@ -40,15 +40,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                    .httpBasic().disable()
-                    .csrf().disable()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .httpBasic().disable()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .antMatcher("/**").authorizeRequests()
-                    .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger-resources/configuration/ui","/swagger-ui.html").permitAll()
-                    .antMatchers("/**", "/login/**", "/webjars/**", "/error**","/join/**","/admin/**","/user/**").permitAll()
-                    .antMatchers("/test/**").hasAnyAuthority("ROLE_USER")
-                    .anyRequest().authenticated()
+                .antMatcher("/**").authorizeRequests()
+                .antMatchers("/v2/controller-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagger-ui.html").permitAll()
+                .antMatchers("/**", "/login/**", "/webjars/**", "/error**", "/join/**", "/admin/**", "/user/**").permitAll()
+                .antMatchers("/test/**").hasAnyAuthority("ROLE_USER")
+                .anyRequest().authenticated()
 //                .and()
 //                .logout()
 //                    .permitAll()
@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider))
                 .and()
-                    .addFilterBefore(ssoFilter, BasicAuthenticationFilter.class);
+                .addFilterBefore(ssoFilter, BasicAuthenticationFilter.class);
     }
 
     @Override
@@ -76,6 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**");
+        web.ignoring().antMatchers("/v2/controller-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**");
     }
 }

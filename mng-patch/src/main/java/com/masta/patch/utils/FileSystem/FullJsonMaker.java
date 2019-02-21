@@ -1,9 +1,10 @@
 package com.masta.patch.utils.FileSystem;
 
-import com.masta.patch.utils.Compress;
-import com.masta.patch.utils.FileSystem.model.DirEntry;
-import com.masta.patch.utils.FileSystem.model.FileEntry;
+import com.masta.patch.model.DirEntry;
+import com.masta.patch.model.FileEntry;
+import com.masta.patch.utils.EntrySystem;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -16,17 +17,12 @@ import static com.masta.patch.service.UploadService.resetDir;
 @Component
 public class FullJsonMaker {
 
-    public static final String compressType = "zip";
-
-    private HashingSystem hashingSystem;
 
     @Value("{local.zipFile.path}")
     private String zipFilePath;
 
-    public FullJsonMaker(final HashingSystem hashingSystem) {
-        this.hashingSystem = hashingSystem;
-    }
-
+    @Autowired
+    private EntrySystem entrySystem;
     /**
      * Be called from controller
      *
@@ -34,7 +30,7 @@ public class FullJsonMaker {
      * @return Full DirEntry (return all file paths' contents)
      */
     public DirEntry getFileTreeList(String path, String version) {
-        DirEntry rootDir = getDirEntry(new File(path), version);
+        DirEntry rootDir = entrySystem.getDirEntry(new File(path), version);
         listFilesForFolder(rootDir, version);
         makeRelativePath(rootDir.getPath(), rootDir);
         log.info("version " + rootDir.getVersion() + " created.");
@@ -60,12 +56,12 @@ public class FullJsonMaker {
         for (final File children : file.listFiles()) {
             if (children.isFile()) { //file
 
-                FileEntry childFile = getFileEntry(children, version); //childFile object setting
+                FileEntry childFile = entrySystem.getFileEntry(children, version); //childFile object setting
                 parentDir.fileEntryList.add(childFile); //child
 
             } else if (children.isDirectory()) { //dir
 
-                DirEntry childDir = getDirEntry(children, version);
+                DirEntry childDir = entrySystem.getDirEntry(children, version);
                 parentDir.dirEntryList.add(childDir);
                 listFilesForFolder(childDir, version); //자식 dir
             }
@@ -87,50 +83,4 @@ public class FullJsonMaker {
         }
     }
 
-    /**
-     * @param file
-     * @return DirEntry Filled fields.
-     */
-    public DirEntry getDirEntry(File file, String version) {
-        char fileType = 'D';
-
-        DirEntry dirEntry = DirEntry.builder()
-                .type(fileType)
-                .path(file.getPath())
-                .compress(compressType)
-                .diffType('x') //patch
-                .version(version) //patch
-                .build();
-
-        return dirEntry;
-    }
-
-
-    /**
-     * @param file
-     * @return FileEntry Filled fields.
-     */
-    public FileEntry getFileEntry(File file, String version) {
-
-        String compressFilePath = Compress.zip(file);
-        File compressFile = new File(compressFilePath);
-
-        char fileType = file.getTotalSpace() != 0 ? 'F' : 'G';
-
-        FileEntry fileEntry = FileEntry.builder()
-                .type(fileType)
-                .path(file.getPath())
-                .compress(compressType)
-                .originalSize((int) file.length())
-                .compressSize((int) compressFile.length())
-                .originalHash(hashingSystem.getMD5Hashing(file))
-                .compressHash(hashingSystem.getMD5Hashing(compressFile))
-                .diffType('x') //patch
-                .version(version)
-                .build();
-
-
-        return fileEntry;
-
-    }
 }

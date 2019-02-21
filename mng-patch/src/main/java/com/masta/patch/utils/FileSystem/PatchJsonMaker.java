@@ -1,6 +1,6 @@
 package com.masta.patch.utils.FileSystem;
 
-import com.masta.patch.utils.FileSystem.model.DirEntry;
+import com.masta.patch.model.DirEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -99,9 +99,6 @@ public class PatchJsonMaker {
 
         for (String path : createList) {
             if (afterJsonStrings.get(after.get(path))[FILE_TYPE].equals("D")) {
-//                if(!unitDirCreateCheck(path, before, after)){
-//                    continue;
-//                }
                 afterJsonStrings.get(after.get(path))[DIR_DIFF_TYPE] = "C";
                 diffStringList.add(typeConverter.arrayToStringFormat(afterJsonStrings.get(after.get(path)), "D"));
             } else {

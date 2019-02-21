@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,13 +22,14 @@ public class TestController {
 
     /**
      * user 권한이 있는 멤버만 접근 가능합니다.
+     *
      * @return
      */
     @GetMapping("/test")
-    public String test(Authentication authentication){
+    public String test(Authentication authentication) {
         log.info(authentication.toString());
         return "hello";
     }
 
-    // + admin 만 접근 가능한 test api 생성하기.
+    // + admin 만 접근 가능한 test controller 생성하기.
 }

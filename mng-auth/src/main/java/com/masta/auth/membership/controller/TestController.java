@@ -1,8 +1,10 @@
 package com.masta.auth.membership.controller;
 
 import com.masta.auth.membership.service.AccountUserService;
+import com.masta.core.auth.jwt.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

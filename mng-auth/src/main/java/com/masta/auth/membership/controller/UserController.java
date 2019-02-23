@@ -94,6 +94,7 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(accountUserForm.getUsername(), accountUserForm.getPassword()));
             AccountUser accountUser = accountUserService.getUser(accountUserForm.getUsername());
+            String token = "Bearer "+ createJwtToken(accountUser);
             LoginRes loginRes = createJwtToken(accountUser);
             return new ResponseEntity(loginRes, HttpStatus.OK);
         } catch (AuthenticationException e) {
@@ -148,7 +149,7 @@ public class UserController {
      * @return LoginRes(로그인 한 후 결과 값)
      */
     public LoginRes createJwtToken(User user) {
-        String token = jwtTokenProvider.createToken(user.getNum(), user.getAuthority());
+        String token = "Bearer " + jwtTokenProvider.createToken(user.getNum(), user.getAuthority());
         return LoginRes.builder()
                 .userNum(user.getNum())
                 .token(token)

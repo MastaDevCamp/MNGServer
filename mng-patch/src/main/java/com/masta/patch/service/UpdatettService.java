@@ -5,9 +5,8 @@ import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
-import com.masta.patch.utils.FileSystem.MergeJsonMaker;
-import com.masta.patch.utils.FileSystem.TypeConverter;
-import com.masta.patch.utils.SftpServer;
+import com.masta.patch.utils.JsonMaker.MergeJsonMaker;
+import com.masta.patch.utils.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +17,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+
+import static com.masta.patch.model.VersionCheckResultType.checkRightVersion;
 
 @Slf4j
 @Service
@@ -33,22 +34,25 @@ public class UpdatettService {
 
     private MergeJsonMaker mergeJsonMaker;
     private VersionMapper versionMapper;
-    private SftpServer sftpServer;
 
-    public UpdatettService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper,
-                           final SftpServer sftpServer) {
+
+    public UpdatettService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper) {
         this.mergeJsonMaker = mergeJsonMaker;
         this.versionMapper = versionMapper;
-        this.sftpServer = sftpServer;
     }
 
     public DefaultRes updateNewVersion(String clientVersion) {
+
         String latestVersion = versionMapper.latestVersion().getVersion();
-        if (latestVersion.equals(clientVersion)) {
-            return DefaultRes.res(StatusCode.OK, ResponseMessage.ALREADY_UPDATED_VERSION);
+        switch (checkRightVersion(latestVersion, clientVersion)) {
+            case NOT_LATEST_VERSION:
+                return DefaultRes.res(StatusCode.NOT_FORMAT, ResponseMessage.NOT_ZIP_FILE);
+            case NOT_VERSION_FORMAT:
+                return DefaultRes.res(StatusCode.NOT_FORMAT, ResponseMessage.NOT_VERSION_FORMAT);
+            case LATEST_VERSION:
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion, latestVersion), getUpdateFileList(clientVersion));
         }
-        log.info(clientVersion + " to " + latestVersion + " update File List ");
-        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion, latestVersion), getUpdateFileList(clientVersion));
+        return DefaultRes.FAIL_DEFAULT_RES;
     }
 
     public List<String> getUpdateFileList(String clientVersion) {
@@ -57,9 +61,7 @@ public class UpdatettService {
 
         List<VersionLog> updateVersionList = versionMapper.getUpdateVersionList(clientVersionId);
 
-        /**
-         * 해당하는 json 폴더 다운로드
-         */
+        // remote -> local download (using nginx)
         for (VersionLog versionLog : updateVersionList) {
             downLoadVersionJson(versionLog.getVersion(), versionLog.getPatch());
         }
@@ -71,7 +73,6 @@ public class UpdatettService {
 
 
     public void downLoadVersionJson(String versionName, String versionPath) {
-
         try {
             File file = new File(localMergePath + PATCH_NAME + versionName + TypeConverter.JSON_EXTENTION);
             log.info(file.toString());

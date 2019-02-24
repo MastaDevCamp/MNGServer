@@ -6,13 +6,11 @@ import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.model.DirEntry;
-import com.masta.patch.utils.FileSystem.FullJsonMaker;
-import com.masta.patch.utils.FileSystem.PatchJsonMaker;
-import com.masta.patch.utils.FileSystem.TypeConverter;
+import com.masta.patch.utils.JsonMaker.FullJsonMaker;
+import com.masta.patch.utils.JsonMaker.PatchJsonMaker;
+import com.masta.patch.utils.TypeConverter;
 import com.masta.patch.utils.SftpServer;
-import com.masta.patch.utils.VersionCheckResultType;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,10 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.util.List;
 
+import static com.masta.patch.model.VersionCheckResultType.checkRightVersion;
 import static com.masta.patch.utils.Compress.unzip;
+import static com.masta.patch.utils.LocalFileIO.resetDir;
+
 
 @Slf4j
 @Service
@@ -76,14 +77,7 @@ public class UpdateService {
         return file;
     }
 
-    public static void resetDir(String path) {
-        try {
-            FileUtils.deleteDirectory(new File(path));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        new File(path).mkdirs();
-    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     @Transactional
@@ -95,7 +89,8 @@ public class UpdateService {
             }
 
             // 2. 입력 받은 버전이 포멧하고 최신인지 확인
-            switch (checkRightVersion(newVersion)) {
+            String latestVersion = versionMapper.latestVersion().getVersion();
+            switch (checkRightVersion(newVersion, latestVersion)) {
                 case NOT_LATEST_VERSION:
                     return DefaultRes.res(StatusCode.NOT_FORMAT, ResponseMessage.NOT_ZIP_FILE);
                 case NOT_VERSION_FORMAT:
@@ -206,51 +201,10 @@ public class UpdateService {
 
 
     ////////////////////////////// 2. 버전이 맞는지 확인(포멧하고 최신 버전인지)
-    public VersionCheckResultType checkRightVersion(String version) {
-        String latestVersion = getLatestVersion();
-        return compareVersion(version, latestVersion);
-    }
 
-    public String getLatestVersion() {
-        try {
-            VersionLog versionLog = versionMapper.latestVersion();
-            return versionLog.getVersion();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return null;
-        }
-    }
+    //이거 version Util로 빼도 되는지?! (updatett에서도 사용함함)
 
-    public VersionCheckResultType compareVersion(String newVersion, String latestVersion) {
-        int newVersionInt = versionToInt(newVersion);
-        int latestVersionInt = versionToInt(latestVersion);
-        if (newVersionInt == -1) {   // Inappropriate format
-            return VersionCheckResultType.NOT_VERSION_FORMAT;
-        } else {
-            int versionComparisionResult = newVersionInt - latestVersionInt;
-            if (versionComparisionResult <= 0) {
-                return VersionCheckResultType.NOT_LATEST_VERSION;
-            } else {
-                return VersionCheckResultType.LATEST_VERSION;
-            }
-        }
-    }
-
-    public int versionToInt(String version) {
-        if (version == null) {
-            return 0;
-        }
-        String[] versions = version.split("\\.");
-        int res = 0;
-        for (String ver : versions) {
-            if (Integer.parseInt(ver) > 10) {
-                return -1;
-            }
-            res *= 100;
-            res = res + Integer.parseInt(ver);
-        }
-        return res;
-    }
+   //version checking (util에서 확인!)
 
     ////////////////////////////// 1. 업로드 받은 파일이 zip파일인지 확인
     public boolean checkFileType(MultipartFile sourceFile, String fileType) {

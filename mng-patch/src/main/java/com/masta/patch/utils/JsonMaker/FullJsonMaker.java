@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.ArrayList;
 
-import static com.masta.patch.utils.LocalFileIO.resetDir;
+import static com.masta.patch.utils.FileMove.LocalFileReadWrite.resetDir;
 
 
 @Slf4j

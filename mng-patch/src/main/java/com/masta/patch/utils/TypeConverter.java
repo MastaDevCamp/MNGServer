@@ -1,21 +1,11 @@
 package com.masta.patch.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.masta.patch.dto.VersionLog;
-import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +15,6 @@ import java.util.List;
 @Slf4j
 @Component
 public class TypeConverter {
-    public final static String JSON_EXTENTION = ".json";
 
     @Value("${file.path}")
     private String mainDir;

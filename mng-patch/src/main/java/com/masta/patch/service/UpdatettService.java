@@ -6,18 +6,12 @@ import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.model.JsonType;
+import com.masta.patch.utils.FileMove.NginXFileRead;
 import com.masta.patch.utils.JsonMaker.MergeJsonMaker;
-import com.masta.patch.utils.NginXIO;
-import com.masta.patch.utils.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 import static com.masta.patch.model.VersionCheckResultType.checkRightVersion;
@@ -32,17 +26,15 @@ public class UpdatettService {
     @Value("${local.merge.path}")
     private String localMergePath;
 
-    final static String PATCH_NAME = "Patch_Ver_";
-
     private MergeJsonMaker mergeJsonMaker;
     private VersionMapper versionMapper;
-    private NginXIO nginXIO;
+    private NginXFileRead nginXFileRead;
 
 
-    public UpdatettService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper, final NginXIO nginXIO) {
+    public UpdatettService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper, final NginXFileRead nginXFileRead) {
         this.mergeJsonMaker = mergeJsonMaker;
         this.versionMapper = versionMapper;
-        this.nginXIO = nginXIO;
+        this.nginXFileRead = nginXFileRead;
     }
 
     public DefaultRes updateNewVersion(String clientVersion) {
@@ -67,7 +59,7 @@ public class UpdatettService {
 
         // remote -> local download (using nginx)
         for (VersionLog versionLog : updateVersionList) {
-            nginXIO.getRemoteLatestVersionJson(versionLog, JsonType.PATCH);
+            nginXFileRead.getRemoteLatestVersionJson(versionLog, JsonType.PATCH);
         }
 
         List<String> updateFileList = mergeJsonMaker.makeMergeJson();

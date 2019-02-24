@@ -1,7 +1,6 @@
-package com.masta.patch.utils;
+package com.masta.patch.utils.FileMove;
 
 import com.masta.patch.dto.VersionLog;
-import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.JsonType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -15,9 +14,7 @@ import java.net.URLConnection;
 
 @Component
 @Slf4j
-public class NginXIO {
-
-    final static String PATCH_NAME = "Patch_Ver_";
+public class NginXFileRead {
 
     @Value("${nginx.url}")
     private String nginXPath;

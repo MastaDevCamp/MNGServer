@@ -1,4 +1,4 @@
-package com.masta.patch.utils;
+package com.masta.patch.utils.FileMove;
 
 import com.jcraft.jsch.*;
 import lombok.extern.slf4j.Slf4j;

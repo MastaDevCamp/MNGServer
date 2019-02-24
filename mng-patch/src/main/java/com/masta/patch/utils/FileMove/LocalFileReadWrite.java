@@ -1,8 +1,10 @@
-package com.masta.patch.utils;
+package com.masta.patch.utils.FileMove;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.masta.patch.dto.VersionLog;
 import com.masta.patch.model.DirEntry;
+import com.masta.patch.model.JsonType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,21 +15,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-@Component
-public class LocalFileIO {
+import static com.masta.patch.utils.TypeConverter.makeFileList;
 
-    public static String LOCALPATH;
+
+@Component
+@Slf4j
+public class LocalFileReadWrite {
 
     @Value("${local.path}")
-    public void setLocalPath(String localPath) {
-        LOCALPATH = localPath;
-    }
+    public String LOCALPATH;
 
-    private TypeConverter typeConverter;
+    private final NginXFileRead nginXFileRead;
 
-    public LocalFileIO(TypeConverter typeConverter){
-        this.typeConverter = typeConverter;
+    public LocalFileReadWrite(NginXFileRead nginXFileRead){
+        this.nginXFileRead = nginXFileRead;
     }
 
     public static void resetDir(String path) {
@@ -59,7 +60,7 @@ public class LocalFileIO {
 
     public List<String> fullJsonToFileList(String jsonPath) {
         DirEntry fullFileTree = fullJsonToFileTree(jsonPath);
-        return typeConverter.makeFileList(fullFileTree);
+        return makeFileList(fullFileTree);
     }
 
     /**
@@ -90,6 +91,11 @@ public class LocalFileIO {
             log.error(e.getMessage());
         }
         return file;
+    }
+
+    public DirEntry getRemoteJsonToObject(VersionLog latestVersion){
+        File jsonPath = nginXFileRead.getRemoteLatestVersionJson(latestVersion, JsonType.FULL);
+        return fullJsonToFileTree(jsonPath.getPath());
     }
 
 }

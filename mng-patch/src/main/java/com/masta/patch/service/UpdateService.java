@@ -6,13 +6,10 @@ import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.model.DirEntry;
-import com.masta.patch.model.JsonType;
+import com.masta.patch.utils.FileMove.LocalFileReadWrite;
+import com.masta.patch.utils.FileMove.SftpServer;
 import com.masta.patch.utils.JsonMaker.FullJsonMaker;
 import com.masta.patch.utils.JsonMaker.PatchJsonMaker;
-import com.masta.patch.utils.LocalFileIO;
-import com.masta.patch.utils.NginXIO;
-import com.masta.patch.utils.TypeConverter;
-import com.masta.patch.utils.SftpServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,51 +23,36 @@ import java.util.List;
 
 import static com.masta.patch.model.VersionCheckResultType.checkRightVersion;
 import static com.masta.patch.utils.Compress.unzip;
-import static com.masta.patch.utils.LocalFileIO.resetDir;
+import static com.masta.patch.utils.FileMove.LocalFileReadWrite.resetDir;
 
 
 @Slf4j
 @Service
 public class UpdateService {
 
-    final SftpServer sftpServer;
     final FullJsonMaker fullJsonMaker;
     final PatchJsonMaker patchJsonMaker;
     final VersionMapper versionMapper;
-    final NginXIO nginXIO;
-    final LocalFileIO localFileIO;
-    final TypeConverter typeConverter;
+    final LocalFileReadWrite localFileReadWrite;
+    final SftpServer sftpServer;
 
     @Value("${local.newVersion.path}")
     private String newVersionPath;
 
-    @Value("${local.merge.path}")
-    private String mergePath;
-
     @Value("${local.path}")
     private String localPath;
-
-    @Value("${sftp.root.path}")
-    private String sftpRootPath;
-
-    @Value("${local.verUpZip.path}")
-    public String verUpZipPath;
 
     @Value("${local.zipFile.path}")
     public String zipFilePath;
 
 
-    public UpdateService(final SftpServer sftpServer, final FullJsonMaker fullJsonMaker,
-                         final PatchJsonMaker patchJsonMaker, final VersionMapper versionMapper,
-                         final TypeConverter typeConverter, final NginXIO nginXIO,
-                         final LocalFileIO localFileIO) {
-        this.sftpServer = sftpServer;
+    public UpdateService(final FullJsonMaker fullJsonMaker, final PatchJsonMaker patchJsonMaker, final VersionMapper versionMapper,
+                         final LocalFileReadWrite localFileReadWrite, final SftpServer sftpServer) {
         this.fullJsonMaker = fullJsonMaker;
         this.patchJsonMaker = patchJsonMaker;
         this.versionMapper = versionMapper;
-        this.nginXIO = nginXIO;
-        this.typeConverter = typeConverter;
-        this.localFileIO = localFileIO;
+        this.localFileReadWrite = localFileReadWrite;
+        this.sftpServer = sftpServer;
     }
 
     public File saveLocal(MultipartFile sourceFile) {
@@ -123,15 +105,15 @@ public class UpdateService {
 
     }
 
-    ///////////////////////////////////            // 4. 업로드 하기(Patch_Ver_[newVersion].json, Full_Ver_[newVersion].json, Patch Files to file/history/[newVersion], Full Files to file/release)
+    ///////////////////////////////////// 4. 업로드 하기(Patch_Ver_[newVersion].json, Full_Ver_[newVersion].json, Patch Files to file/history/[newVersion], Full Files to file/release)
     public void UploadPatch(String newVersion) {
 
         UploadJson(newVersion);
 
-        List<String> fullFileList = localFileIO.fullJsonToFileList(String.format("Full_Ver_%s.json", newVersion));
+        List<String> fullFileList = localFileReadWrite.fullJsonToFileList(String.format("Full_Ver_%s.json", newVersion));
         uploadToRemote(fullFileList, "file/release");
 
-        List<String> patchFileList = localFileIO.patchJsonToFileList(String.format("Patch_Ver_%s.json", newVersion));
+        List<String> patchFileList = localFileReadWrite.patchJsonToFileList(String.format("Patch_Ver_%s.json", newVersion));
         uploadToRemote(patchFileList, "file/history/" + newVersion);
 
     }
@@ -189,10 +171,10 @@ public class UpdateService {
         DirEntry latestVersionFileTree = getVersionFileTree();
 
         DirEntry newVersionFileTree = getVersionFileTree(newVersionFile, newVersion);
-        localFileIO.saveJsonFile(newVersionFileTree, String.format("Full_Ver_%s.json", newVersion));
+        localFileReadWrite.saveJsonFile(newVersionFileTree, String.format("Full_Ver_%s.json", newVersion));
 
         List<String> newVersionPatchFileList = patchJsonMaker.getPatchFileList(newVersionFileTree, latestVersionFileTree);
-        localFileIO.saveJsonFile(newVersionPatchFileList, String.format("Patch_Ver_%s.json", newVersion));
+        localFileReadWrite.saveJsonFile(newVersionPatchFileList, String.format("Patch_Ver_%s.json", newVersion));
 
     }
 
@@ -205,8 +187,7 @@ public class UpdateService {
 
     public DirEntry getVersionFileTree() {
         VersionLog latestVersion = versionMapper.latestVersion();
-        File jsonPath = nginXIO.getRemoteLatestVersionJson(latestVersion, JsonType.FULL);
-        return localFileIO.fullJsonToFileTree(jsonPath.getPath());
+        return localFileReadWrite.getRemoteJsonToObject(latestVersion);
     }
 
 

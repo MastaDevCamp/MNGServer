@@ -7,7 +7,7 @@ import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.utils.FileSystem.MergeJsonMaker;
 import com.masta.patch.utils.FileSystem.TypeConverter;
-import com.masta.patch.utils.sftp.SftpServer;
+import com.masta.patch.utils.SftpServer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;

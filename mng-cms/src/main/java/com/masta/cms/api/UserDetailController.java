@@ -1,5 +1,6 @@
 package com.masta.cms.api;
 
+import com.masta.cms.auth.jwt.JwtTokenProvider;
 import com.masta.cms.model.MoneyReq;
 import com.masta.cms.model.UserNickReq;
 import com.masta.cms.service.UserDetailService;
@@ -14,15 +15,21 @@ import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 @RestController
 @RequestMapping("/detail")
 public class UserDetailController {
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailService userDetailService;
 
-    public UserDetailController(final UserDetailService userDetailService) {
+    public UserDetailController(JwtTokenProvider jwtTokenProvider, UserDetailService userDetailService) {
+        this.jwtTokenProvider = jwtTokenProvider;
         this.userDetailService = userDetailService;
     }
 
+
+
     //유저 디테일 정보 보기
     @GetMapping("/{uid}")
-    public ResponseEntity getUserDetail(@PathVariable final int uid) {
+    public ResponseEntity getUserDetail(@RequestHeader(value="Authentiation") String authentication,
+                                        @PathVariable final int uid) {
+        jwtTokenProvider.getUser(authentication, "ROLE_USER");
         try {
             return new ResponseEntity<>(userDetailService.getUserDetailWithId(uid), HttpStatus.OK);
         } catch (Exception e) {
@@ -33,8 +40,10 @@ public class UserDetailController {
 
 
     @PutMapping("/nick/{uid}")
-    public ResponseEntity updateUserInfo(@RequestBody final UserNickReq userNickReq,
+    public ResponseEntity updateUserInfo(@RequestHeader(value="Authentiation") String authentication,
+                                         @RequestBody final UserNickReq userNickReq,
                                          @PathVariable final int uid) {
+        jwtTokenProvider.getUser(authentication, "ROLE_USER");
         return new ResponseEntity<>(userDetailService.updateUserNickname(userNickReq.getNickname(), uid), HttpStatus.OK);
     }
 
@@ -53,7 +62,9 @@ public class UserDetailController {
 
     //유저 푸시 온오프
     @PutMapping("/push/{uid}")
-    public ResponseEntity updateUserPush(@PathVariable final int uid) {
+    public ResponseEntity updateUserPush(@RequestHeader(value="Authentiation") String authentication,
+                                         @PathVariable final int uid) {
+        jwtTokenProvider.getUser(authentication, "ROLE_USER");
         try {
             return new ResponseEntity<>(userDetailService.updateUserPushOnoff(uid), HttpStatus.OK);
         } catch (Exception e) {
@@ -64,25 +75,27 @@ public class UserDetailController {
 
     //유저 재화 정보 수정
     @PutMapping("/good/{uid}")
-    public ResponseEntity updateUserMoneyInfo(@RequestBody final MoneyReq money,
+    public ResponseEntity updateUserMoneyInfo(@RequestHeader(value="Authentiation") String authentication,
+                                              @RequestBody final MoneyReq money,
                                               @PathVariable final int uid) {
+        jwtTokenProvider.getUser(authentication, "ROLE_USER");
         try {
             log.info("user_id " + uid);
             return new ResponseEntity<>(userDetailService.updateUserMoney(money.getRuby(), money.getGold(), uid), HttpStatus.OK);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    //유저 하트 -1로 수정 (게임 실행시 호출되는 api)
+    //유저 하트 -1로 수정 (게임 실행시 호출되는 controller)
     @PutMapping("/heart/spend/{uid}")
-    public ResponseEntity updateUserHeartInfo(@PathVariable final int uid) {
+    public ResponseEntity updateUserHeartInfo(@RequestHeader(value="Authentiation") String authentication,
+                                              @PathVariable final int uid) {
+        jwtTokenProvider.getUser(authentication, "ROLE_USER");
         try {
             return new ResponseEntity<>(userDetailService.spendOneHeart(uid), HttpStatus.OK);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }

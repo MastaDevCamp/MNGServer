@@ -1,4 +1,4 @@
-package com.masta.patch.utils.FileSystem.model;
+package com.masta.patch.model;
 
 import lombok.*;
 
@@ -21,7 +21,7 @@ public class DirEntry {
     public List<DirEntry> dirEntryList = new ArrayList<>();
 
     public List<FileEntry> fileEntryList = new ArrayList<>();
-    
+
     public String print() {
         return String.format("%c | %s | %s | %s | %c ", this.type, this.path, this.compress, this.version, this.diffType);
     }
@@ -37,4 +37,6 @@ public class DirEntry {
 
         this.fileEntryList.addAll(dirEntry.fileEntryList);
     }
+
+
 }

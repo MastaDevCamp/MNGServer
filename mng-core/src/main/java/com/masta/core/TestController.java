@@ -38,6 +38,7 @@ public class TestController {
 
         try {
             UserDto userDto =jwtTokenProvider.validateToken(authentication);
+
             return new ResponseEntity(userDto, HttpStatus.OK);
         }
         catch (JwtException|InvalidJwtAuthenticationException e){

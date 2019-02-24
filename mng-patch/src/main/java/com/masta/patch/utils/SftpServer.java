@@ -1,4 +1,4 @@
-package com.masta.patch.utils.sftp;
+package com.masta.patch.utils;
 
 import com.jcraft.jsch.*;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +67,6 @@ public class SftpServer {
         try {
             channelSftp = (ChannelSftp) channel;
             channelSftp.cd(rootPath);
-            System.out.println("in init" + channelSftp.pwd());
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -141,7 +140,6 @@ public class SftpServer {
         try {
             if (localDir.isDirectory()) {
                 channelSftp.mkdir(destPath);
-                //System.out.println("Created Folder: " + localFile.getName() + " in " + destPath);
 
                 destPath = destPath + "/" + localDir.getName();
                 channelSftp.cd(destPath);
@@ -152,7 +150,6 @@ public class SftpServer {
 
                 channelSftp.cd(destPath.substring(0, destPath.lastIndexOf('/')));
             } else {
-                System.out.println("Copying File: " + localDir.getName() + " to " + destPath);
                 channelSftp.put(new FileInputStream(localDir), localDir.getName(), ChannelSftp.OVERWRITE);
             }
         } catch (Exception e) {

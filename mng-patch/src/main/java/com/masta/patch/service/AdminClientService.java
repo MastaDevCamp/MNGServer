@@ -6,16 +6,19 @@ import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
+import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.JsonType;
 import com.masta.patch.utils.FileSystem.TypeConverter;
-import com.masta.patch.utils.FileSystem.model.DirEntry;
 import com.masta.patch.utils.HttpConnection;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
+@AllArgsConstructor
 @Slf4j
 @Service
 public class AdminClientService {
@@ -24,12 +27,8 @@ public class AdminClientService {
     private HttpConnection httpConnection;
     private VersionMapper versionMapper;
 
-    public AdminClientService(final TypeConverter typeConverter, final HttpConnection httpConnection,
-                              final VersionMapper versionMapper) {
-        this.typeConverter = typeConverter;
-        this.httpConnection = httpConnection;
-        this.versionMapper = versionMapper;
-    }
+    @Value("${nginx.url}")
+    private String nginXPath;
 
     public DefaultRes getAllVersionList() {
         List<VersionLog> versionLogs = versionMapper.getAllVersionList();
@@ -39,9 +38,9 @@ public class AdminClientService {
     }
 
     public DefaultRes getFullJsonContent(final String inputUrl, final JsonType type) throws Exception {
-        String urlpath = "http://aws.nage.wo.tc:8021/" + inputUrl; //properties 속성으로 바꾸기
+        String urlPath = nginXPath + inputUrl; //properties 속성으로 바꾸기
 
-        String jsonContent = httpConnection.readResponse(urlpath);
+        String jsonContent = httpConnection.readResponse(urlPath);
 
         List<String> stringList = null;
 

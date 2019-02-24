@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
-import com.masta.patch.utils.FileSystem.model.DirEntry;
-import com.masta.patch.utils.FileSystem.model.FileEntry;
+import com.masta.patch.model.DirEntry;
+import com.masta.patch.model.FileEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +28,7 @@ public class TypeConverter {
     public final static String JSON_EXTENTION = ".json";
 
     @Value("${nginx.url}")
-    private String nginxUrl;
+    private String nginXPath;
 
 
     @Value("${file.path}")
@@ -141,10 +141,8 @@ public class TypeConverter {
 
     public String arrayToStringFormat(String strings[], String type) {
         if (type.equals("D")) {
-            System.out.println(String.format("%s | %s | %s | %s | %s", strings));
             return String.format("%s | %s | %s | %s | %s", strings);
         } else {
-            System.out.println(String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s", strings));
             return String.format("%s | %s | %s | %s | %s | %s | %s | %s | %s", strings);
         }
 
@@ -176,7 +174,7 @@ public class TypeConverter {
         if (latestVersion != null) {
             try {
                 File file = new File(savePath + latestVersion.getVersion() + JSON_EXTENTION);
-                URL url = new URL(nginxUrl + latestVersion.getFull());
+                URL url = new URL(nginXPath + latestVersion.getFull());
                 URLConnection connection = url.openConnection();
                 InputStream is = connection.getInputStream();
                 FileUtils.copyInputStreamToFile(is, file);

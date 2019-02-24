@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,8 +23,8 @@ public class GuestUser extends User{
     }
 
     @Builder
-    public GuestUser(Long num, String authority, String guestId) {
-        super(num, authority);
+    public GuestUser(Long num, String authority, LocalDateTime createdAt, LocalDateTime updatedAt, String guestId) {
+        super(num, authority, createdAt, updatedAt);
         this.guestId = guestId;
     }
 

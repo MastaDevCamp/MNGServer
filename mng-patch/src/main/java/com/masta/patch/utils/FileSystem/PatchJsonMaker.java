@@ -1,6 +1,6 @@
 package com.masta.patch.utils.FileSystem;
 
-import com.masta.patch.utils.FileSystem.model.DirEntry;
+import com.masta.patch.model.DirEntry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -92,27 +92,6 @@ public class PatchJsonMaker {
     }
 
 
-    public boolean unitDirCreateCheck(String path, HashMap<String, Integer> before, HashMap<String, Integer> after) {
-        int beforeCount = 0;
-        for (String childPath : before.keySet()) {
-            if (childPath.contains(path)) {
-                beforeCount++;
-            }
-        }
-        int afterCount = 0;
-        for (String childPath : after.keySet()) {
-            if (childPath.contains(path)) {
-                afterCount++;
-            }
-        }
-
-        log.info("afterCount " + afterCount + " beforeCount " + beforeCount);
-        if (beforeCount == 0 && afterCount == 1) {
-            return true;
-        }
-        return false;
-    }
-
     public void addCreateList(HashMap<String, Integer> before, HashMap<String, Integer> after, List<String> diffStringList) {
         List<String> createList = new ArrayList<>();
         createList.addAll(after.keySet());
@@ -120,9 +99,6 @@ public class PatchJsonMaker {
 
         for (String path : createList) {
             if (afterJsonStrings.get(after.get(path))[FILE_TYPE].equals("D")) {
-//                if(!unitDirCreateCheck(path, before, after)){
-//                    continue;
-//                }
                 afterJsonStrings.get(after.get(path))[DIR_DIFF_TYPE] = "C";
                 diffStringList.add(typeConverter.arrayToStringFormat(afterJsonStrings.get(after.get(path)), "D"));
             } else {

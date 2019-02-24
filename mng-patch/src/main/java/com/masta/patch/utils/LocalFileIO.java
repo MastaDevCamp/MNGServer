@@ -17,7 +17,18 @@ import java.util.List;
 @Component
 public class LocalFileIO {
 
+    public static String LOCALPATH;
 
+    @Value("${local.path}")
+    public void setLocalPath(String localPath) {
+        LOCALPATH = localPath;
+    }
+
+    private TypeConverter typeConverter;
+
+    public LocalFileIO(TypeConverter typeConverter){
+        this.typeConverter = typeConverter;
+    }
 
     public static void resetDir(String path) {
         try {
@@ -28,5 +39,57 @@ public class LocalFileIO {
         new File(path).mkdirs();
     }
 
+    /**
+     * convert json to pojo type
+     *
+     * @param jsonPath
+     * @return DirEntry
+     */
+    public DirEntry fullJsonToFileTree(String jsonPath) {
+        DirEntry dirEntry = new DirEntry();
+
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            dirEntry = mapper.readValue(new File(jsonPath), DirEntry.class);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return dirEntry;
+    }
+
+    public List<String> fullJsonToFileList(String jsonPath) {
+        DirEntry fullFileTree = fullJsonToFileTree(jsonPath);
+        return typeConverter.makeFileList(fullFileTree);
+    }
+
+    /**
+     * convert StringList To Json
+     *
+     * @param jsonPath
+     * @return
+     */
+    public List<String> patchJsonToFileList(String jsonPath) {
+        List<String> strings = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            strings = mapper.readValue(new File(jsonPath), List.class);
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return strings;
+    }
+
+    public File saveJsonFile(Object obj, String path) {
+        File file = new File(LOCALPATH + path);
+        try {
+            Gson gson = new Gson();
+            String dirJson = gson.toJson(obj);
+            FileUtils.writeStringToFile(file, dirJson);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return file;
+    }
 
 }

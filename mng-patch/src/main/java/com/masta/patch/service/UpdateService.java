@@ -6,8 +6,11 @@ import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.model.DirEntry;
+import com.masta.patch.model.JsonType;
 import com.masta.patch.utils.JsonMaker.FullJsonMaker;
 import com.masta.patch.utils.JsonMaker.PatchJsonMaker;
+import com.masta.patch.utils.LocalFileIO;
+import com.masta.patch.utils.NginXIO;
 import com.masta.patch.utils.TypeConverter;
 import com.masta.patch.utils.SftpServer;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +37,8 @@ public class UpdateService {
     final FullJsonMaker fullJsonMaker;
     final PatchJsonMaker patchJsonMaker;
     final VersionMapper versionMapper;
+    final NginXIO nginXIO;
+    final LocalFileIO localFileIO;
     final TypeConverter typeConverter;
 
     @Value("${local.newVersion.path}")
@@ -57,12 +62,15 @@ public class UpdateService {
 
     public UpdateService(final SftpServer sftpServer, final FullJsonMaker fullJsonMaker,
                          final PatchJsonMaker patchJsonMaker, final VersionMapper versionMapper,
-                         final TypeConverter typeConverter) {
+                         final TypeConverter typeConverter, final NginXIO nginXIO,
+                         final LocalFileIO localFileIO) {
         this.sftpServer = sftpServer;
         this.fullJsonMaker = fullJsonMaker;
         this.patchJsonMaker = patchJsonMaker;
         this.versionMapper = versionMapper;
+        this.nginXIO = nginXIO;
         this.typeConverter = typeConverter;
+        this.localFileIO = localFileIO;
     }
 
     public File saveLocal(MultipartFile sourceFile) {
@@ -120,10 +128,10 @@ public class UpdateService {
 
         UploadJson(newVersion);
 
-        List<String> fullFileList = typeConverter.fullJsonToFileList(String.format("Full_Ver_%s.json", newVersion));
+        List<String> fullFileList = localFileIO.fullJsonToFileList(String.format("Full_Ver_%s.json", newVersion));
         uploadToRemote(fullFileList, "file/release");
 
-        List<String> patchFileList = typeConverter.patchJsonToFileList(String.format("Patch_Ver_%s.json", newVersion));
+        List<String> patchFileList = localFileIO.patchJsonToFileList(String.format("Patch_Ver_%s.json", newVersion));
         uploadToRemote(patchFileList, "file/history/" + newVersion);
 
     }
@@ -181,10 +189,10 @@ public class UpdateService {
         DirEntry latestVersionFileTree = getVersionFileTree();
 
         DirEntry newVersionFileTree = getVersionFileTree(newVersionFile, newVersion);
-        typeConverter.saveJsonFile(newVersionFileTree, String.format("Full_Ver_%s.json", newVersion));
+        localFileIO.saveJsonFile(newVersionFileTree, String.format("Full_Ver_%s.json", newVersion));
 
         List<String> newVersionPatchFileList = patchJsonMaker.getPatchFileList(newVersionFileTree, latestVersionFileTree);
-        typeConverter.saveJsonFile(newVersionPatchFileList, String.format("Patch_Ver_%s.json", newVersion));
+        localFileIO.saveJsonFile(newVersionPatchFileList, String.format("Patch_Ver_%s.json", newVersion));
 
     }
 
@@ -196,7 +204,9 @@ public class UpdateService {
     }
 
     public DirEntry getVersionFileTree() {
-        return typeConverter.getRemoteLatestVersionJson();
+        VersionLog latestVersion = versionMapper.latestVersion();
+        File jsonPath = nginXIO.getRemoteLatestVersionJson(latestVersion, JsonType.FULL);
+        return localFileIO.fullJsonToFileTree(jsonPath.getPath());
     }
 
 

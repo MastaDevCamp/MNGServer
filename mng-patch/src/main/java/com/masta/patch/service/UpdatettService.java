@@ -5,7 +5,9 @@ import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
+import com.masta.patch.model.JsonType;
 import com.masta.patch.utils.JsonMaker.MergeJsonMaker;
+import com.masta.patch.utils.NginXIO;
 import com.masta.patch.utils.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -34,11 +36,13 @@ public class UpdatettService {
 
     private MergeJsonMaker mergeJsonMaker;
     private VersionMapper versionMapper;
+    private NginXIO nginXIO;
 
 
-    public UpdatettService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper) {
+    public UpdatettService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper, final NginXIO nginXIO) {
         this.mergeJsonMaker = mergeJsonMaker;
         this.versionMapper = versionMapper;
+        this.nginXIO = nginXIO;
     }
 
     public DefaultRes updateNewVersion(String clientVersion) {
@@ -63,28 +67,11 @@ public class UpdatettService {
 
         // remote -> local download (using nginx)
         for (VersionLog versionLog : updateVersionList) {
-            downLoadVersionJson(versionLog.getVersion(), versionLog.getPatch());
+            nginXIO.getRemoteLatestVersionJson(versionLog, JsonType.PATCH);
         }
 
         List<String> updateFileList = mergeJsonMaker.makeMergeJson();
-
         return updateFileList;
     }
-
-
-    public void downLoadVersionJson(String versionName, String versionPath) {
-        try {
-            File file = new File(localMergePath + PATCH_NAME + versionName + TypeConverter.JSON_EXTENTION);
-            log.info(file.toString());
-            URL url = new URL(nginXPath + versionPath);
-            log.info(url.toString());
-            URLConnection connection = url.openConnection();
-            InputStream is = connection.getInputStream();
-            FileUtils.copyInputStreamToFile(is, file);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-    }
-
 
 }

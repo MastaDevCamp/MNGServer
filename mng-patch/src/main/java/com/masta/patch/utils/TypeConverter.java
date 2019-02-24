@@ -27,21 +27,8 @@ import java.util.List;
 public class TypeConverter {
     public final static String JSON_EXTENTION = ".json";
 
-    @Value("${nginx.url}")
-    private String nginXPath;
-
-
-    @Value("${local.path}")
-    private String localPath;
-
     @Value("${file.path}")
     private String mainDir;
-
-    private VersionMapper versionMapper;
-
-    public TypeConverter(final VersionMapper versionMapper) {
-        this.versionMapper = versionMapper;
-    }
 
     /**
      * convert tree version of full json to string list version
@@ -49,7 +36,7 @@ public class TypeConverter {
      * @param rootDir
      * @return
      */
-    public List<String> makeFileList(DirEntry rootDir) {
+    public static List<String> makeFileList(DirEntry rootDir) {
         List<String> fileList = new ArrayList<>();
 
         searchFile(rootDir, fileList);
@@ -58,14 +45,13 @@ public class TypeConverter {
         return fileList;
     }
 
-
     /**
      * convert object to string list
      *
      * @param rootDir
      * @param fileList
      */
-    public void searchFile(DirEntry rootDir, List<String> fileList) {
+    public static void searchFile(DirEntry rootDir, List<String> fileList) {
         for (FileEntry fileEntry : rootDir.fileEntryList) {
             fileList.add(fileEntry.print());
         }
@@ -78,54 +64,12 @@ public class TypeConverter {
     }
 
     /**
-     * convert json to pojo type
-     *
-     * @param jsonPath
-     * @return DirEntry
-     */
-    public DirEntry fullJsonToFileTree(String jsonPath) {
-        DirEntry dirEntry = new DirEntry();
-
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            dirEntry = mapper.readValue(new File(jsonPath), DirEntry.class);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return dirEntry;
-    }
-
-    public List<String> fullJsonToFileList(String jsonPath) {
-        DirEntry fullFileTree = fullJsonToFileTree(jsonPath);
-        return makeFileList(fullFileTree);
-    }
-
-    /**
-     * convert StringList To Json
-     *
-     * @param jsonPath
-     * @return
-     */
-    public List<String> patchJsonToFileList(String jsonPath) {
-        List<String> strings = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            strings = mapper.readValue(new File(jsonPath), List.class);
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-        }
-        return strings;
-    }
-
-
-    /**
      * convert jsonString to Array String List
      *
      * @param jsonList
      * @return
      */
-    public List<String[]> jsonToList(List<String> jsonList) {
+    public static List<String[]> jsonToList(List<String> jsonList) {
 
         List<String[]> strings = new ArrayList<>();
 
@@ -147,7 +91,7 @@ public class TypeConverter {
      * @return
      */
 
-    public String arrayToStringFormat(String strings[], String type) {
+    public static String arrayToStringFormat(String strings[], String type) {
         if (type.equals("D")) {
             return String.format("%s | %s | %s | %s | %s", strings);
         } else {
@@ -176,35 +120,8 @@ public class TypeConverter {
 
     }
 
-    public DirEntry getRemoteLatestVersionJson() {
-        DirEntry dirEntry = null;
-        VersionLog latestVersion = versionMapper.latestVersion(); //local에 저장 후 file읽기 or 그냥 바로 file 읽기
-        if (latestVersion != null) {
-            try {
-                File file = new File(localPath + String.format("Full_Ver_%s.json", latestVersion.getVersion()));
-                URL url = new URL(nginXPath + latestVersion.getFull());
-                URLConnection connection = url.openConnection();
-                InputStream is = connection.getInputStream();
-                FileUtils.copyInputStreamToFile(is, file);
-                dirEntry = fullJsonToFileTree(file.getPath());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
-        }
-        return dirEntry;
-    }
 
-    public File saveJsonFile(Object obj, String path) {
-        File file = new File(localPath + path);
-        try {
-            Gson gson = new Gson();
-            String dirJson = gson.toJson(obj);
-            FileUtils.writeStringToFile(file, dirJson);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
 
-        return file;
-    }
+
 
 }

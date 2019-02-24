@@ -3,6 +3,8 @@ package com.masta.cms.api;
 import com.masta.cms.model.NoticeReq;
 import com.masta.cms.service.NoticeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +53,14 @@ public class NoticeController {
 
     //공지사항 삭제
     @DeleteMapping("/{notice_id}")
-    public ResponseEntity deleteNotie(@PathVariable final int notice_id) {
+    public ResponseEntity deleteNotice(@PathVariable final int notice_id) {
         return new ResponseEntity<>(noticeService.deleteNoticeById(notice_id), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/check-period")
+    public ResponseEntity checkNoticeValidPeriod() {
+
+        return new ResponseEntity<>(noticeService.checkNoticePeriod(), HttpStatus.OK);
     }
 }

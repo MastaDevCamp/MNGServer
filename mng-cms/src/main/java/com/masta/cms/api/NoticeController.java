@@ -4,6 +4,8 @@ import com.masta.cms.auth.jwt.JwtTokenProvider;
 import com.masta.cms.model.NoticeReq;
 import com.masta.cms.service.NoticeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.ApplicationPidFileWriter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,5 +68,12 @@ public class NoticeController {
                                       @PathVariable final int notice_id) {
         jwtTokenProvider.getUser(authentication, "ROLE_USER");
         return new ResponseEntity<>(noticeService.deleteNoticeById(notice_id), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/check-period")
+    public ResponseEntity checkNoticeValidPeriod() {
+
+        return new ResponseEntity<>(noticeService.checkNoticePeriod(), HttpStatus.OK);
     }
 }

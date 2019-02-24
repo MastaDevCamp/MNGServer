@@ -1,13 +1,15 @@
 package com.masta.patch.utils.JsonMaker;
 
 import com.masta.patch.model.DirEntry;
-import com.masta.patch.utils.TypeConverter;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.masta.patch.utils.TypeConverter.*;
 
 @Slf4j
 @Component
@@ -18,16 +20,6 @@ public class PatchJsonMaker {
     private final int DIR_DIFF_TYPE = 4;
     private final int FILE_DIFF_TYPE = 8;
 
-
-    private List<String[]> beforeJsonStrings;
-    private List<String[]> afterJsonStrings;
-
-    private TypeConverter typeConverter;
-
-    public PatchJsonMaker(final TypeConverter typeConverter) {
-        this.typeConverter = typeConverter;
-    }
-
     /**
      * make full json to patch json's string list
      *
@@ -37,12 +29,11 @@ public class PatchJsonMaker {
      */
     public List<String> getPatchFileList(DirEntry beforeJson, DirEntry afterJson) {
         if (beforeJson != null) {
-            beforeJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(beforeJson));
-            afterJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(afterJson));
-
+            List<String[]> beforeJsonStrings = jsonToList(makeFileList(beforeJson));
+            List<String[]> afterJsonStrings = jsonToList(makeFileList(afterJson));
             try {
-                HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
-                HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
+                HashMap<String, String[]> beforeHashMap = makePathHashMap(beforeJsonStrings);
+                HashMap<String, String[]> afterHashMap = makePathHashMap(afterJsonStrings);
 
                 return compareDiff(beforeHashMap, afterHashMap);
 
@@ -54,7 +45,7 @@ public class PatchJsonMaker {
     }
 
 
-    public List<String> compareDiff(HashMap<String, Integer> before, HashMap<String, Integer> after) {
+    public List<String> compareDiff(HashMap<String, String[]> before, HashMap<String, String[]> after) {
 
         List<String> diffStringList = new ArrayList<>();
 
@@ -76,53 +67,52 @@ public class PatchJsonMaker {
         return diffStringList;
     }
 
-    public void addDeleteList(HashMap<String, Integer> before, HashMap<String, Integer> after, List<String> diffStringList) {
+    public void addDeleteList(HashMap<String, String[]> before, HashMap<String, String[]> after, List<String> diffStringList) {
         List<String> deleteList = new ArrayList<>();
         deleteList.addAll(before.keySet());
         deleteList.removeAll(after.keySet());
 
         for (String path : deleteList) {
-            if (beforeJsonStrings.get(before.get(path))[FILE_TYPE].equals("D")) {
-                beforeJsonStrings.get(before.get(path))[DIR_DIFF_TYPE] = "D";
-                diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), "D"));
+            if (before.get(path)[FILE_TYPE].equals("D")) {
+                before.get(path)[DIR_DIFF_TYPE] = "D";
+                diffStringList.add(arrayToStringFormat(before.get(path), "D"));
             } else {
-                beforeJsonStrings.get(before.get(path))[FILE_DIFF_TYPE] = "D";
-                diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), "F"));
+                before.get(path)[FILE_DIFF_TYPE] = "D";
+                diffStringList.add(arrayToStringFormat(before.get(path), "F"));
             }
         }
     }
 
 
-    public void addCreateList(HashMap<String, Integer> before, HashMap<String, Integer> after, List<String> diffStringList) {
+    public void addCreateList(HashMap<String, String[]> before, HashMap<String, String[]> after, List<String> diffStringList) {
         List<String> createList = new ArrayList<>();
         createList.addAll(after.keySet());
         createList.removeAll(before.keySet());
 
         for (String path : createList) {
-            if (afterJsonStrings.get(after.get(path))[FILE_TYPE].equals("D")) {
-                afterJsonStrings.get(after.get(path))[DIR_DIFF_TYPE] = "C";
-                diffStringList.add(typeConverter.arrayToStringFormat(afterJsonStrings.get(after.get(path)), "D"));
+            if (after.get(path)[FILE_TYPE].equals("D")) {
+                after.get(path)[DIR_DIFF_TYPE] = "C";
+                diffStringList.add(arrayToStringFormat(after.get(path), "D"));
             } else {
-                afterJsonStrings.get(after.get(path))[FILE_DIFF_TYPE] = "C";
-                diffStringList.add(typeConverter.arrayToStringFormat(afterJsonStrings.get(after.get(path)), "F"));
+                after.get(path)[FILE_DIFF_TYPE] = "C";
+                diffStringList.add(arrayToStringFormat(after.get(path), "F"));
             }
 
         }
     }
 
-    public void addUpdateList(HashMap<String, Integer> before, HashMap<String, Integer> after, List<String> diffStringList) {
+    public void addUpdateList(HashMap<String, String[]> before, HashMap<String, String[]> after, List<String> diffStringList) {
         List<String> updateList = new ArrayList<>();
         updateList.addAll(before.keySet());
         updateList.retainAll(after.keySet()); //교집합 : 빈 dir 파일이 있으면 file delete로 인해 빈 dir 파일로 create 해주어야 한다.
 
         for (String path : updateList) {
-            if (beforeJsonStrings.get(before.get(path))[FILE_TYPE].equals("F")) {
-                if (!beforeJsonStrings.get(before.get(path))[FILE_HASHING].equals(afterJsonStrings.get(after.get(path))[FILE_HASHING])) {
-                    beforeJsonStrings.get(before.get(path))[FILE_DIFF_TYPE] = "U";
-                    diffStringList.add(typeConverter.arrayToStringFormat(beforeJsonStrings.get(before.get(path)), "F"));
+            if (before.get(path)[FILE_TYPE].equals("F")) {
+                if (!before.get(path)[FILE_HASHING].equals(after.get(path)[FILE_HASHING])) {
+                    before.get(path)[FILE_DIFF_TYPE] = "U";
+                    diffStringList.add(arrayToStringFormat(before.get(path), "F"));
                 }
             }
-
         }
     }
 

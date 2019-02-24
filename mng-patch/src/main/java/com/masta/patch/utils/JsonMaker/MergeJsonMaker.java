@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.masta.patch.utils.TypeConverter.arrayToStringFormat;
-import static com.masta.patch.utils.TypeConverter.jsonToList;
+import static com.masta.patch.utils.TypeConverter.*;
 
 @Component
 @Slf4j
@@ -71,10 +70,8 @@ public class MergeJsonMaker {
 
         List<String[]> diffArrayList = jsonToList(localFileReadWrite.patchJsonToFileList(file.getPath()));
 
-        HashMap<String, String[]> pathNowHashMap = new HashMap<>();
-        for (String[] nowPath : diffArrayList) {
-            pathNowHashMap.put(nowPath[PATH], nowPath);
-        }
+        HashMap<String, String[]> pathNowHashMap = makePathHashMap(diffArrayList);
+
         for (String nowPath : pathNowHashMap.keySet()) {
             checkDiff(nowPath, pathNowHashMap.get(nowPath));
         }

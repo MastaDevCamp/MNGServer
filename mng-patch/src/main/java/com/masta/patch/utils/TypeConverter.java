@@ -19,6 +19,8 @@ public class TypeConverter {
     @Value("${file.path}")
     private String mainDir;
 
+    private static final int PATH = 1;
+
     /**
      * convert tree version of full json to string list version
      *
@@ -96,17 +98,14 @@ public class TypeConverter {
      * @return
      */
 
-    public HashMap<String, Integer> makePathHashMap(List<String[]> jsonStringList) {
+    public static HashMap<String, String[]> makePathHashMap(List<String[]> jsonStringList) {
 
-        HashMap<String, Integer> hashMap = new HashMap<>();
+        HashMap<String, String[]> hashMap = new HashMap<>();
 
-        int i = 0;
-        for (String[] jsonString : jsonStringList) {
-            String pathString = jsonString[1];
-            hashMap.put(pathString, i++);
+        for (String[] nowPath : jsonStringList) {
+            hashMap.put(nowPath[PATH], nowPath);
         }
         return hashMap;
-
     }
 
 

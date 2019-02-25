@@ -24,7 +24,8 @@ public class NoticeController {
     }
 
     @GetMapping("")
-    public ResponseEntity getAllNotice() {
+    public ResponseEntity getAllNotice(@RequestHeader(value="Authentiation") String authentication){
+        jwtTokenProvider.getUser(authentication, "ROLE_USER");
         return new ResponseEntity<>(noticeService.getNotice(), HttpStatus.OK);
     }
 

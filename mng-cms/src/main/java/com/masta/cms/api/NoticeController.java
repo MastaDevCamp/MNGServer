@@ -45,36 +45,35 @@ public class NoticeController {
         return new ResponseEntity<>(noticeService.getOneNoticeById(notice_id), HttpStatus.OK);
     }
 
-
-    //공지사항 등록
-    @PostMapping("")
-    public ResponseEntity postNotice(@RequestHeader(value="Authentiation") String authentication,
-                                     @RequestBody final NoticeReq noticeReq){
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(noticeService.postNotice(noticeReq), HttpStatus.OK);
-    }
-
-    //공지사항 수정
-    @PutMapping("/{notice_id}")
-    public ResponseEntity updateNotice(@RequestHeader(value="Authentiation") String authentication,
-                                       @PathVariable final int notice_id,
-                                       @RequestBody final NoticeReq noticeReq) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(noticeService.updateNoticeById(noticeReq, notice_id), HttpStatus.OK);
-    }
-
-    //공지사항 삭제
-    @DeleteMapping("/{notice_id}")
-    public ResponseEntity deleteNotie(@RequestHeader(value="Authentiation") String authentication,
-                                      @PathVariable final int notice_id) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(noticeService.deleteNoticeById(notice_id), HttpStatus.OK);
-    }
-
-
-    @GetMapping("/check-period")
-    public ResponseEntity checkNoticeValidPeriod() {
-
-        return new ResponseEntity<>(noticeService.checkNoticePeriod(), HttpStatus.OK);
-    }
+//    //공지사항 등록
+//    @PostMapping("")
+//    public ResponseEntity postNotice(@RequestHeader(value="Authentiation") String authentication,
+//                                     @RequestBody final NoticeReq noticeReq){
+//        jwtTokenProvider.getUser(authentication, "ROLE_USER");
+//        return new ResponseEntity<>(noticeService.postNotice(noticeReq), HttpStatus.OK);
+//    }
+//
+//    //공지사항 수정
+//    @PutMapping("/{notice_id}")
+//    public ResponseEntity updateNotice(@RequestHeader(value="Authentiation") String authentication,
+//                                       @PathVariable final int notice_id,
+//                                       @RequestBody final NoticeReq noticeReq) {
+//        jwtTokenProvider.getUser(authentication, "ROLE_USER");
+//        return new ResponseEntity<>(noticeService.updateNoticeById(noticeReq, notice_id), HttpStatus.OK);
+//    }
+//
+//    //공지사항 삭제
+//    @DeleteMapping("/{notice_id}")
+//    public ResponseEntity deleteNotie(@RequestHeader(value="Authentiation") String authentication,
+//                                      @PathVariable final int notice_id) {
+//        jwtTokenProvider.getUser(authentication, "ROLE_USER");
+//        return new ResponseEntity<>(noticeService.deleteNoticeById(notice_id), HttpStatus.OK);
+//    }
+//
+//
+//    @GetMapping("/check-period")
+//    public ResponseEntity checkNoticeValidPeriod() {
+//
+//        return new ResponseEntity<>(noticeService.checkNoticePeriod(), HttpStatus.OK);
+//    }
 }

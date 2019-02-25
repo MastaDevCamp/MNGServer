@@ -32,9 +32,20 @@ public class UserDetailService {
         }
     }
     //특정 유저 디테일 정보 조회
+    public DefaultRes getUserDetailWithNum(final Long usernum){
+        try {
+            final UserDetail userDetail = userInfoMapper.findUserDetail(usernum);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_USER_DETAIL, userDetail);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
     public DefaultRes getUserDetailWithId(final int uid){
         try {
-            final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
+            final UserDetail userDetail = userInfoMapper.getUseridWithId(uid);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_USER_DETAIL, userDetail);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -44,7 +55,7 @@ public class UserDetailService {
     }
 
     //닉네임 변경
-    public DefaultRes updateUserNickname(final String nickname, final int uid) {
+    public DefaultRes updateUserNickname(final String nickname, final Long uid) {
         try {
             userInfoMapper.updateUserNickname(nickname, uid);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_NICKNAME);
@@ -56,14 +67,14 @@ public class UserDetailService {
     }
 
     //푸시 온오프 변경
-    public DefaultRes updateUserPushOnoff(final int uid){
+    public DefaultRes updateUserPushOnoff(final Long usernum){
         try {
-            final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
+            final UserDetail userDetail = userInfoMapper.findUserDetail(usernum);
             int userPush = userDetail.getPushonoff();
             if (userPush == 0)
-                userInfoMapper.updateUserOnoff(1, uid);
+                userInfoMapper.updateUserOnoff(1, usernum);
             else if (userPush == 1)
-                userInfoMapper.updateUserOnoff(0, uid);
+                userInfoMapper.updateUserOnoff(0, usernum);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_PUSH);
         } catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -89,14 +100,14 @@ public class UserDetailService {
 //        }
 //    }
     //유저 재화 정보 변경
-    public DefaultRes updateUserMoney(final int ruby, final int gold, final int uid){
+    public DefaultRes updateUserMoney(final int ruby, final int gold, final Long usernum){
         try {
             //원래 있던 재화 체크
-            final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
+            final UserDetail userDetail = userInfoMapper.findUserDetail(usernum);
             if (userDetail == null) {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             } else {
-                userInfoMapper.updateUserMoneyInfo(userDetail.getRuby()+ruby, userDetail.getGold() + gold, uid);
+                userInfoMapper.updateUserMoneyInfo(userDetail.getRuby()+ruby, userDetail.getGold() + gold, usernum);
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_MONEY);
             }
         }
@@ -107,15 +118,16 @@ public class UserDetailService {
         }
     }
 
+
     //유저 하트 1개 소모
-    public DefaultRes spendOneHeart(final int uid) {
+    public DefaultRes spendOneHeart(final Long usernum) {
         try {
-            final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
+            final UserDetail userDetail = userInfoMapper.findUserDetail(usernum);
             if (userDetail == null) {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             } else {
                 int newHeart = userDetail.getHeart() - 1;
-                userInfoMapper.updateUserHeart(newHeart, uid);
+                userInfoMapper.updateUserHeart(newHeart, usernum);
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.SPEND_HEART);
             }
         } catch (Exception e) {
@@ -126,37 +138,41 @@ public class UserDetailService {
     }
 
     //유저 하트 1개 충전
-//    public DefaultRes chargeOneHeart(final int uid) {
-//        try {
-//            final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
-//            if (userDetail == null) {
-//                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-//            } else {
-//                int heart = userDetail.getHeart() + 1;
-//                d
-//                userInfoMapper.updateUserHeart(heart, uid);
-//                userInfoMapper.
-//            }
-//        }
-//    }
-
-    //유저 하트 변경
-    public DefaultRes updateHeart(final int heart, final int uid) {
+    public DefaultRes chargeOneHeart(final int uid) {
         try {
-            final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
+            final UserDetail userDetail = userInfoMapper.getUseridWithId(uid);
             if (userDetail == null) {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             } else {
-                int newHeart = userDetail.getHeart() + heart;
-                userInfoMapper.updateUserHeart(newHeart, uid);
+                int heart = userDetail.getHeart() + 1;
+                userInfoMapper.updateUserHeart(heart, userDetail.getUsernum());
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_HEARTS_CNT);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
             return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
         }
     }
+
+//    유저 하트 변경
+//    public DefaultRes updateHeart(final int heart, final int uid) {
+//        try {
+//            final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
+//            if (userDetail == null) {
+//                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+//            } else {
+//                int newHeart = userDetail.getHeart() + heart;
+//                userInfoMapper.updateUserHeart(newHeart, uid);
+//                return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_HEARTS_CNT);
+//            }
+//        } catch (Exception e) {
+//            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+//            log.error(e.getMessage());
+//            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+//        }
+//    }
 
     public DefaultRes updateAllInfo(final int uid, final UserReq userReq) {
         try {

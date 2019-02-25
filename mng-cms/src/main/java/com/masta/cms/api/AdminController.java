@@ -115,7 +115,7 @@ public class AdminController {
     @GetMapping("/default/partner")
     public ResponseEntity getDefaultPartnerInfo(@RequestHeader(value="Authentiation") String authentication) {
         jwtTokenProvider.getUser(authentication, "ROLE_ADMIN");
-        return new ResponseEntity<>(partnerService.getFavor(0), HttpStatus.OK);
+        return new ResponseEntity<>(partnerService.getFavor(), HttpStatus.OK);
     }
 
     @PutMapping("/default/user")
@@ -129,6 +129,6 @@ public class AdminController {
     public ResponseEntity modifyDefaultPartnerInfo(@RequestHeader(value="Authentiation") String authentication,
                                                    @RequestBody PartnerReq partnerReq) {
         jwtTokenProvider.getUser(authentication, "ROLE_ADMIN");
-        return new ResponseEntity<>(partnerService.editFavor(0, partnerReq.getPartner(), partnerReq.getLike(), partnerReq.getTrust()), HttpStatus.OK);
+        return new ResponseEntity<>(partnerService.editFavorDefualt(0, partnerReq.getPartner(), partnerReq.getLike(), partnerReq.getTrust()), HttpStatus.OK);
     }
 }

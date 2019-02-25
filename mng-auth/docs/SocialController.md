@@ -10,10 +10,10 @@
 
 ## API LISTS
 
-#### [- POST](http://localhost:8080/swagger-ui.html#!/social-controller/facebookLoginUsingPOST) [/social/login/facebook/{token}](http://localhost:8080/swagger-ui.html#!/social-controller/facebookLoginUsingPOST)
+#### [- POST](http://localhost:8180/swagger-ui.html#!/social-controller/facebookLoginUsingPOST) [/social/login/facebook/{token}](http://localhost:8080/swagger-ui.html#!/social-controller/facebookLoginUsingPOST)
 
 - FaceBook 로그인을 위한 API
 
-#### [- POST](http://localhost:8080/swagger-ui.html#!/social-controller/googleLoginUsingPOST) [/social/login/google/{token}](http://localhost:8080/swagger-ui.html#!/social-controller/googleLoginUsingPOST)
+#### [- POST](http://localhost:8180/swagger-ui.html#!/social-controller/googleLoginUsingPOST) [/social/login/google/{token}](http://localhost:8080/swagger-ui.html#!/social-controller/googleLoginUsingPOST)
 
 - Google 로그인을 위한 API

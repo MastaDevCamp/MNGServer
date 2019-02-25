@@ -15,14 +15,14 @@
 
 ## API LISTS
 
-####  [- GET](http://localhost:8080/swagger-ui.html#!/admin-controller/allUserListUsingGET) [/admin/users](http://localhost:8080/swagger-ui.html#!/admin-controller/allUserListUsingGET)
+####  [- GET](http://localhost:8180/swagger-ui.html#!/admin-controller/allUserListUsingGET) [/admin/users](http://localhost:8080/swagger-ui.html#!/admin-controller/allUserListUsingGET)
 
 - 유저 전체 목록을 조회하는 API
 
-### [- GET](http://localhost:8080/swagger-ui.html#!/admin-controller/userListUsingGET) [/admin/users/{id}](http://localhost:8080/swagger-ui.html#!/admin-controller/userListUsingGET)
+### [- GET](http://localhost:8180/swagger-ui.html#!/admin-controller/userListUsingGET) [/admin/users/{id}](http://localhost:8080/swagger-ui.html#!/admin-controller/userListUsingGET)
 
 - 유저 1명 상세 정보를 조회하는 API
 
-### [- PUT](http://localhost:8080/swagger-ui.html#!/admin-controller/updateUserUsingPUT) [/admin/{id}](http://localhost:8080/swagger-ui.html#!/admin-controller/updateUserUsingPUT)
+### [- PUT](http://localhost:8180/swagger-ui.html#!/admin-controller/updateUserUsingPUT) [/admin/{id}](http://localhost:8080/swagger-ui.html#!/admin-controller/updateUserUsingPUT)
 
 - USER 권한 계정을 ADMIN 권한 계정으로 전환하는 API

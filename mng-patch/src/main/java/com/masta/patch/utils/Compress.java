@@ -6,6 +6,7 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -14,16 +15,17 @@ import java.io.File;
 @Component
 public class Compress {
 
+    @Value("${local.path}")
+    private String localPath;
+
     private static String originalFilePath = "C:\\WorkSpace\\newVersion\\";
 
-    private static String zipFilePath = "C:\\WorkSpace\\ZipDir\\";
-
-    public static String zip(File file) {
-
+    public String zip(File file) {
+        String PatchZipPath = localPath + "PatchZip/";
         String relPath = file.getParent().replace(originalFilePath, "") + "/";
         String destination = file.getPath();
-        new File(zipFilePath + relPath).mkdirs();
-        String source = zipFilePath + relPath + file.getName() + ".zip";
+        new File(PatchZipPath + relPath).mkdirs();
+        String source = PatchZipPath + relPath + file.getName() + ".zip";
 
         File destFile = new File(destination);
 

@@ -10,16 +10,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class VersionService {
 
-
     private final VersionMapper versionMapper;
 
-
-    public VersionService(final VersionMapper versionMapper){
+    public VersionService(final VersionMapper versionMapper) {
         this.versionMapper = versionMapper;
     }
 
     public String checkRightVersion(String version) {
-        String latestVersion = versionMapper.latestVersion().getVersion();
+        VersionLog versionLog = versionMapper.latestVersion();
+        String latestVersion = null;
+        if (versionLog != null)
+            latestVersion = versionLog.getVersion();
         return compareVersion(version, latestVersion);
     }
 

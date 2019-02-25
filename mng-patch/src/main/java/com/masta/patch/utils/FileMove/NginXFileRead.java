@@ -1,11 +1,9 @@
 package com.masta.patch.utils.FileMove;
 
 import com.masta.patch.dto.VersionLog;
-import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.JsonType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -21,28 +19,23 @@ public class NginXFileRead {
     @Value("${nginx.url}")
     private String nginXPath;
 
-    @Value("${local.merge.path}")
-    private String localMergePath;
-
     @Value("${local.path}")
     public String localPath;
 
-    @Autowired
-    LocalFileReadWrite localFileReadWrite;
-
-
     public File getRemoteVersionJson(VersionLog version, JsonType jsonType) {
         File file = null;
+        URL url;
         if (version != null) {
             try {
-                if(jsonType == JsonType.FULL){
+                if (jsonType == JsonType.FULL) {
                     file = new File(localPath + String.format("Full_Ver_%s.json", version.getVersion()));
-                }else if(jsonType == JsonType.PATCH){
-                    file = new File(localMergePath + String.format("Patch_Ver_%s.json", version.getVersion()));
-                }else{
+                    url = new URL(nginXPath + version.getFull());
+                } else if (jsonType == JsonType.PATCH) {
+                    file = new File(localPath + "merge/" + String.format("Patch_Ver_%s.json", version.getVersion()));
+                    url = new URL(nginXPath + version.getPatch());
+                } else {
                     return null;  // throw error
                 }
-                URL url = new URL(nginXPath + version.getFull());
                 URLConnection connection = url.openConnection();
                 InputStream is = connection.getInputStream();
                 FileUtils.copyInputStreamToFile(is, file);

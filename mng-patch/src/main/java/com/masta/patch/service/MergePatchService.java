@@ -5,13 +5,14 @@ import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
-import com.masta.patch.model.JsonType;
-import com.masta.patch.utils.FileMove.NginXFileRead;
+import com.masta.patch.utils.FileMove.LocalFileReadWrite;
 import com.masta.patch.utils.JsonMaker.MergeJsonMaker;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.List;
 
 
@@ -22,20 +23,17 @@ public class MergePatchService {
     @Value("${nginx.url}")
     private String nginXPath;
 
-    @Value("${local.merge.path}")
-    private String localMergePath;
+    @Value("${local.path}")
+    public String localPath;
 
+    @Autowired
     private MergeJsonMaker mergeJsonMaker;
+    @Autowired
     private VersionMapper versionMapper;
-    private NginXFileRead nginXFileRead;
+    @Autowired
     private VersionService versionService;
-
-    public MergePatchService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper, final NginXFileRead nginXFileRead, final VersionService versionService) {
-        this.mergeJsonMaker = mergeJsonMaker;
-        this.versionMapper = versionMapper;
-        this.nginXFileRead = nginXFileRead;
-        this.versionService = versionService;
-    }
+    @Autowired
+    private LocalFileReadWrite localFileReadWrite;
 
     public DefaultRes updateNewVersion(String clientVersion) {
 
@@ -57,9 +55,10 @@ public class MergePatchService {
 
         List<VersionLog> updateVersionList = versionMapper.getUpdateVersionList(clientVersionId);
 
-        // remote -> local download (using nginx)
+        localFileReadWrite.rmLocalDir(new File(localPath + "merge/"));
+
         for (VersionLog versionLog : updateVersionList) {
-            nginXFileRead.getRemoteVersionJson(versionLog, JsonType.PATCH);
+            localFileReadWrite.getRemotePatchVersionJson(versionLog);
         }
 
         List<String> updateFileList = mergeJsonMaker.makeMergeJson();

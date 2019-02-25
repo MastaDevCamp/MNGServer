@@ -8,23 +8,25 @@ import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.JsonType;
-import com.masta.patch.utils.TypeConverter;
 import com.masta.patch.utils.HttpConnection;
-import lombok.AllArgsConstructor;
+import com.masta.patch.utils.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 
-@AllArgsConstructor
 @Slf4j
 @Service
 public class AdminClientService {
 
+    @Autowired
     private TypeConverter typeConverter;
+    @Autowired
     private HttpConnection httpConnection;
+    @Autowired
     private VersionMapper versionMapper;
 
     @Value("${nginx.url}")

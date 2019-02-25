@@ -29,7 +29,7 @@ public class NoticeService {
     public DefaultRes postNotice(final NoticeReq noticeReq){
         try {
             noticeMapper.insertNotice(noticeReq);
-            return DefaultRes.res(StatusCode.CREATE, "Create Notice");
+            return DefaultRes.res(StatusCode.CREATE, ResponseMessage.REGISTER_NOTICE);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -42,7 +42,7 @@ public class NoticeService {
     public DefaultRes getNotice() {
         try {
             List<Notice> notices = noticeMapper.findPerfectlyAllNotice();
-            return DefaultRes.res(StatusCode.OK, "Get All Notices", notices);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_NOTICE, notices);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -54,7 +54,7 @@ public class NoticeService {
     public DefaultRes getNoticeByType(final int type) {
         try {
             List<Notice> notices = noticeMapper.findAllNotice(type);
-            return DefaultRes.res(StatusCode.OK, "Get Notice By Type", notices);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_NOTICE, notices);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -66,7 +66,7 @@ public class NoticeService {
     public DefaultRes getOneNoticeById(final int notice_id) {
         try {
             Notice notice = noticeMapper.findOneNotice(notice_id);
-            return DefaultRes.res(StatusCode.OK, "Get One Notice By Id", notice);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_NOTICE, notice);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -78,7 +78,7 @@ public class NoticeService {
     public DefaultRes updateNoticeById(final NoticeReq noticeReq, final int notice_id) {
         try {
             noticeMapper.updateNotice(noticeReq, notice_id);
-            return DefaultRes.res(StatusCode.OK, "Update Notice");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NOTICE);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -90,7 +90,7 @@ public class NoticeService {
     public DefaultRes deleteNoticeById(final int notice_id) {
         try {
             noticeMapper.deleteNotice(notice_id);
-            return DefaultRes.res(StatusCode.OK, "Delete Notice");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_NOTICE);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -118,7 +118,9 @@ public class NoticeService {
 
                 }
             }
-            return DefaultRes.res(StatusCode.OK, "Check for Invalid Notice", resultNotice);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.CHECK_INVALID_NOTICE, resultNotice);
+//            return DefaultRes.res(StatusCode.OK, ResponseMessage.CHECK_INVALID_NOTICE);
+
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());

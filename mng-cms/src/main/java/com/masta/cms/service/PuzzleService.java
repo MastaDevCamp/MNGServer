@@ -25,10 +25,7 @@ public class PuzzleService {
     public DefaultRes getPuzzleInfo(final int uid) {
         try {
             List<Puzzle> puzzleList = puzzleMapper.getPuzzleInfoWithUid(uid);
-            if(puzzleList == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, "Not Exist User Puzzle");
-            }
-            return DefaultRes.res(StatusCode.OK, "Find User Puzzle", puzzleList);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_PUZZLES, puzzleList);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -40,10 +37,7 @@ public class PuzzleService {
     public DefaultRes getPuzzleInfoWithPartner(final int uid, final int partner) {
         try {
             List<Puzzle> puzzleList = puzzleMapper.getPuzzleInfoWithPartner(uid, partner);
-            if(puzzleList == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, "Not Exist User Puzzle");
-            }
-            return DefaultRes.res(StatusCode.OK, "Find User Puzzle", puzzleList);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_PUZZLES, puzzleList);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -56,7 +50,7 @@ public class PuzzleService {
         try {
             int partner_id = partnerMapper.findPartnerFavor(uid, partner);
             puzzleMapper.insertPuzzleInfoWithPartner(partner_id, puzzle, pieces);
-            return DefaultRes.res(StatusCode.OK, "Register User Puzzle");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.REGISTER_PIECES);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -70,7 +64,7 @@ public class PuzzleService {
             int partner_id = partnerMapper.findPartnerFavor(uid, partner);
             log.info("partner_id : " + partner_id);
             puzzleMapper.updatePuzzleInfo(partner_id, puzzle, pieces);
-            return DefaultRes.res(StatusCode.OK, "Update User Puzzle");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_PIECES);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -82,7 +76,7 @@ public class PuzzleService {
     public DefaultRes deletePuzzleInfo(final int puzzle_id) {
         try {
             puzzleMapper.deletePuzzleWithIdx(puzzle_id);
-            return DefaultRes.res(StatusCode.OK, "Delete User Puzzle with Puzzle");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_PIECES);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -94,7 +88,7 @@ public class PuzzleService {
     public DefaultRes deletePuzzleInfoByPartner(final int partner_id) {
         try {
             puzzleMapper.deletePuzzleWithPartner(partner_id);
-            return DefaultRes.res(StatusCode.OK, "Delete User Puzzle with Partner");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.DELETE_PIECES);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

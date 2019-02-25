@@ -24,11 +24,7 @@ public class ScenarioService {
     public DefaultRes getScenarioByType(final int uid) {
         try {
             List<Perform> performs = scenarioMapper.findPerformedByType(uid);
-            if (performs == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, "Not Found Scenario Info");
-            } else {
-                return DefaultRes.res(StatusCode.OK, "Find User Scenario Info By Type", performs);
-            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_SCENARIO, performs);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -41,11 +37,7 @@ public class ScenarioService {
         try {
             log.info("안뇽하쇼 : " + sceneReq);
             List<Choice> choice = scenarioMapper.findScriptChoice(sceneReq);
-            if (choice == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, "Not Found Answer Info");
-            } else {
-                return DefaultRes.res(StatusCode.OK, "Find User Answer", choice);
-            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_SCENARIO_ANSWER, choice);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -61,11 +53,10 @@ public class ScenarioService {
             findScript.setChapter(sceneReq.getChapter());
             findScript.setScene(sceneReq.getScene());
             findScript.setUid(sceneReq.getUid());
-            log.info("으앙 sceneReq : " + findScript);
             int prfm_id = scenarioMapper.findPerformIdWithSceneReq(findScript);
             log.info("prfm_id : " + prfm_id);
             scenarioMapper.inserChoice(prfm_id, sceneReq.getScript(), sceneReq.getAnswer());
-            return DefaultRes.res(StatusCode.OK, "Insert User Answer");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.REGISTER_SCENARIO_ANSWER);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -86,15 +77,15 @@ public class ScenarioService {
                 List<Perform> duplicatedPerform = scenarioMapper.findDuplicatedPerformedScene(performReq);
                 if (duplicatedPerform == null) {
                     scenarioMapper.insertPerformStarted(performReq);
-                    return DefaultRes.res(StatusCode.OK, "Edit Progress 0");
+                    return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_SCENARIO_PROGRESS);
                 }
                 else {
-                    return DefaultRes.res(StatusCode.OK, "Already Perform Scene");
+                    return DefaultRes.res(StatusCode.OK, ResponseMessage.ALREADY_SCENARIO_START);
                 }
             }
             else {
                 scenarioMapper.updatePerformFinished(performReq);
-                return DefaultRes.res(StatusCode.OK, "Edit Progress 1");
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_SCENARIO_PROGRESS);
             }
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

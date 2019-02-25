@@ -2,12 +2,16 @@ package com.masta.cms.service;
 
 import com.masta.cms.dto.UserDetail;
 import com.masta.cms.mapper.UserInfoMapper;
+import com.masta.cms.model.UserReq;
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -17,15 +21,21 @@ public class UserDetailService {
         this.userInfoMapper = userInfoMapper;
     }
 
-    //디테일 정보 조회
+    public DefaultRes getAllUserDetail() {
+        try {
+            List<UserDetail> userDetailList = userInfoMapper.findAllUserDetail();
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_USER_DETAIL, userDetailList);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+    //특정 유저 디테일 정보 조회
     public DefaultRes getUserDetailWithId(final int uid){
         try {
             final UserDetail userDetail = userInfoMapper.findUserDetail(uid);
-            if (userDetail == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-            } else {
-                return DefaultRes.res(StatusCode.OK, ResponseMessage.READ_USER, userDetail);
-            }
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_USER_DETAIL, userDetail);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -37,7 +47,7 @@ public class UserDetailService {
     public DefaultRes updateUserNickname(final String nickname, final int uid) {
         try {
             userInfoMapper.updateUserNickname(nickname, uid);
-            return DefaultRes.res(StatusCode.OK, "Update User Nickname");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_NICKNAME);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -54,7 +64,7 @@ public class UserDetailService {
                 userInfoMapper.updateUserOnoff(1, uid);
             else if (userPush == 1)
                 userInfoMapper.updateUserOnoff(0, uid);
-            return DefaultRes.res(StatusCode.OK, "Modify Push OnOff");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_PUSH);
         } catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -87,7 +97,7 @@ public class UserDetailService {
                 return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
             } else {
                 userInfoMapper.updateUserMoneyInfo(userDetail.getRuby()+ruby, userDetail.getGold() + gold, uid);
-                return DefaultRes.res(StatusCode.OK, "재화 정보 변경");
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_MONEY);
             }
         }
         catch (Exception e) {
@@ -106,7 +116,7 @@ public class UserDetailService {
             } else {
                 int newHeart = userDetail.getHeart() - 1;
                 userInfoMapper.updateUserHeart(newHeart, uid);
-                return DefaultRes.res(StatusCode.OK, "Update Heart to Minus One");
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.SPEND_HEART);
             }
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -139,7 +149,7 @@ public class UserDetailService {
             } else {
                 int newHeart = userDetail.getHeart() + heart;
                 userInfoMapper.updateUserHeart(newHeart, uid);
-                return DefaultRes.res(StatusCode.OK, "Update Heart Count");
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_HEARTS_CNT);
             }
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -148,5 +158,14 @@ public class UserDetailService {
         }
     }
 
-
+    public DefaultRes updateAllInfo(final int uid, final UserReq userReq) {
+        try {
+            userInfoMapper.updateUserInfo(uid, userReq);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_USER_DETAIL);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
 }

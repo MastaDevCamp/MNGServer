@@ -21,10 +21,7 @@ public class HistoryService {
     public DefaultRes getCGInfoWithUid(final int uid) {
         try {
             List<Integer> histories = historyMapper.findCGWithUid(uid);
-            if(histories == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-            }
-            return DefaultRes.res(StatusCode.OK, "Find CG History", histories);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_HISTORY, histories);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -36,10 +33,7 @@ public class HistoryService {
     public DefaultRes getEndingInfoWithUid(final int uid) {
         try {
             List<Integer> histories = historyMapper.findEndingWithUid(uid);
-            if(histories == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-            }
-            return DefaultRes.res(StatusCode.OK, "Find Ending History", histories);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_HISTORY, histories);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -53,7 +47,7 @@ public class HistoryService {
     public DefaultRes postCGinHistory(final int uid, final int cg) {
         try {
             historyMapper.insertCGinHistory(uid, cg);
-            return DefaultRes.res(StatusCode.OK, "Register CG in History");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.REGISTER_HISTORY);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -65,7 +59,7 @@ public class HistoryService {
     public DefaultRes postEndinginHistory(final int uid, final int ending) {
         try {
             historyMapper.insertEndinginHistory(uid, ending);
-            return DefaultRes.res(StatusCode.OK, "Register Ending in History");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.REGISTER_HISTORY);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

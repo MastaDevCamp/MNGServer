@@ -8,6 +8,7 @@ import com.masta.auth.membership.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,6 +26,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
@@ -33,8 +35,8 @@ public class JwtTokenProvider {
 
     private String secretKey;
 
-    @Value("${security.jwt.token.expire-length:3600000}")
-    private long validityInMilliseconds = 3600000; // 1h
+
+    private long validityInMilliseconds = 259200000;//3600000*24*3; // 1h*hour*day
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -54,7 +56,9 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims().setSubject(usernum.toString());
         claims.put("roles", roles);
         Date now = new Date();
+        System.out.println(validityInMilliseconds);
         Date validity = new Date(now.getTime() + validityInMilliseconds);
+        System.out.println(validity);
         String jwts = Jwts.builder()//
                 .setClaims(claims)//
                 .setIssuedAt(now)//
@@ -62,7 +66,7 @@ public class JwtTokenProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)//
                 .compact();
         redisTemplate.opsForValue().set(usernum.toString(), jwts);
-        redisTemplate.expire(usernum.toString(),7, TimeUnit.DAYS);
+        redisTemplate.expire(usernum.toString(),3, TimeUnit.DAYS);
         return jwts;
     }
 

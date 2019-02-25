@@ -11,4 +11,5 @@ public class UserReq {
     private int pushonoff;
     private int heart;
     private Date charge_at;
+    private int reset;
 }

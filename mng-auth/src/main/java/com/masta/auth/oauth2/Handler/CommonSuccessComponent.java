@@ -38,7 +38,7 @@ public class CommonSuccessComponent {
         SocialUser socialUser = socialUserService.getOrSave(socialUserForm);
 
         String token ="Bearer "+ jwtTokenProvider.createToken(socialUser.getNum(),"ROLE_USER");
-
+        log.info(authentication.getDetails().toString());
         Cookie cookie  = new Cookie("Authorization", URLEncoder.encode(token,"UTF-8").replace("+","%20"));
         response.addCookie(cookie);
         response.setContentType("application/json");

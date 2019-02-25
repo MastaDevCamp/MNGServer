@@ -24,9 +24,9 @@
   - spring-boot-starter-web
   - mysql-connector-java
   - mybatis-spring-boot-starter
-- auth
-- cms
-- patch
+- [MemberShip Server](mng-auth)
+- [CMS Server](mng-cms)
+- [Patch Server](mng-patch)
 
 
 

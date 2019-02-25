@@ -19,6 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
+
+/**
+ * 소셜 유저의 로그인을 위한 controller
+ * - 페이스북 로그인
+ * - 구글 로그인
+ *
+ * Client에게 받은 Access Token으로 JWT 토큰을 생성하여 Return.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/social")

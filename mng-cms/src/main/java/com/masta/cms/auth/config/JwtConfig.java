@@ -1,4 +1,4 @@
-package com.masta.core.auth.config;
+package com.masta.cms.auth.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

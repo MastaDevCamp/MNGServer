@@ -29,10 +29,7 @@ public class MailboxService {
     public DefaultRes getAllMailboxWithUid(final int uid) {
         try {
             List<Mailbox> mailboxListNotOpened = mailboxMapper.getNotOpenedMailList(uid);
-            if (mailboxListNotOpened == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
-            }
-            return DefaultRes.res(StatusCode.OK, "Get All Mailbox", mailboxListNotOpened);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_MAILBOX, mailboxListNotOpened);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -45,7 +42,7 @@ public class MailboxService {
     public DefaultRes getOneMailbox(final int mail_id) {
         try {
             Mailbox oneMailboxInfoList = mailboxMapper.getOneMailbox(mail_id);
-            return DefaultRes.res(StatusCode.OK, "Get One Mailbox", oneMailboxInfoList);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_MAILBOX, oneMailboxInfoList);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.error(e.getMessage());
@@ -70,9 +67,9 @@ public class MailboxService {
                 log.info("uid : ", uid);
                 log.info("mail_id : ", mail_id);
                 mailboxMapper.insertUserInAction(uid, mail_id);
-                return DefaultRes.res(StatusCode.OK, "User be Rewarded In This Event");
+                return DefaultRes.res(StatusCode.OK, ResponseMessage.GET_REWARD_MAILBOX);
             }
-            return DefaultRes.res(StatusCode.NO_CONTENT, "Already User Has been Rewarded");
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.ALREADY_REWARD);
 
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -81,7 +78,7 @@ public class MailboxService {
         }
     }
 
-    //이벤트 등록
+    //이벤트 등록 - 이하 안씀
     public DefaultRes registerMail(final MailboxReq mailboxReq) {
         try {
             log.info("MailboxService");

@@ -1,13 +1,16 @@
 package com.masta.cms.mapper;
 
 import com.masta.cms.dto.Favor;
+import com.masta.cms.model.PartnerReq;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface PartnerMapper {
-    @Insert("INSERT INTO partner ")
+
+    @Select("SELECT * FROM partner WHERE uid=0")
+    Favor findDefaultFavor();
 
     @Select("SELECT * FROM partner WHERE uid = #{uid}")
     List<Favor> findAllFavor(@Param("uid") final int uid);
@@ -28,6 +31,11 @@ public interface PartnerMapper {
     @Update("UPDATE partner SET partner.like=#{like}, partner.trust=#{trust} WHERE uid=#{uid} AND partner=#{partner}")
     void updateFavor(@Param("like") final int like, @Param("trust") final int trust, @Param("uid") final int uid, @Param("partner") final int partner);
 
-    @Insert("INSERT INTO partner (uid, partner, like, trust) VALUES (#{uid}, #{partner}, #{like}, #{trust})")
-    void insertDefaultFavor(@Param("uid") final int uid, @Param("partner") final int partner, @Param("like") final int like, @Param("trust") final int trust);
+
+    //파트너 초기화 설정
+    @Insert("INSERT INTO partner (uid, partner, partner.like, trust) VALUES (#{uid}, #{partner.partner}, #{partner.like}, #{partner.trust})")
+    void insertDefaultPartner(@Param("uid") final int uid, @Param("partner") final PartnerReq partner);
+
+//    @Insert("INSERT INTO partner (uid, partner, like, trust) VALUES (#{uid}, #{partner}, #{like}, #{trust})")
+//    void insertDefaultFavor(@Param("uid") final int uid, @Param("partner") final int partner, @Param("like") final int like, @Param("trust") final int trust);
 }

@@ -21,10 +21,7 @@ public class PartnerService {
     public DefaultRes getFavor(final int uid) {
         try {
             List<Favor> favors = partnerMapper.findAllFavor(uid);
-            if (favors == null) {
-                return DefaultRes.res(StatusCode.NOT_FOUND, "Not Exist User Favor");
-            }
-            return DefaultRes.res(StatusCode.OK, "Find User Favor", favors);
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_FAVOR, favors);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -39,7 +36,7 @@ public class PartnerService {
             int newLike = favor.getLike() + like;
             int newTrust = favor.getTrust() + trust;
             partnerMapper.updateFavor(newLike, newTrust, uid, partner);
-            return DefaultRes.res(StatusCode.OK, "Edit Favor");
+            return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_FAVOR);
         }
         catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

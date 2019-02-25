@@ -10,7 +10,6 @@ import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.JsonType;
 import com.masta.patch.utils.FileSystem.TypeConverter;
 import com.masta.patch.utils.HttpConnection;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,14 +17,19 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
-@AllArgsConstructor
 @Slf4j
 @Service
 public class AdminClientService {
 
-    private TypeConverter typeConverter;
-    private HttpConnection httpConnection;
-    private VersionMapper versionMapper;
+    final TypeConverter typeConverter;
+    final HttpConnection httpConnection;
+    final VersionMapper versionMapper;
+
+    public AdminClientService(TypeConverter typeConverter, HttpConnection httpConnection, VersionMapper versionMapper) {
+        this.typeConverter = typeConverter;
+        this.httpConnection = httpConnection;
+        this.versionMapper = versionMapper;
+    }
 
     @Value("${nginx.url}")
     private String nginXPath;

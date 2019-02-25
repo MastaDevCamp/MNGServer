@@ -50,6 +50,9 @@ public class TypeConverter {
      * @return
      */
     public List<String> makeFileList(DirEntry rootDir) {
+        if (rootDir == null)
+            return null;
+
         List<String> fileList = new ArrayList<>();
 
         searchFile(rootDir, fileList);
@@ -127,6 +130,9 @@ public class TypeConverter {
      */
     public List<String[]> jsonToList(List<String> jsonList) {
 
+        if (jsonList == null)
+            return null;
+
         List<String[]> strings = new ArrayList<>();
 
         for (String jsonString : jsonList) {
@@ -164,6 +170,8 @@ public class TypeConverter {
      */
 
     public HashMap<String, Integer> makePathHashMap(List<String[]> jsonStringList) {
+        if (jsonStringList == null)
+            return new HashMap<String, Integer>();
 
         HashMap<String, Integer> hashMap = new HashMap<>();
 
@@ -186,7 +194,10 @@ public class TypeConverter {
                 URLConnection connection = url.openConnection();
                 InputStream is = connection.getInputStream();
                 FileUtils.copyInputStreamToFile(is, file);
-                dirEntry = fullJsonToFileTree(file.getPath());
+                dirEntry = fullJsonToFileTree(file.getPath())
+
+
+                ;
             } catch (Exception e) {
                 log.error(e.getMessage());
             }

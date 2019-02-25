@@ -35,20 +35,16 @@ public class PatchJsonMaker {
      * @return
      */
     public List<String> getPatchFileList(DirEntry beforeJson, DirEntry afterJson) {
-        if (beforeJson != null) {
-            beforeJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(beforeJson));
-            afterJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(afterJson));
-
-            try {
-                HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
-                HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
-
-                return compareDiff(beforeHashMap, afterHashMap);
-
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
+        beforeJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(beforeJson));
+        afterJsonStrings = typeConverter.jsonToList(typeConverter.makeFileList(afterJson));
+        try {
+            HashMap<String, Integer> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
+            HashMap<String, Integer> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
+            return compareDiff(beforeHashMap, afterHashMap);
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
+
         return null; // create 만들기
     }
 

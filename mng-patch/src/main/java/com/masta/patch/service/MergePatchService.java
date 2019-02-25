@@ -14,11 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.masta.patch.model.VersionCheckResultType.checkRightVersion;
 
 @Slf4j
 @Service
-public class UpdatettService {
+public class MergePatchService {
 
     @Value("${nginx.url}")
     private String nginXPath;
@@ -29,26 +28,27 @@ public class UpdatettService {
     private MergeJsonMaker mergeJsonMaker;
     private VersionMapper versionMapper;
     private NginXFileRead nginXFileRead;
+    private VersionService versionService;
 
-
-    public UpdatettService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper, final NginXFileRead nginXFileRead) {
+    public MergePatchService(final MergeJsonMaker mergeJsonMaker, final VersionMapper versionMapper, final NginXFileRead nginXFileRead, final VersionService versionService) {
         this.mergeJsonMaker = mergeJsonMaker;
         this.versionMapper = versionMapper;
         this.nginXFileRead = nginXFileRead;
+        this.versionService = versionService;
     }
 
     public DefaultRes updateNewVersion(String clientVersion) {
 
         String latestVersion = versionMapper.latestVersion().getVersion();
-        switch (checkRightVersion(latestVersion, clientVersion)) {
-            case NOT_LATEST_VERSION:
-                return DefaultRes.res(StatusCode.NOT_FORMAT, ResponseMessage.NOT_ZIP_FILE);
-            case NOT_VERSION_FORMAT:
-                return DefaultRes.res(StatusCode.NOT_FORMAT, ResponseMessage.NOT_VERSION_FORMAT);
-            case LATEST_VERSION:
-                return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion, latestVersion), getUpdateFileList(clientVersion));
+
+        String checkRightVersionResult = versionService.compareVersion(latestVersion, clientVersion);
+
+
+        if (checkRightVersionResult != ResponseMessage.SUCCESS_TO_GET_LATEST_VERSION) {
+            return DefaultRes.res(StatusCode.NOT_FORMAT, checkRightVersionResult);
         }
-        return DefaultRes.FAIL_DEFAULT_RES;
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion, latestVersion), getUpdateFileList(clientVersion));
     }
 
     public List<String> getUpdateFileList(String clientVersion) {
@@ -59,7 +59,7 @@ public class UpdatettService {
 
         // remote -> local download (using nginx)
         for (VersionLog versionLog : updateVersionList) {
-            nginXFileRead.getRemoteLatestVersionJson(versionLog, JsonType.PATCH);
+            nginXFileRead.getRemoteVersionJson(versionLog, JsonType.PATCH);
         }
 
         List<String> updateFileList = mergeJsonMaker.makeMergeJson();

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,12 +24,25 @@ import static com.masta.patch.utils.TypeConverter.makeFileList;
 public class LocalFileReadWrite {
 
     @Value("${local.path}")
-    public String LOCALPATH;
+    public String localPath;
 
     private final NginXFileRead nginXFileRead;
 
     public LocalFileReadWrite(NginXFileRead nginXFileRead){
         this.nginXFileRead = nginXFileRead;
+    }
+
+
+    public File saveLocal(MultipartFile sourceFile) {
+        resetDir(localPath);
+        File file = new File(localPath + sourceFile.getName() + ".zip");
+        try {
+            sourceFile.transferTo(file);
+            log.info("save file [" + file.getPath() + "]");
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return file;
     }
 
     public static void resetDir(String path) {
@@ -82,7 +96,7 @@ public class LocalFileReadWrite {
     }
 
     public File saveJsonFile(Object obj, String path) {
-        File file = new File(LOCALPATH + path);
+        File file = new File(localPath + path);
         try {
             Gson gson = new Gson();
             String dirJson = gson.toJson(obj);
@@ -94,7 +108,7 @@ public class LocalFileReadWrite {
     }
 
     public DirEntry getRemoteJsonToObject(VersionLog latestVersion){
-        File jsonPath = nginXFileRead.getRemoteLatestVersionJson(latestVersion, JsonType.FULL);
+        File jsonPath = nginXFileRead.getRemoteVersionJson(latestVersion, JsonType.FULL);
         return fullJsonToFileTree(jsonPath.getPath());
     }
 

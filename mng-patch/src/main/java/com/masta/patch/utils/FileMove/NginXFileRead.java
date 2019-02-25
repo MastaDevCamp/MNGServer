@@ -1,9 +1,11 @@
 package com.masta.patch.utils.FileMove;
 
 import com.masta.patch.dto.VersionLog;
+import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.JsonType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +27,11 @@ public class NginXFileRead {
     @Value("${local.path}")
     public String localPath;
 
-    public File getRemoteLatestVersionJson(VersionLog version, JsonType jsonType) {
+    @Autowired
+    LocalFileReadWrite localFileReadWrite;
+
+
+    public File getRemoteVersionJson(VersionLog version, JsonType jsonType) {
         File file = null;
         if (version != null) {
             try {
@@ -46,5 +52,6 @@ public class NginXFileRead {
         }
         return file;
     }
+
 
 }

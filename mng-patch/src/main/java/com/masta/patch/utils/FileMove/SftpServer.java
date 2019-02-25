@@ -117,11 +117,9 @@ public class SftpServer {
             log.error(e.getMessage());
         }
     }
-
-    public void backupRelease(String srcDir, String version) {
+    public void backupDir(String srcDir, String destinationDir) {
         try {
-            mkdir(version, "file/history");
-            channelSftp.rename(rootPath + srcDir, rootPath + "file/history/" + version);
+            channelSftp.rename(rootPath + srcDir, rootPath + destinationDir);
             channelSftp.mkdir(rootPath + srcDir);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -129,8 +127,37 @@ public class SftpServer {
     }
 
     public void rmDir(String srcDir) {
+        recursiveRmDir(rootPath + srcDir);
+    }
+
+    public void remove(String path) {
         try {
-            channelSftp.rmdir(rootPath + srcDir);
+            channelSftp.rm(rootPath + path);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+    }
+
+    public void recursiveRmDir(String path) {
+        try {
+            channelSftp.cd(path);
+            Vector<ChannelSftp.LsEntry> fileAndFolderList = channelSftp.ls(path);
+            for (ChannelSftp.LsEntry item : fileAndFolderList) {
+
+                if (!item.getAttrs().isDir()) {
+                    channelSftp.rm(path + "/" + item.getFilename()); // Remove file.
+                } else if (!(".".equals(item.getFilename()) || "..".equals(item.getFilename()))) {
+                    try {
+                        channelSftp.rmdir(path + "/" + item.getFilename());
+
+                    } catch (Exception e) {
+                        recursiveRmDir(path + "/" + item.getFilename());
+                    }
+                }
+            }
+
+            channelSftp.rmdir(path); // delete the parent directory after empty
         } catch (Exception e) {
             log.error(e.getMessage());
         }

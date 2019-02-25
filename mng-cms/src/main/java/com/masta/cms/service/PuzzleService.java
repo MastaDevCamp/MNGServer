@@ -3,6 +3,7 @@ package com.masta.cms.service;
 import com.masta.cms.dto.Puzzle;
 import com.masta.cms.mapper.PartnerMapper;
 import com.masta.cms.mapper.PuzzleMapper;
+import com.masta.cms.mapper.UserInfoMapper;
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
@@ -17,13 +18,16 @@ import java.util.List;
 public class PuzzleService {
     private final PuzzleMapper puzzleMapper;
     private final PartnerMapper partnerMapper;
-    public PuzzleService(PuzzleMapper puzzleMapper, PartnerMapper partnerMapper) {
+    private final UserInfoMapper userInfoMapper;
+    public PuzzleService(PuzzleMapper puzzleMapper, PartnerMapper partnerMapper, UserInfoMapper userInfoMapper) {
         this.puzzleMapper = puzzleMapper;
         this.partnerMapper = partnerMapper;
+        this.userInfoMapper = userInfoMapper;
     }
 
-    public DefaultRes getPuzzleInfo(final int uid) {
+    public DefaultRes getPuzzleInfo(final Long usernum) {
         try {
+            int uid = userInfoMapper.getUseridWithNum(usernum);
             List<Puzzle> puzzleList = puzzleMapper.getPuzzleInfoWithUid(uid);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_PUZZLES, puzzleList);
         }
@@ -46,8 +50,9 @@ public class PuzzleService {
         }
     }
 
-    public DefaultRes postPuzzleInfo(final int uid, final int partner, final int puzzle, final int pieces) {
+    public DefaultRes postPuzzleInfo(final Long usernum, final int partner, final int puzzle, final int pieces) {
         try {
+            int uid = userInfoMapper.getUseridWithNum(usernum);
             int partner_id = partnerMapper.findPartnerFavor(uid, partner);
             puzzleMapper.insertPuzzleInfoWithPartner(partner_id, puzzle, pieces);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.REGISTER_PIECES);
@@ -59,8 +64,9 @@ public class PuzzleService {
         }
     }
 
-    public DefaultRes putPuzzleInfo(final int uid, final int partner, final int puzzle, final int pieces) {
+    public DefaultRes putPuzzleInfo(final Long usernum, final int partner, final int puzzle, final int pieces) {
         try {
+            int uid = userInfoMapper.getUseridWithNum(usernum);
             int partner_id = partnerMapper.findPartnerFavor(uid, partner);
             log.info("partner_id : " + partner_id);
             puzzleMapper.updatePuzzleInfo(partner_id, puzzle, pieces);

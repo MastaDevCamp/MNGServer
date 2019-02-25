@@ -16,7 +16,7 @@
 - 인증 및 인가
 
 ## 2. API 
-프로젝트 실행후 http://localhost:8080/swagger-ui.html에서 API 상세 목록과 API Call 테스트가 가능합니다.
+프로젝트 실행후 http://localhost:8180/swagger-ui.html에서 API 상세 목록과 API Call 테스트가 가능합니다.
 
 API 관련 자세한 정보는 아래 링크에서 확인하실 수 있습니다.
 | Plugin                 | LINK | 요약                      |

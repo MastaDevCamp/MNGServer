@@ -1,5 +1,6 @@
 package com.masta.cms.api;
 
+import com.masta.cms.auth.dto.UserDto;
 import com.masta.cms.auth.jwt.JwtTokenProvider;
 import com.masta.cms.model.FavorReq;
 import com.masta.cms.service.PartnerService;
@@ -20,18 +21,18 @@ public class PartnerController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @GetMapping("{uid}")
-    public ResponseEntity getAllFavor(@RequestHeader(value="Authentiation") String authentication,
-                                      @PathVariable final int uid) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(partnerService.getFavor(uid), HttpStatus.OK);
+    @GetMapping("")
+    public ResponseEntity getAllFavor(@RequestHeader(value="Authentiation") String authentication) {
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        return new ResponseEntity<>(partnerService.getFavor(usernum), HttpStatus.OK);
     }
 
-    @PutMapping("{uid}")
+    @PutMapping("")
     public ResponseEntity editFavor(@RequestHeader(value="Authentiation") String authentication,
-                                    @PathVariable final int uid,
                                     @RequestBody FavorReq favorReq) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(partnerService.editFavor(uid, favorReq.getPartner(), favorReq.getLike(), favorReq.getTrust()), HttpStatus.OK);
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        return new ResponseEntity<>(partnerService.editFavor(usernum, favorReq.getPartner(), favorReq.getLike(), favorReq.getTrust()), HttpStatus.OK);
     }
 }

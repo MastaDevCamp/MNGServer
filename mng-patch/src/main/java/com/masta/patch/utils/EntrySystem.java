@@ -2,7 +2,6 @@ package com.masta.patch.utils;
 
 import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.FileEntry;
-import com.masta.patch.utils.FileSystem.HashingSystem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

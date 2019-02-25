@@ -1,5 +1,6 @@
-package com.masta.patch.utils.FileSystem;
+package com.masta.patch.utils.JsonMaker;
 
+import com.masta.patch.utils.FileMove.LocalFileReadWrite;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.masta.patch.utils.TypeConverter.*;
 
 @Component
 @Slf4j
@@ -21,16 +24,14 @@ public class MergeJsonMaker {
     @Value("${local.merge.path}")
     private String patchDir;
 
-    private TypeConverter typeConverter;
+    private LocalFileReadWrite localFileReadWrite;
 
-    public MergeJsonMaker(final TypeConverter typeConverter) {
-        this.typeConverter = typeConverter;
+    MergeJsonMaker(LocalFileReadWrite localFileReadWrite){
+        this.localFileReadWrite = localFileReadWrite;
     }
-
     /**
      * make merge json
      */
-
 
     public static HashMap<String, String[]> intermediateHashMap;
 
@@ -48,7 +49,7 @@ public class MergeJsonMaker {
 
         //arrayToFormat
         for (String[] mergeList : intermediateHashMap.values()) {
-            mergeJsonList.add(typeConverter.arrayToStringFormat(mergeList, mergeList[0]));
+            mergeJsonList.add(arrayToStringFormat(mergeList, mergeList[0]));
         }
         return mergeJsonList;
     }
@@ -67,13 +68,10 @@ public class MergeJsonMaker {
 
     public void fileRead(File file) {
 
-        List<String[]> diffArrayList = typeConverter.jsonToList(typeConverter.patchJsonToFileList(file.getPath()));
+        List<String[]> diffArrayList = jsonToList(localFileReadWrite.patchJsonToFileList(file.getPath()));
 
+        HashMap<String, String[]> pathNowHashMap = makePathHashMap(diffArrayList);
 
-        HashMap<String, String[]> pathNowHashMap = new HashMap<>();
-        for (String[] nowPath : diffArrayList) {
-            pathNowHashMap.put(nowPath[PATH], nowPath);
-        }
         for (String nowPath : pathNowHashMap.keySet()) {
             checkDiff(nowPath, pathNowHashMap.get(nowPath));
         }

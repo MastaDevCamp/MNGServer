@@ -9,12 +9,20 @@ public class ResponseMessage {
     // version 관리
     public static final String READ_JSON_FILE = "JSON file 조회 성공";
     public static final String NOT_READ_JSON_FILE = "JSON file 조회 실패";
-    public static final String LASTEST_VERSION = "최신 버전 조회 성공";
+    public static final String SUCCESS_TO_GET_LATEST_VERSION = "최신 버전 전달 성공";
     public static final String NOT_VERSION_FORMAT = "버전 포멧 오류";
     public static final String FILA_TO_GET_VERSION = "최신 버전 조회 실패";
     public static final String NOT_ZIP_FILE = "version 업로드시에 zip파일만 가능";
     public static final String UPLOAD_FIREST_VERSION = "처음 버전 등록 성공";
     public static final String SUCCESS_TO_NEW_VERSION = "새로운 버전 등록 성공";
+    public static final String NOT_LATEST_VERSION = "최신 버전이 아님";
+    public static final String FAIL_TO_SAVE_JSON_IN_LOCAL = "JSON 로컬에 저장 실패";
+    public static final String SUCCESS_TO_SAVE_JSON_IN_LOCAL = "JSON 로컬에 저장 성공";
+    public static final String FAIL_TO_UPLOAD_JSON_TO_SFTP = "JSON 파일 SFTP에 업로드 실패";
+    public static final String FAIL_TO_UPLOAD_FILES_TO_SFTP = "파일 SFTP에 업로드 실패";
+    public static final String SUCCESS_TO_UPLOAD_PATCH = "패치 파일 업로드 성공";
+    public static final String FAIL_TO_INSERT_JSON_DB = "Json DB 입력 실패";
+    public static final String SUCCESS_TO_INSERT_JSON_DB = "Json DB 입력 성공";
 
     public static final String UPDATE_NEW_VERSION(String client, String latest) {
         return client + "버전에서 " + latest + " 버전으로 업데이트 리스트 전달";

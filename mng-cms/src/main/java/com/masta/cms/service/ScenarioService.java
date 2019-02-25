@@ -3,6 +3,7 @@ package com.masta.cms.service;
 import com.masta.cms.dto.Choice;
 import com.masta.cms.dto.Perform;
 import com.masta.cms.mapper.ScenarioMapper;
+import com.masta.cms.mapper.UserInfoMapper;
 import com.masta.cms.model.PerformReq;
 import com.masta.cms.model.SceneReq;
 import com.masta.core.response.DefaultRes;
@@ -18,11 +19,16 @@ import java.util.List;
 @Service
 public class ScenarioService {
     private final ScenarioMapper scenarioMapper;
-    public ScenarioService(final ScenarioMapper scenarioMapper) { this.scenarioMapper = scenarioMapper; }
+    private final UserInfoMapper userInfoMapper;
+    public ScenarioService(final ScenarioMapper scenarioMapper, final UserInfoMapper userInfoMapper) {
+        this.scenarioMapper = scenarioMapper;
+        this.userInfoMapper = userInfoMapper;
+    }
 
     //타입별로 최근 시나리오 찾기
-    public DefaultRes getScenarioByType(final int uid) {
+    public DefaultRes getScenarioByType(final Long usernum) {
         try {
+            int uid = userInfoMapper.getUseridWithNum(usernum);
             List<Perform> performs = scenarioMapper.findPerformedByType(uid);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_SCENARIO, performs);
         } catch (Exception e) {
@@ -33,10 +39,11 @@ public class ScenarioService {
     }
 
     //시나리오 정보로 답변 찾기
-    public DefaultRes getScriptAnsWithSceneReq(final SceneReq sceneReq) {
+    public DefaultRes getScriptAnsWithSceneReq(final Long usernum, final SceneReq sceneReq) {
         try {
+            int uid = userInfoMapper.getUseridWithNum(usernum);
             log.info("안뇽하쇼 : " + sceneReq);
-            List<Choice> choice = scenarioMapper.findScriptChoice(sceneReq);
+            List<Choice> choice = scenarioMapper.findScriptChoice(uid, sceneReq);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_SCENARIO_ANSWER, choice);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -46,14 +53,15 @@ public class ScenarioService {
     }
 
     //답변 등록
-    public DefaultRes postChoice(final SceneReq sceneReq) {
+    public DefaultRes postChoice(final Long usernum, final SceneReq sceneReq) {
         try {
+            int uid = userInfoMapper.getUseridWithNum(usernum);
             SceneReq findScript = new SceneReq();
             findScript.setType(sceneReq.getType());
             findScript.setChapter(sceneReq.getChapter());
             findScript.setScene(sceneReq.getScene());
-            findScript.setUid(sceneReq.getUid());
-            int prfm_id = scenarioMapper.findPerformIdWithSceneReq(findScript);
+
+            int prfm_id = scenarioMapper.findPerformIdWithSceneReq(uid, findScript);
             log.info("prfm_id : " + prfm_id);
             scenarioMapper.inserChoice(prfm_id, sceneReq.getScript(), sceneReq.getAnswer());
             return DefaultRes.res(StatusCode.OK, ResponseMessage.REGISTER_SCENARIO_ANSWER);
@@ -65,18 +73,18 @@ public class ScenarioService {
     }
 
     //시나리오 시작/종료
-    public DefaultRes editPrgsScenario(final int uid, final int type, final int ch, final int sc, final int prgs) {
+    public DefaultRes editPrgsScenario(final Long usernum, final int type, final int ch, final int sc, final int prgs) {
         try {
+            int uid = userInfoMapper.getUseridWithNum(usernum);
             PerformReq performReq = new PerformReq();
-            performReq.setUid(uid);
             performReq.setType(type);
             performReq.setChapter(ch);
             performReq.setScene(sc);
             performReq.setPrgs(prgs);
             if (prgs == 0) {
-                List<Perform> duplicatedPerform = scenarioMapper.findDuplicatedPerformedScene(performReq);
+                List<Perform> duplicatedPerform = scenarioMapper.findDuplicatedPerformedScene(uid, performReq);
                 if (duplicatedPerform == null) {
-                    scenarioMapper.insertPerformStarted(performReq);
+                    scenarioMapper.insertPerformStarted(uid, performReq);
                     return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_SCENARIO_PROGRESS);
                 }
                 else {
@@ -84,7 +92,7 @@ public class ScenarioService {
                 }
             }
             else {
-                scenarioMapper.updatePerformFinished(performReq);
+                scenarioMapper.updatePerformFinished(uid, performReq);
                 return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_SCENARIO_PROGRESS);
             }
         } catch (Exception e) {

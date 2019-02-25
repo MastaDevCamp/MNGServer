@@ -32,7 +32,7 @@ public class UserInitService {
             log.info("서비스 내 사용자 넘 : " + usernum);
 
             Favor favor = partnerMapper.findDefaultFavor();
-            UserDetail userReq = userInfoMapper.findUserDetail(0);
+            UserDetail userReq = userInfoMapper.findUserDefaultValue();
 
             UserReq defaultUser = new UserReq();
             defaultUser.setPushonoff(userReq.getPushonoff());

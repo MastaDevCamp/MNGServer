@@ -11,10 +11,16 @@ public interface UserInfoMapper {
 
     @Select("SELECT * FROM userinfo WHERE uid != 0")
     List<UserDetail> findAllUserDetail();
-    //특정 회원 디테일 정보 조회
-    @Select("SELECT * FROM userinfo WHERE uid = #{uid}")
-    UserDetail findUserDetail(@Param("uid") final int uid);
 
+    @Select("SELECT * FROM userinfo WHERE uid = 0")
+    UserDetail findUserDefaultValue();
+
+    //특정 회원 디테일 정보 조회
+    @Select("SELECT * FROM userinfo WHERE usernum = #{usernum}")
+    UserDetail findUserDetail(@Param("usernum") final Long usernum);
+
+    @Select("SELECT uid FROM userinfo WHERE uid=#{uid}")
+    UserDetail getUseridWithId(@Param("uid") final int uid); 
 
     //******* User Initialize ********//
     //회원 생성
@@ -31,20 +37,20 @@ public interface UserInfoMapper {
 
     //******* User Modify ********//
     //닉네임 변경
-    @Update("UPDATE userinfo SET nickname = #{nickname} WHERE uid = #{uid}")
-    void updateUserNickname(@Param("nickname") final String nickname, @Param("uid") final int uid);
+    @Update("UPDATE userinfo SET nickname = #{nickname} WHERE usernum = #{usernum}")
+    void updateUserNickname(@Param("nickname") final String nickname, @Param("usernum") final Long usernum);
 
     //푸시알람 온오프 정보 변경
-    @Update("UPDATE userinfo SET pushonoff = #{onoff} WHERE uid = #{uid}")
-    void updateUserOnoff(@Param("onoff") final int onoff, @Param("uid") final int uid);
+    @Update("UPDATE userinfo SET pushonoff = #{onoff} WHERE usernum = #{usernum}")
+    void updateUserOnoff(@Param("onoff") final int onoff, @Param("usernum") final Long usernum);
 
     //회원 재화 정보 갱신
-    @Update("UPDATE userinfo SET ruby = #{ruby}, gold = #{gold} WHERE uid = #{uid}")
-    void updateUserMoneyInfo(@Param("ruby") final int ruby, @Param("gold") final int gold, @Param("uid") final int uid);
+    @Update("UPDATE userinfo SET ruby = #{ruby}, gold = #{gold} WHERE usernum = #{usernum}")
+    void updateUserMoneyInfo(@Param("ruby") final int ruby, @Param("gold") final int gold, @Param("usernum") final Long usernum);
 
     //회원 하트 변경
-    @Update("UPDATE userinfo SET heart = #{heart} WHERE uid = #{uid}")
-    void updateUserHeart(@Param("heart") final int heart, @Param("uid") final int uid);
+    @Update("UPDATE userinfo SET heart = #{heart} WHERE usernum = #{usernum}")
+    void updateUserHeart(@Param("heart") final int heart, @Param("usernum") final Long usernum);
 
     @Update("UPDATE userinfo SET gold=#{detail.gold}, ruby=#{detail.ruby}, heart=#{detail.heart} WHERE uid=#{user_id}")
     void updateUserInfo(@Param("user_id") final int user_id, @Param("detail") final UserReq detail);

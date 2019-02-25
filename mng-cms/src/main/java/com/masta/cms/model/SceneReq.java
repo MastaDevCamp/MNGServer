@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class SceneReq {
-    private int uid;
     private int type;
     private int chapter;
     private int scene;

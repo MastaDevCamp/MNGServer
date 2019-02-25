@@ -1,5 +1,6 @@
 package com.masta.cms.api;
 
+import com.masta.cms.auth.dto.UserDto;
 import com.masta.cms.auth.jwt.JwtTokenProvider;
 import com.masta.cms.model.HistoryReq;
 import com.masta.cms.service.HistoryService;
@@ -20,32 +21,35 @@ public class HistoryController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @GetMapping("/cg/{uid}")
-    public ResponseEntity getCGInfo(@RequestHeader(value = "Authentiation") String authentication, @PathVariable final int uid) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(historyService.getCGInfoWithUid(uid), HttpStatus.OK);
+    @GetMapping("/cg")
+    public ResponseEntity getCGInfo(@RequestHeader(value = "Authentiation") String authentication) {
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        log.info("***************************usernum**************************" + usernum);
+        return new ResponseEntity<>(historyService.getCGInfoWithNum(usernum), HttpStatus.OK);
     }
 
-    @GetMapping("/ending/{uid}")
-    public ResponseEntity getEndingInfo(@RequestHeader(value = "Authentiation") String authentication, @PathVariable final int uid) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(historyService.getEndingInfoWithUid(uid), HttpStatus.OK);
+    @GetMapping("/ending")
+    public ResponseEntity getEndingInfo(@RequestHeader(value = "Authentiation") String authentication) {
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        return new ResponseEntity<>(historyService.getEndingInfoWithNum(usernum), HttpStatus.OK);
     }
 
-    @PostMapping("/cg/{uid}")
+    @PostMapping("/cg")
     public ResponseEntity postCGinHistoryInfo(@RequestHeader(value = "Authentiation") String authentication,
-                                              @PathVariable final int uid,
                                               @RequestBody final HistoryReq historyReq) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(historyService.postCGinHistory(uid, historyReq.getCg()), HttpStatus.OK);
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        return new ResponseEntity<>(historyService.postCGinHistory(usernum, historyReq.getCg()), HttpStatus.OK);
     }
 
-    @PostMapping("/ending/{uid}")
+    @PostMapping("/ending")
     public ResponseEntity postEndingHistoryInfo(@RequestHeader(value = "Authentiation") String authentication,
-                                                @PathVariable final int uid,
                                                 @RequestBody final HistoryReq historyReq) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(historyService.postEndinginHistory(uid, historyReq.getEnding()), HttpStatus.OK);
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        return new ResponseEntity<>(historyService.postEndinginHistory(usernum, historyReq.getEnding()), HttpStatus.OK);
     }
 
 //    @PostMapping("/{uid}/ending")

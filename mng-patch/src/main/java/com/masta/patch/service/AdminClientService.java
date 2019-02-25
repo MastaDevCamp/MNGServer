@@ -8,7 +8,7 @@ import com.masta.patch.dto.VersionLog;
 import com.masta.patch.mapper.VersionMapper;
 import com.masta.patch.model.DirEntry;
 import com.masta.patch.model.JsonType;
-import com.masta.patch.utils.FileSystem.TypeConverter;
+import com.masta.patch.utils.TypeConverter;
 import com.masta.patch.utils.HttpConnection;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

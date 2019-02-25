@@ -13,22 +13,22 @@
 
 ## API LISTS
 
-#### [- POST](http://localhost:8080/swagger-ui.html#!/user-controller/joinAccountUsingPOST) [/join/account](http://localhost:8080/swagger-ui.html#!/user-controller/joinAccountUsingPOST)
+#### [- POST](http://localhost:8180/swagger-ui.html#!/user-controller/joinAccountUsingPOST) [/join/account](http://localhost:8080/swagger-ui.html#!/user-controller/joinAccountUsingPOST)
 
 - 계정 회원가입 API
 
-#### [- POST](http://localhost:8080/swagger-ui.html#!/user-controller/joinGuestUsingPOST) [/join/guest](http://localhost:8080/swagger-ui.html#!/user-controller/joinGuestUsingPOST)
+#### [- POST](http://localhost:8180/swagger-ui.html#!/user-controller/joinGuestUsingPOST) [/join/guest](http://localhost:8080/swagger-ui.html#!/user-controller/joinGuestUsingPOST)
 
 - 게스트 회원가입 API
 
-#### [- POST](http://localhost:8080/swagger-ui.html#!/user-controller/loginAccountUsingPOST) [/login/account](http://localhost:8080/swagger-ui.html#!/user-controller/loginAccountUsingPOST)
+#### [- POST](http://localhost:8180/swagger-ui.html#!/user-controller/loginAccountUsingPOST) [/login/account](http://localhost:8080/swagger-ui.html#!/user-controller/loginAccountUsingPOST)
 
 - 계정 로그인 API
 
-### [- POST](http://localhost:8080/swagger-ui.html#!/user-controller/LoginGuestUsingPOST) [/login/guest](http://localhost:8080/swagger-ui.html#!/user-controller/LoginGuestUsingPOST)
+### [- POST](http://localhost:8180/swagger-ui.html#!/user-controller/LoginGuestUsingPOST) [/login/guest](http://localhost:8080/swagger-ui.html#!/user-controller/LoginGuestUsingPOST)
 
 - 게스트 로그인 API
 
-#### [- DELETE](http://localhost:8080/swagger-ui.html#!/user-controller/DeleteUserUsingDELETE) [/user/{usernum}](http://localhost:8080/swagger-ui.html#!/user-controller/DeleteUserUsingDELETE)
+#### [- DELETE](http://localhost:8180/swagger-ui.html#!/user-controller/DeleteUserUsingDELETE) [/user/{usernum}](http://localhost:8080/swagger-ui.html#!/user-controller/DeleteUserUsingDELETE)
 
 - 유저 탈퇴

@@ -1,5 +1,6 @@
 package com.masta.cms.api;
 
+import com.masta.cms.auth.dto.UserDto;
 import com.masta.cms.auth.jwt.JwtTokenProvider;
 import com.masta.cms.model.PuzzleReq;
 import com.masta.cms.service.PuzzleService;
@@ -20,27 +21,28 @@ public class PuzzleController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    @GetMapping("/{uid}")
-    public ResponseEntity getPuzzleInfo(@RequestHeader(value="Authentiation") String authentication,
-                                        @PathVariable final int uid) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(puzzleService.getPuzzleInfo(uid), HttpStatus.OK);
+    @GetMapping("/")
+    public ResponseEntity getPuzzleInfo(@RequestHeader(value="Authentiation") String authentication) {
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+
+        return new ResponseEntity<>(puzzleService.getPuzzleInfo(usernum), HttpStatus.OK);
     }
 
-    @PostMapping("/{uid}")
+    @PostMapping("/")
     public ResponseEntity postPuzzleInfo(@RequestHeader(value="Authentiation") String authentication,
-                                         @PathVariable final int uid,
                                          @RequestBody final PuzzleReq puzzleReq) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(puzzleService.postPuzzleInfo(uid, puzzleReq.getPartner(), puzzleReq.getPuzzle(), puzzleReq.getPieces()), HttpStatus.OK);
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        return new ResponseEntity<>(puzzleService.postPuzzleInfo(usernum, puzzleReq.getPartner(), puzzleReq.getPuzzle(), puzzleReq.getPieces()), HttpStatus.OK);
     }
 
-    @PutMapping("/{uid}")
+    @PutMapping("/")
     public ResponseEntity putPuzzleInfo(@RequestHeader(value="Authentiation") String authentication,
-                                        @PathVariable final int uid,
                                         @RequestBody final PuzzleReq puzzleReq) {
-        jwtTokenProvider.getUser(authentication, "ROLE_USER");
-        return new ResponseEntity<>(puzzleService.putPuzzleInfo(uid, puzzleReq.getPartner(), puzzleReq.getPuzzle(), puzzleReq.getPieces()), HttpStatus.OK);
+        UserDto userDto = jwtTokenProvider.getUser(authentication, "ROLE_USER");
+        Long usernum = userDto.getUsernum();
+        return new ResponseEntity<>(puzzleService.putPuzzleInfo(usernum, puzzleReq.getPartner(), puzzleReq.getPuzzle(), puzzleReq.getPieces()), HttpStatus.OK);
     }
 
 }

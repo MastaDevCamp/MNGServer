@@ -35,12 +35,23 @@ public class MergePatchService {
     @Autowired
     private LocalFileReadWrite localFileReadWrite;
 
+    public DefaultRes updateNewVersion_Http(String clientVersion){
+        String latestVersion = versionMapper.latestVersion().getVersion();
+        String checkRightVersionResult = versionService.compareVersion(latestVersion, clientVersion);
+
+        if (checkRightVersionResult != ResponseMessage.SUCCESS_TO_GET_LATEST_VERSION) {
+            return DefaultRes.res(StatusCode.NOT_FORMAT, checkRightVersionResult);
+        }
+
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.UPDATE_NEW_VERSION(clientVersion, latestVersion),getUpdateFileList_HTTP(clientVersion));
+
+    }
+
     public DefaultRes updateNewVersion(String clientVersion) {
 
         String latestVersion = versionMapper.latestVersion().getVersion();
 
         String checkRightVersionResult = versionService.compareVersion(latestVersion, clientVersion);
-
 
         if (checkRightVersionResult != ResponseMessage.SUCCESS_TO_GET_LATEST_VERSION) {
             return DefaultRes.res(StatusCode.NOT_FORMAT, checkRightVersionResult);
@@ -64,5 +75,18 @@ public class MergePatchService {
         List<String> updateFileList = mergeJsonMaker.makeMergeJson();
         return updateFileList;
     }
+
+    public List<String> getUpdateFileList_HTTP(String clientVersion){
+        int clientVersionId = versionMapper.getVersionId(clientVersion);
+
+        List<VersionLog> updateVersionList = versionMapper.getUpdateVersionList(clientVersionId);
+        List<String> updateFileList = null;
+        if(updateVersionList != null){
+             updateFileList = mergeJsonMaker.makeMergeJson_HTTP(updateVersionList);
+        }
+        return updateFileList;
+    }
+
+
 
 }

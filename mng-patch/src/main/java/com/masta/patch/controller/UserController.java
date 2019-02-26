@@ -35,6 +35,19 @@ public class UserController {
         }
     }
 
+
+
+    @PostMapping("MergeHTTP")
+    public ResponseEntity updateClientResource_HTTP(@RequestBody final String clientVersion) {
+        try {
+            //String convert = clientVersion.replace("_", "\\.");
+            return new ResponseEntity(mergePatchService.updateNewVersion_Http(clientVersion.replace("_", ".")), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Transactional
     @GetMapping("lastVersion")
     public ResponseEntity checkLastVersion() {

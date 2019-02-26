@@ -76,6 +76,7 @@ public class ScenarioService {
     public DefaultRes editPrgsScenario(final Long usernum, final int type, final int ch, final int sc, final int prgs) {
         try {
             int uid = userInfoMapper.getUseridWithNum(usernum);
+            log.info("유저 아이디 : " + uid);
             PerformReq performReq = new PerformReq();
             performReq.setType(type);
             performReq.setChapter(ch);
@@ -83,7 +84,8 @@ public class ScenarioService {
             performReq.setPrgs(prgs);
             if (prgs == 0) {
                 List<Perform> duplicatedPerform = scenarioMapper.findDuplicatedPerformedScene(uid, performReq);
-                if (duplicatedPerform == null) {
+                log.info("??!?!?! : " + duplicatedPerform);
+                if (duplicatedPerform.size() == 0) {
                     scenarioMapper.insertPerformStarted(uid, performReq);
                     return DefaultRes.res(StatusCode.OK, ResponseMessage.MODIFY_SCENARIO_PROGRESS);
                 }

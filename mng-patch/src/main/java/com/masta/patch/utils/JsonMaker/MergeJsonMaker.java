@@ -1,7 +1,9 @@
 package com.masta.patch.utils.JsonMaker;
 
 import com.masta.patch.utils.FileMove.LocalFileReadWrite;
+import com.masta.patch.utils.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.masta.patch.utils.TypeConverter.*;
+import static com.masta.patch.utils.TypeConverter.arrayToStringFormat;
+import static com.masta.patch.utils.TypeConverter.jsonToList;
 
 @Component
 @Slf4j
@@ -21,14 +24,19 @@ public class MergeJsonMaker {
     private final int FILE_DIFF_TYPE = 8;
     private final int PATH = 1;
 
-    @Value("${local.merge.path}")
-    private String patchDir;
+    @Value("${local.path}")
+    private String localPath;
 
+
+    @Autowired
     private LocalFileReadWrite localFileReadWrite;
+    @Autowired
+    private TypeConverter typeConverter;
 
-    MergeJsonMaker(LocalFileReadWrite localFileReadWrite){
+    MergeJsonMaker(LocalFileReadWrite localFileReadWrite) {
         this.localFileReadWrite = localFileReadWrite;
     }
+
     /**
      * make merge json
      */
@@ -56,7 +64,7 @@ public class MergeJsonMaker {
 
     public List<File> patchJsonList() {
         log.info("patchJsonList");
-        File dir = new File(patchDir);
+        File dir = new File(localPath + "merge");
         List<File> patchJsonFiles = new ArrayList<>();
 
         File[] files = dir.listFiles();
@@ -70,7 +78,7 @@ public class MergeJsonMaker {
 
         List<String[]> diffArrayList = jsonToList(localFileReadWrite.patchJsonToFileList(file.getPath()));
 
-        HashMap<String, String[]> pathNowHashMap = makePathHashMap(diffArrayList);
+        HashMap<String, String[]> pathNowHashMap = typeConverter.makePathHashMap(diffArrayList);
 
         for (String nowPath : pathNowHashMap.keySet()) {
             checkDiff(nowPath, pathNowHashMap.get(nowPath));

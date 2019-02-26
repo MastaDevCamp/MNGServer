@@ -46,6 +46,7 @@ public class UserDetailService {
     public DefaultRes getUserDetailWithId(final int uid){
         try {
             final UserDetail userDetail = userInfoMapper.getUseridWithId(uid);
+            log.info("userDetail : " + userDetail);
             return DefaultRes.res(StatusCode.OK, ResponseMessage.FIND_USER_DETAIL, userDetail);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

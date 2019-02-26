@@ -19,8 +19,8 @@ public interface UserInfoMapper {
     @Select("SELECT * FROM userinfo WHERE usernum = #{usernum}")
     UserDetail findUserDetail(@Param("usernum") final Long usernum);
 
-    @Select("SELECT uid FROM userinfo WHERE uid=#{uid}")
-    UserDetail getUseridWithId(@Param("uid") final int uid); 
+    @Select("SELECT * FROM userinfo WHERE uid=#{uid}")
+    UserDetail getUseridWithId(@Param("uid") final int uid);
 
     //******* User Initialize ********//
     //회원 생성

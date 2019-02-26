@@ -64,7 +64,7 @@ API 관련 자세한 정보는 아래 링크에서 확인하실 수 있습니다
     └─ log
        ├─ full
        |  └─ [json files : FULL_VER_0.0.1.json]
-	   └─ patch
+       └─ patch
           └─ [json files : PATCH_VER_0.0.1.json]
 ```
 

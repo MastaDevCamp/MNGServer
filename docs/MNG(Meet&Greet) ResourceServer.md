@@ -3,7 +3,7 @@
 ## 0. 프로젝트 목적
 #### 실제 패치 업로드 서비스 만들기
 
-![그림1](..\mng-patch\docs\docs_image\p2.png)
+![p2](https://user-images.githubusercontent.com/26458200/53396517-f90b3280-39e7-11e9-9e00-5a8c4b9320aa.png)
 
 
 
@@ -27,6 +27,7 @@
 프로젝트 실행후 http://localhost:8082/swagger-ui.html에서 API 상세 목록과 API Call 테스트가 가능합니다.
 
 API 관련 자세한 정보는 아래 링크에서 확인하실 수 있습니다.
+
 | Plugin                 | LINK | 요약                      |
 | ---------------------- | ---- | ------------------------- |
 | [AdminController](../mng-patch/docs/AdminController.md) | [link](../mng-patch/src/main/java/com/masta/patch/controller/AdminController.java) | 관리자 관련 api |

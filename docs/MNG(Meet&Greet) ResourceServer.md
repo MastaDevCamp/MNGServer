@@ -3,7 +3,7 @@
 ## 0. 프로젝트 목적
 #### 실제 패치 업로드 서비스 만들기
 
-- ![그림1](..\mng-patch\docs\docs_image\그림1.png)
+![그림1](..\mng-patch\docs\docs_image\p2.png)
 
 
 

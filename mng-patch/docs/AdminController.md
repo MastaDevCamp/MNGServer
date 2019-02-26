@@ -26,7 +26,22 @@
   2. multipart Formdata로 resource server에 파일 전송
 
   3. 파일 전처리
+
+     - 버전 정보 생성, 압축 및 해싱 정보로 CRC체크 정보 저장
+
   4. SFTP를 이용해 리소스 스토리지에 파일 저장
+
+     - version up중 파일 업로딩 오류를 대비한 backup 폴더에 리소스 저장
+
+     - roolback을 대비한 history 버전 파일 저장
+
+     - 최신 버전 파일들 realese에 저장
+
+     - full_ver.json 파일 저장 : 최신버전 파일 혹은 폴더 리스트 정보
+
+     - patch_ver.json 파일 저장 : 업데이트된 파일 혹은 폴더 리스트 정보
+
+       
 
 #### - [GET /admin/all](http://localhost:8082/swagger-ui.html#!/admin-controller/viewAllVersionUsingGET)
 

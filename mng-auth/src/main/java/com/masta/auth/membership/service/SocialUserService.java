@@ -14,11 +14,10 @@ import com.masta.core.response.ResponseMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.omg.IOP.ExceptionDetailMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -65,6 +64,17 @@ public class SocialUserService {
             user = socialUserForm.toEntity();
             user.setAuthority("ROLE_USER");
             user = socialUserRepository.save(user);
+            RestTemplate restTemplate = new RestTemplate();
+            JSONObject req = new JSONObject();
+            try {
+                req.put("usernum",user.getNum());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<String>(req.toString(),headers);
+            restTemplate.exchange("http://175.210.61.143:8201/init", HttpMethod.POST,entity,HttpEntity.class);
         } else user = saveUser.get();
         return user;
     }

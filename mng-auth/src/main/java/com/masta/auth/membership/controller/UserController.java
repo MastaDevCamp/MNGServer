@@ -15,13 +15,14 @@ import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -63,7 +64,15 @@ public class UserController {
                 return new ResponseEntity(DefaultRes.res(StatusCode.OK, ResponseMessage.EXIST_USER), HttpStatus.OK);
             }
             // ++ 이메일 인증했는지 확인
-            accountUserService.createUser(accountUserForm.toAccountUser());
+            User user = accountUserService.createUser(accountUserForm.toAccountUser());
+            RestTemplate restTemplate = new RestTemplate();
+            JSONObject req = new JSONObject();
+            req.put("usernum",user.getNum());
+            System.out.println(user.getNum());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(req.toString(),headers);
+            restTemplate.exchange("http://175.210.61.143:8201/init", HttpMethod.POST,entity,HttpEntity.class);
             return new ResponseEntity("success", HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -75,6 +84,14 @@ public class UserController {
     public ResponseEntity joinGuest() {
         try {
             GuestUser guestUser = guestUserService.saveGuestUser(); // ++ maybe return guest_id;
+            RestTemplate restTemplate = new RestTemplate();
+            JSONObject req = new JSONObject();
+            req.put("usernum",guestUser.getNum());
+            System.out.println(guestUser.getNum());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<String> entity = new HttpEntity<>(req.toString(),headers);
+            restTemplate.exchange("http://175.210.61.143:8201/init", HttpMethod.POST,entity,HttpEntity.class);
             return new ResponseEntity(guestUser.getGuestId(), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());

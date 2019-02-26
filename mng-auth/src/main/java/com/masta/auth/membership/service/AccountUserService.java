@@ -40,11 +40,12 @@ public class AccountUserService implements UserDetailsService {
     }
 
     @Transactional
-    public void createUser(AccountUser accountUser) {
+    public User createUser(AccountUser accountUser) {
         String pw = accountUser.getPassword();
         String encodedPw = new BCryptPasswordEncoder().encode(pw);
         accountUser.setPassword(encodedPw);
-        accountUserRepository.save(accountUser);
+        User user = accountUserRepository.save(accountUser);
+        return user;
     }
 
     @Transactional

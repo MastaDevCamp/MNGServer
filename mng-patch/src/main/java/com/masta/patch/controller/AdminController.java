@@ -2,6 +2,7 @@ package com.masta.patch.controller;
 
 import com.masta.core.response.DefaultRes;
 import com.masta.patch.model.JsonType;
+import com.masta.patch.model.PatchJson;
 import com.masta.patch.service.AdminClientService;
 import com.masta.patch.service.UpdateService;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class AdminController {
 
     private final AdminClientService adminClientService;
     private final UpdateService updateService;
+    private final PatchJson patchJson;
 
     @GetMapping("all")
     public ResponseEntity viewAllVersion() {
@@ -55,6 +57,16 @@ public class AdminController {
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("init")
+    public ResponseEntity viewPatchVersion() {
+        try {
+            return new ResponseEntity(patchJson.getPatchJson(), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(DefaultRes.FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

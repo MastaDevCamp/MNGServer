@@ -65,4 +65,14 @@ public class MergePatchService {
         return updateFileList;
     }
 
+    public List<String> getUpdateFileList_HTTP(String clientVersion) {
+        int clientVersionId = versionMapper.getVersionId(clientVersion);
+
+        List<VersionLog> updateVersionList = versionMapper.getUpdateVersionList(clientVersionId);
+        List<String> updateFileList = null;
+        if (updateVersionList != null) {
+            updateFileList = mergeJsonMaker.makeMergeJson_HTTP(updateVersionList);
+        }
+        return updateFileList;
+    }
 }

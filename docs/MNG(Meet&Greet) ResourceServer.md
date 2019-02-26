@@ -3,7 +3,7 @@
 ## 0. 프로젝트 목적
 #### 실제 패치 업로드 서비스 만들기
 
-![그림1](..\mng-patch\docs\docs_image\p2.png)
+![p2](https://user-images.githubusercontent.com/26458200/53396517-f90b3280-39e7-11e9-9e00-5a8c4b9320aa.png)
 
 
 

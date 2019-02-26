@@ -1,5 +1,6 @@
 package com.masta.cms.service;
 
+import com.masta.cms.auth.dto.UserDto;
 import com.masta.cms.dto.Favor;
 import com.masta.cms.dto.UserDetail;
 import com.masta.cms.mapper.PartnerMapper;

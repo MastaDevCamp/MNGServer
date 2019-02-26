@@ -28,7 +28,7 @@ public class LocalFileReadWrite {
 
     private final NginXFileRead nginXFileRead;
 
-    public LocalFileReadWrite(NginXFileRead nginXFileRead){
+    public LocalFileReadWrite(NginXFileRead nginXFileRead) {
         this.nginXFileRead = nginXFileRead;
     }
 
@@ -107,9 +107,29 @@ public class LocalFileReadWrite {
         return file;
     }
 
-    public DirEntry getRemoteJsonToObject(VersionLog latestVersion){
+    public DirEntry getRemoteJsonToObject(VersionLog latestVersion) {
         File jsonPath = nginXFileRead.getRemoteVersionJson(latestVersion, JsonType.FULL);
-        return fullJsonToFileTree(jsonPath.getPath());
+        if (jsonPath == null) {
+            return null;
+        } else {
+            return fullJsonToFileTree(jsonPath.getPath());
+        }
     }
+
+    public File getRemotePatchVersionJson(VersionLog versionLog) {
+        return nginXFileRead.getRemoteVersionJson(versionLog, JsonType.PATCH);
+    }
+
+
+    public void rmLocalDir(File file) {
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                rmLocalDir(f);
+            }
+        }
+        file.delete();
+    }
+
 
 }

@@ -28,8 +28,9 @@ public class TypeConverter {
      * @return
      */
     public static List<String> makeFileList(DirEntry rootDir) {
+        if (rootDir == null)
+            return null;
         List<String> fileList = new ArrayList<>();
-
         searchFile(rootDir, fileList);
         Collections.sort(fileList);
 
@@ -61,6 +62,9 @@ public class TypeConverter {
      * @return
      */
     public static List<String[]> jsonToList(List<String> jsonList) {
+
+        if (jsonList == null)
+            return null;
 
         List<String[]> strings = new ArrayList<>();
 
@@ -98,7 +102,9 @@ public class TypeConverter {
      * @return
      */
 
-    public static HashMap<String, String[]> makePathHashMap(List<String[]> jsonStringList) {
+    public HashMap<String, String[]> makePathHashMap(List<String[]> jsonStringList) {
+        if (jsonStringList == null)
+            return new HashMap<String, String[]>();
 
         HashMap<String, String[]> hashMap = new HashMap<>();
 
@@ -107,9 +113,6 @@ public class TypeConverter {
         }
         return hashMap;
     }
-
-
-
 
 
 }

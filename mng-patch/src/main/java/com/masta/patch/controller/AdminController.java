@@ -49,9 +49,9 @@ public class AdminController {
     }
 
     @PostMapping("newVersion")
-    public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile newPatchFile, @RequestParam("newVersion") final String newVersion) {
+    public ResponseEntity uploadNewVersion(@RequestPart final MultipartFile newVersionFile, @RequestParam("newVersion") final String newVersion) {
         try {
-            return new ResponseEntity(updateService.updateVersion(newPatchFile, newVersion), HttpStatus.OK);
+            return new ResponseEntity(updateService.updateVersion(newVersionFile, newVersion), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

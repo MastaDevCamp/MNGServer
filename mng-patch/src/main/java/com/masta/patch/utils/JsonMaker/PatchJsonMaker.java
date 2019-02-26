@@ -1,8 +1,9 @@
 package com.masta.patch.utils.JsonMaker;
 
 import com.masta.patch.model.DirEntry;
-import io.swagger.models.auth.In;
+import com.masta.patch.utils.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public class PatchJsonMaker {
     private final int DIR_DIFF_TYPE = 4;
     private final int FILE_DIFF_TYPE = 8;
 
+    @Autowired
+    private TypeConverter typeConverter;
+
     /**
      * make full json to patch json's string list
      *
@@ -27,21 +31,21 @@ public class PatchJsonMaker {
      * @param afterJson
      * @return
      */
+
     public List<String> getPatchFileList(DirEntry beforeJson, DirEntry afterJson) {
-        if (beforeJson != null) {
-            List<String[]> beforeJsonStrings = jsonToList(makeFileList(beforeJson));
-            List<String[]> afterJsonStrings = jsonToList(makeFileList(afterJson));
-            try {
-                HashMap<String, String[]> beforeHashMap = makePathHashMap(beforeJsonStrings);
-                HashMap<String, String[]> afterHashMap = makePathHashMap(afterJsonStrings);
+        List<String[]> beforeJsonStrings = jsonToList(makeFileList(beforeJson));
+        List<String[]> afterJsonStrings = jsonToList(makeFileList(afterJson));
+        try {
+            HashMap<String, String[]> beforeHashMap = typeConverter.makePathHashMap(beforeJsonStrings);
+            HashMap<String, String[]> afterHashMap = typeConverter.makePathHashMap(afterJsonStrings);
 
-                return compareDiff(beforeHashMap, afterHashMap);
+            return compareDiff(beforeHashMap, afterHashMap);
 
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
-        return null; // create 만들기
+
+        return null;
     }
 
 

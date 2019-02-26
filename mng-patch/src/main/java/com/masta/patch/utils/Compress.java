@@ -21,16 +21,17 @@ public class Compress {
     private static String originalFilePath = "C:\\WorkSpace\\newVersion\\";
 
     public String zip(File file) {
-        String PatchZipPath = localPath + "PatchZip/";
-        String relPath = file.getParent().replace(originalFilePath, "") + "/";
-        String destination = file.getPath();
+        String PatchZipPath = localPath + "PatchZip";
+        String relPath = file.getParent().replace("\\", "/")
+                .replace(localPath + "newVersionFile", "") + "/";
+        String source = file.getPath();
         new File(PatchZipPath + relPath).mkdirs();
-        String source = PatchZipPath + relPath + file.getName() + ".zip";
 
-        File destFile = new File(destination);
+        String destination = PatchZipPath + relPath + file.getName() + ".zip";
+        File destFile = new File(source);
 
         try {
-            ZipFile zipFile = new ZipFile(source);
+            ZipFile zipFile = new ZipFile(destination);
             ZipParameters parameters = new ZipParameters();
             parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
             parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
@@ -39,7 +40,7 @@ public class Compress {
             e.printStackTrace();
         }
 
-        return source;
+        return destination;
     }
 
     public static String unzip(File file) {

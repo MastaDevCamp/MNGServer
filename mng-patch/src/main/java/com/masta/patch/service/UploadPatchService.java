@@ -41,10 +41,10 @@ public class UploadPatchService {
             String pathJsonPath = localPath + String.format("Patch_Ver_%s.json", newVersion);
 
             List<String> fullFileList = localFileReadWrite.fullJsonToFileList(fullJsonPath);
-            uploadToRemote(fullFileList, "file/release");
+            uploadToRemote(fullFileList, "file/release", true);
 
             List<String> patchFileList = localFileReadWrite.patchJsonToFileList(pathJsonPath);
-            uploadToRemote(patchFileList, "file/history/" + newVersion);
+            uploadToRemote(patchFileList, "file/history/" + newVersion, false);
         } catch (Exception e) {
             log.error("Fail to upload files to SFTP, " + e.getMessage());
             return ResponseMessage.FAIL_TO_UPLOAD_FILES_TO_SFTP;
@@ -52,9 +52,10 @@ public class UploadPatchService {
         return ResponseMessage.SUCCESS_TO_UPLOAD_PATCH;
     }
 
-    public void uploadToRemote(List<String> uploadFileList, String remotePath) {
+    public void uploadToRemote(List<String> uploadFileList, String remotePath, boolean isBackup) {
         sftpServer.init();
-        sftpServer.backupDir("file/release", "file/backup");
+        if (isBackup)
+            sftpServer.backupDir(remotePath, "file/backup");
         sftpServer.rmDir(remotePath);
         sftpServer.mkdir(remotePath);
 

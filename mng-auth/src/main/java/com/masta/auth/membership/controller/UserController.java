@@ -1,4 +1,4 @@
-package com.masta.auth.membership.controller;
+﻿package com.masta.auth.membership.controller;
 
 import com.masta.auth.exception.exceptions.NoSuchDataException;
 import com.masta.auth.jwt.JwtTokenProvider;

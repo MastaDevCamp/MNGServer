@@ -1,5 +1,6 @@
 package com.masta.auth.oauth2.Handler;
 
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,10 @@ public class FacebookSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        commonSuccessComponent.successProcess(request, response,authentication,"facebook");
+        try {
+            commonSuccessComponent.successProcess(request, response,authentication,"facebook");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿package com.masta.auth.membership.controller;
+package com.masta.auth.membership.controller;
 
 import com.masta.auth.exception.exceptions.NoSuchDataException;
 import com.masta.auth.jwt.JwtTokenProvider;
@@ -10,19 +10,18 @@ import com.masta.auth.membership.entity.GuestUser;
 import com.masta.auth.membership.entity.User;
 import com.masta.auth.membership.service.AccountUserService;
 import com.masta.auth.membership.service.GuestUserService;
+import com.masta.auth.membership.service.HttpService;
 import com.masta.auth.membership.service.UserService;
 import com.masta.core.response.DefaultRes;
 import com.masta.core.response.ResponseMessage;
 import com.masta.core.response.StatusCode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
 
@@ -32,6 +31,7 @@ import static com.masta.core.response.DefaultRes.FAIL_DEFAULT_RES;
  * - 유저 탈퇴
  * ++ 로그아웃
  */
+
 @Slf4j
 @RestController
 public class UserController {
@@ -41,6 +41,8 @@ public class UserController {
     final AccountUserService accountUserService;
     final AuthenticationManager authenticationManager;
     final JwtTokenProvider jwtTokenProvider;
+
+    HttpService httpService = new HttpService();
 
     public UserController(UserService userService, GuestUserService guestUserService, AccountUserService accountUserService,
                           AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
@@ -65,14 +67,7 @@ public class UserController {
             }
             // ++ 이메일 인증했는지 확인
             User user = accountUserService.createUser(accountUserForm.toAccountUser());
-            RestTemplate restTemplate = new RestTemplate();
-            JSONObject req = new JSONObject();
-            req.put("usernum",user.getNum());
-            System.out.println(user.getNum());
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> entity = new HttpEntity<>(req.toString(),headers);
-            restTemplate.exchange("http://175.210.61.143:8201/init", HttpMethod.POST,entity,HttpEntity.class);
+            httpService.InitCMS("http://175.210.61.143:8201/init", user.getNum());
             return new ResponseEntity("success", HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -84,14 +79,15 @@ public class UserController {
     public ResponseEntity joinGuest() {
         try {
             GuestUser guestUser = guestUserService.saveGuestUser(); // ++ maybe return guest_id;
-            RestTemplate restTemplate = new RestTemplate();
-            JSONObject req = new JSONObject();
-            req.put("usernum",guestUser.getNum());
-            System.out.println(guestUser.getNum());
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> entity = new HttpEntity<>(req.toString(),headers);
-            restTemplate.exchange("http://175.210.61.143:8201/init", HttpMethod.POST,entity,HttpEntity.class);
+//            RestTemplate restTemplate = new RestTemplate();
+//            JSONObject req = new JSONObject();
+//            req.put("usernum",guestUser.getNum());
+//            System.out.println(guestUser.getNum());
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//            HttpEntity<String> entity = new HttpEntity<>(req.toString(),headers);
+//            restTemplate.exchange("http://175.210.61.143:8201/init", HttpMethod.POST,entity,HttpEntity.class);
+            httpService.InitCMS("http://175.210.61.143:8201/init", guestUser.getNum());
             return new ResponseEntity(guestUser.getGuestId(), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());

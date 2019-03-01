@@ -44,6 +44,8 @@ public class SocialUserService {
     @Autowired
     YmlConfig ymlConfig;
 
+    HttpService httpService = new HttpService();
+
     public SocialUserService(SocialUserRepository socialUserRepository) {
         this.socialUserRepository = socialUserRepository;
     }
@@ -57,24 +59,15 @@ public class SocialUserService {
     }
 
     @Transactional
-    public SocialUser getOrSave(SocialUserForm socialUserForm) {
+    public SocialUser getOrSave(SocialUserForm socialUserForm) throws JSONException {
         SocialUser user = null;
         Optional<SocialUser> saveUser = socialUserRepository.findBySocialId(socialUserForm.getSocial_id());
         if (!saveUser.isPresent()) {
             user = socialUserForm.toEntity();
             user.setAuthority("ROLE_USER");
             user = socialUserRepository.save(user);
-            RestTemplate restTemplate = new RestTemplate();
-            JSONObject req = new JSONObject();
-            try {
-                req.put("usernum",user.getNum());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> entity = new HttpEntity<String>(req.toString(),headers);
-            restTemplate.exchange("http://175.210.61.143:8201/init", HttpMethod.POST,entity,HttpEntity.class);
+            Long num = saveUser.get().getNum();
+            httpService.InitCMS("http://175.210.61.143.:8201/init", num);
         } else user = saveUser.get();
         return user;
     }
